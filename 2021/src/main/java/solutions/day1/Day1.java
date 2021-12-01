@@ -33,14 +33,14 @@ public class Day1 extends BaseDay {
         return differences;
     }
 
-    private Long getIncreaseCount(List<Integer> differences) {
+    private Long getIncreaseCount(final List<Integer> differences) {
         return differences
                 .stream()
                 .filter(depth -> depth > 0)
                 .count();
     }
 
-    private Integer getTotalForWindow(int index, final List<Integer> depths, final int windowSize) {
+    private Integer getTotalForWindow(final int index, final List<Integer> depths, final int windowSize) {
         return depths.subList(index, index + windowSize)
                 .stream()
                 .reduce(Integer::sum)
