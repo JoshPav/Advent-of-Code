@@ -7,15 +7,16 @@ import lombok.NoArgsConstructor;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FileUtils {
 
-    public static Stream<String> getInputAsStream(final Number number) {
+    public static List<String> getInput(final Number number) {
         try {
-            return Files.lines(getFilePath(number));
+            return Files.lines(getFilePath(number)).collect(Collectors.toList());
         } catch (IOException e) {
             throw new NoSuchPuzzleInputException(number);
         }

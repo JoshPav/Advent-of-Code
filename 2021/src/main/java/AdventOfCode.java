@@ -1,8 +1,8 @@
 import solutions.PuzzleDay;
 
-import java.util.stream.Stream;
+import java.util.List;
 
-import static utils.FileUtils.getInputAsStream;
+import static utils.FileUtils.getInput;
 
 public class AdventOfCode {
 
@@ -38,8 +38,8 @@ public class AdventOfCode {
     private static PuzzleDay instantiateDay(final Number dayNumber) {
         try {
             return (PuzzleDay) getClassForDay(dayNumber.toString())
-                    .getDeclaredConstructor(Stream.class)
-                    .newInstance(getInputAsStream(dayNumber));
+                    .getDeclaredConstructor(List.class)
+                    .newInstance(getInput(dayNumber));
         } catch (Exception e) {
             throw new RuntimeException("Could not instantiate class for Day: " + dayNumber);
         }

@@ -10,10 +10,10 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class BaseDay implements PuzzleDay {
 
-    private final Stream<String> inputStream;
+    private final List<String> input;
 
     protected Stream<String> getInputAsStream() {
-        return inputStream;
+        return input.stream();
     }
 
     protected Stream<Number> getInputAsNumberStream() {
@@ -24,8 +24,8 @@ public abstract class BaseDay implements PuzzleDay {
         return getInputAsStream().collect(Collectors.toList());
     }
 
-    protected List<Number> getInputAsNumberList() {
-        return getInputAsNumberStream().collect(Collectors.toList());
+    protected List<Integer> getInputAsIntegerList() {
+        return getInputAsNumberStream().map(Number::intValue).collect(Collectors.toList());
     }
 
     @Override
