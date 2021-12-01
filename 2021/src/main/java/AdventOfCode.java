@@ -7,7 +7,7 @@ import static utils.FileUtils.getInputAsStream;
 public class AdventOfCode {
 
     private static final int DAY_NUMBER = 1;
-    private static final int DAYS_COMPLETE = 25;
+    private static final int DAYS_COMPLETE = 0;
 
     public static void main(String[] args) {
         System.out.println("""

@@ -24,6 +24,10 @@ public abstract class BaseDay implements PuzzleDay {
         return getInputAsStream().collect(Collectors.toList());
     }
 
+    protected List<Number> getInputAsNumberList() {
+        return getInputAsNumberStream().collect(Collectors.toList());
+    }
+
     @Override
     public String getDayNumber() {
         return getClass().getSimpleName().replace("Day", "");
