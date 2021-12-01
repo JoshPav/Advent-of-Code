@@ -23,9 +23,16 @@ public class Day1 extends BaseDay {
             differences.add(depths.get(i) - depths.get(i - 1));
         }
 
-        return String.valueOf(differences.stream().filter(depth -> depth > 0).count());
+        return getIncreaseCount(differences);
     }
 
+    private String getIncreaseCount(List<Integer> differences) {
+        return String.valueOf(differences
+                .stream()
+                .filter(depth -> depth > 0)
+                .count()
+        );
+    }
 
     @Override
     public String solvePartTwo() {

@@ -3,8 +3,10 @@ package solutions.day1;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
+import static utils.FileUtils.getInputAsStream;
 
 public class Day1Test {
 
@@ -25,6 +27,12 @@ public class Day1Test {
 
         // Then
         assertEquals("7", new Day1(input.stream()).solvePartOne());
+    }
+
+    @Test
+    public void testPartOneActualInput() {
+
+        assertEquals("1696", new Day1(getInputAsStream(1)).solvePartOne());
     }
 
 }
