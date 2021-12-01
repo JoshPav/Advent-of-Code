@@ -27,6 +27,12 @@ public class Day1Test {
         assertEquals("5", new Day1(getTestInput()).solvePartTwo());
     }
 
+    @Test
+    public void testPartTwoActualInput() {
+
+        assertEquals("1737", new Day1(getInput(1)).solvePartTwo());
+    }
+
     private List<String> getTestInput() {
         return List.of("199",
                 "200",

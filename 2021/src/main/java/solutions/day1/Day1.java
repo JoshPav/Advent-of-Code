@@ -13,50 +13,38 @@ public class Day1 extends BaseDay {
 
     @Override
     public String solvePartOne() {
-        final List<Integer> depths = getInputAsIntegerList();
-
-        final List<Integer> differences = new ArrayList<>();
-
-        for (int i = 1; i < depths.size(); i++) {
-            differences.add(depths.get(i) - depths.get(i - 1));
-        }
-
-        return getIncreaseCount(differences);
-    }
-
-    private String getIncreaseCount(List<Integer> differences) {
-        return String.valueOf(differences
-                .stream()
-                .filter(depth -> depth > 0)
-                .count()
-        );
+        return getDepthIncreasesForWindowSize(1).toString();
     }
 
     @Override
     public String solvePartTwo() {
-        final List<Integer> depths = getInputAsIntegerList();
+        return getDepthIncreasesForWindowSize(3).toString();
+    }
 
+    private Long getDepthIncreasesForWindowSize(final int windowSize) {
+        return getIncreaseCount(getDifferencesForWindowSize(getInputAsIntegerList(), windowSize));
+    }
+
+    private List<Integer> getDifferencesForWindowSize(final List<Integer> nums, final int windowSize) {
         final List<Integer> differences = new ArrayList<>();
-
-        final int windowSize = 3;
-
-        for (int i = 1; i < depths.size() - (windowSize - 1); i++) {
-            differences.add(getTotalForWindow(i, depths, windowSize) - getTotalForWindow(i - 1, depths, windowSize));
+        for (int i = 1; i < nums.size() - (windowSize - 1); i++) {
+            differences.add(getTotalForWindow(i, nums, windowSize) - getTotalForWindow(i - 1, nums, windowSize));
         }
+        return differences;
+    }
 
-        return getIncreaseCount(differences);
+    private Long getIncreaseCount(List<Integer> differences) {
+        return differences
+                .stream()
+                .filter(depth -> depth > 0)
+                .count();
     }
 
     private Integer getTotalForWindow(int index, final List<Integer> depths, final int windowSize) {
-
-        int sum = 0;
-
-        for (int i = 0; i < windowSize; i++) {
-            sum += depths.get(index);
-            index++;
-        }
-
-        return sum;
+        return depths.subList(index, index + windowSize)
+                .stream()
+                .reduce(Integer::sum)
+                .orElse(0);
     }
 
 }
