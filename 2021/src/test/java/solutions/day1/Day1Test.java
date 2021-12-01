@@ -1,36 +1,37 @@
 package solutions.day1;
 
 import org.junit.Test;
+import solutions.BaseTest;
 
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static utils.FileUtils.getInput;
 
-public class Day1Test {
+public class Day1Test extends BaseTest {
 
     @Test
     public void testPartOne() {
 
-        assertEquals("7", new Day1(getTestInput()).solvePartOne());
+        assertEquals("7", getDayInstance(getTestInput()).solvePartOne());
     }
 
     @Test
     public void testPartOneActualInput() {
 
-        assertEquals("1696", new Day1(getInput(1)).solvePartOne());
+        assertEquals("1696", getDayInstance(getInput(1)).solvePartOne());
     }
 
     @Test
     public void testPartTwo() {
 
-        assertEquals("5", new Day1(getTestInput()).solvePartTwo());
+        assertEquals("5", getDayInstance(getTestInput()).solvePartTwo());
     }
 
     @Test
     public void testPartTwoActualInput() {
 
-        assertEquals("1737", new Day1(getInput(1)).solvePartTwo());
+        assertEquals("1737", getDayInstance(getInput(1)).solvePartTwo());
     }
 
     private List<String> getTestInput() {

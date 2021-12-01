@@ -1,13 +1,12 @@
 import solutions.PuzzleDay;
-
-import java.util.List;
+import utils.PuzzleDayFactory;
 
 import static utils.FileUtils.getInput;
 
 public class AdventOfCode {
 
-    private static final int DAY_NUMBER = 1;
-    private static final int DAYS_COMPLETE = 0;
+    private static final short DAY_NUMBER = 1;
+    private static final short DAYS_COMPLETE = 0;
 
     public static void main(String[] args) {
         System.out.println("""
@@ -21,8 +20,8 @@ public class AdventOfCode {
         solveDay(DAY_NUMBER);
     }
 
-    private static void solveDay(final Number dayNumber) {
-        final PuzzleDay currentDay = instantiateDay(dayNumber);
+    private static void solveDay(final short dayNumber) {
+        final PuzzleDay currentDay = PuzzleDayFactory.createPuzzleDay(dayNumber, getInput(dayNumber));
 
         System.out.println("============== Day " + currentDay.getDayNumber() + " ==============");
         System.out.println("Part one: " + currentDay.solvePartOne());
@@ -30,28 +29,11 @@ public class AdventOfCode {
     }
 
     private static void solveAllPuzzles() {
-        for (int i = 0; i <= DAYS_COMPLETE; i++) {
+        for (short i = 0; i <= DAYS_COMPLETE; i++) {
             solveDay(i);
         }
     }
 
-    private static PuzzleDay instantiateDay(final Number dayNumber) {
-        try {
-            return (PuzzleDay) getClassForDay(dayNumber.toString())
-                    .getDeclaredConstructor(List.class)
-                    .newInstance(getInput(dayNumber));
-        } catch (Exception e) {
-            throw new RuntimeException("Could not instantiate class for Day: " + dayNumber);
-        }
-    }
 
-    private static Class<?> getClassForDay(final String dayNumber) {
-        try {
-            final String day = "Day" + dayNumber;
-            return Class.forName(String.format("solutions.%s.%s", day.toLowerCase(), day));
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException("Could find class for Day: " + dayNumber);
-        }
-    }
 
 }

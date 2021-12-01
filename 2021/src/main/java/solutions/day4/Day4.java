@@ -1,0 +1,22 @@
+package solutions.day4;
+
+import solutions.BaseDay;
+
+import java.util.List;
+
+public class Day4 extends BaseDay {
+
+    public Day4(List<String> input) {
+        super(input);
+    }
+
+    @Override
+    public String solvePartOne() {
+        return null;
+    }
+
+    @Override
+    public String solvePartTwo() {
+        return null;
+    }
+}
