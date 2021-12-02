@@ -21,7 +21,7 @@ public final class PuzzleDayFactory {
 
     private static Class<?> getClassForDay(final short dayNumber) {
         try {
-            final String day = "Day" + dayNumber;
+            final String day = String.format("Day%02d", dayNumber);
             return Class.forName(String.format("solutions.%s.%s", day.toLowerCase(), day));
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("Could find class for Day: " + dayNumber);

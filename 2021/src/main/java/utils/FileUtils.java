@@ -29,7 +29,7 @@ public final class FileUtils {
     }
 
     private static String getInputFileName(final Number number) {
-        return "Day" + number + ".txt";
+        return String.format("Day%02d.txt", number.intValue());
     }
 
 }
