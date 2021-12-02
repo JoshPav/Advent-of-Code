@@ -19,7 +19,7 @@ public class Day2Test extends BaseTest {
     @Test
     public void testPartOneActualInput() {
 
-        assertEquals(null, getDayInstance(getInput(2)).solvePartOne());
+        assertEquals("1714680", getDayInstance(getInput(2)).solvePartOne());
     }
 
     @Test
@@ -31,7 +31,7 @@ public class Day2Test extends BaseTest {
     @Test
     public void testPartTwoActualInput() {
 
-        assertEquals(null, getDayInstance(getInput(2)).solvePartTwo());
+        assertEquals("1963088820", getDayInstance(getInput(2)).solvePartTwo());
     }
 
     private List<String> getTestInput() {
