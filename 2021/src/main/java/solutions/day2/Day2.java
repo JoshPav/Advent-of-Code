@@ -29,6 +29,11 @@ public class Day2 extends BaseDay {
 
     @Override
     public String solvePartTwo() {
-        return null;
+        final List<SubmarineCommand> commands = getInputAsStream().map(Day2::parseLine).collect(Collectors.toList());
+
+        SubmarinePosition pos = new SubmarinePosition();
+        commands.forEach(pos::applyCommandPt2);
+
+        return String.valueOf(pos.computeProduct());
     }
 }
