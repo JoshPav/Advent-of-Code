@@ -19,13 +19,13 @@ public class Day03Test extends BaseTest {
     @Test
     public void testPartOneActualInput() {
 
-        assertEquals(null, getDayInstance(getInput(3)).solvePartOne());
+        assertEquals("4006064", getDayInstance(getInput(3)).solvePartOne());
     }
 
     @Test
     public void testPartTwo() {
 
-        assertEquals(null, getDayInstance(getTestInput()).solvePartTwo());
+        assertEquals("230", getDayInstance(getTestInput()).solvePartTwo());
     }
 
     @Test
