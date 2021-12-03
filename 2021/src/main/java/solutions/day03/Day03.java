@@ -3,8 +3,8 @@ package solutions.day03;
 import solutions.BaseDay;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Day03 extends BaseDay {
@@ -13,103 +13,54 @@ public class Day03 extends BaseDay {
         super(input);
     }
 
+    private List<DiagnosticReading> inputAsDiagnosticReadings() {
+        return getInputAsList().stream().map(DiagnosticReading::new).collect(Collectors.toList());
+    }
+
     @Override
     public String solvePartOne() {
-
-        final List<String> input = getInputAsList();
-
-        final String gammaRateBytes = getGammaRate(input);
-
-        final int gammaRate = Integer.parseInt(gammaRateBytes, 2);
-
-        int mask = (1 << gammaRateBytes.length()) - 1;
-        final int epsilonRate = gammaRate ^ mask;
-
-
-        return String.valueOf(gammaRate * epsilonRate);
-    }
-
-    private int[] getCountOfBytes(final List<String> input) {
-        final int[] ints = new int[input.get(0).length()];
-
-        for (String s : input) {
-            char[] chars = s.toCharArray();
-            for (int i = 0; i < chars.length; i++) {
-                if (chars[i] == '1')
-                    ints[i]++;
-            }
-        }
-        return ints;
-    }
-
-    private String getGammaRate(final List<String> input) {
-        final int[] ints = getCountOfBytes(input);
-
-        StringBuilder gammaRateBytes = new StringBuilder();
-
-        final int listSize = input.size();
-
-        for (int i : ints) {
-            gammaRateBytes.append(i >= listSize / 2f ? "1" : "0");
-        }
-
-        return gammaRateBytes.toString();
-    }
-
-    private int getOxygenGeneratorRating(final List<String> input) {
-
-        List<String> oxygenGeneratorRatings = new ArrayList<>(input);
-        int index = 0;
-        while (oxygenGeneratorRatings.size() != 1) {
-            final String gammaRate = getGammaRate(oxygenGeneratorRatings);
-
-            final char mostCommonDigit = gammaRate.charAt(index);
-            int finalIndex = index;
-            oxygenGeneratorRatings = oxygenGeneratorRatings.stream()
-                    .filter(s -> s.charAt(finalIndex) == mostCommonDigit)
-                    .collect(Collectors.toList());
-            index++;
-        }
-
-        return Integer.parseInt(oxygenGeneratorRatings.get(0), 2);
-
-    }
-
-    private int getCo2ScrubberRating(final List<String> input) {
-
-        List<String> oxygenGeneratorRatings = new ArrayList<>(input);
-        int index = 0;
-        while (oxygenGeneratorRatings.size() != 1) {
-            final String gammaRateBytes = getGammaRate(oxygenGeneratorRatings);
-
-            int mask = (1 << gammaRateBytes.length()) - 1;
-            final int gammaRate = Integer.parseInt(gammaRateBytes, 2);
-
-            StringBuilder epsilonRate = new StringBuilder(Integer.toBinaryString(gammaRate ^ mask));
-
-            while (epsilonRate.length() < gammaRateBytes.length()) {
-                epsilonRate.insert(0, '0');
-            }
-
-            final char leastCommonDigit = epsilonRate.charAt(index);
-            int finalIndex = index;
-            oxygenGeneratorRatings = oxygenGeneratorRatings.stream()
-                    .filter(s -> s.charAt(finalIndex) == leastCommonDigit)
-                    .collect(Collectors.toList());
-            index++;
-        }
-
-        return Integer.parseInt(oxygenGeneratorRatings.get(0), 2);
+        final DiagnosticReading gammaRate = getGammaRateForReadings(inputAsDiagnosticReadings());
+        return String.valueOf(gammaRate.asInt() * gammaRate.getEpsilonRate().asInt());
     }
 
     @Override
     public String solvePartTwo() {
-
-        final List<String> input = getInputAsList();
-
-        final int oxygenGeneratorRating = getOxygenGeneratorRating(input);
-        final int co2 = getCo2ScrubberRating(input);
-
-        return String.valueOf(oxygenGeneratorRating * co2);
+        final List<DiagnosticReading> readings = inputAsDiagnosticReadings();
+        return String.valueOf(getOxygenGeneratorRating(readings) * getCo2ScrubberRating(readings));
     }
+
+    private int getOxygenGeneratorRating(final List<DiagnosticReading> readings) {
+        return getRatingForBitCriteria(readings, this::getGammaRateForReadings);
+    }
+
+    private DiagnosticReading getGammaRateForReadings(final List<DiagnosticReading> readings) {
+        return readings.stream().reduce(DiagnosticReading::add).orElseThrow().getGammaRate();
+    }
+
+    private int getCo2ScrubberRating(final List<DiagnosticReading> readings) {
+        return getRatingForBitCriteria(readings, this::getEpsilonRateForReadings);
+    }
+
+    private DiagnosticReading getEpsilonRateForReadings(final List<DiagnosticReading> readings) {
+        return getGammaRateForReadings(readings).getEpsilonRate();
+    }
+
+    private int getRatingForBitCriteria(final List<DiagnosticReading> readings,
+                                        final Function<List<DiagnosticReading>, DiagnosticReading> criteria) {
+
+        List<DiagnosticReading> oxygenGeneratorRatings = new ArrayList<>(readings);
+
+        for (int i = 0; i < oxygenGeneratorRatings.get(0).bitCount() && !oxygenGeneratorRatings.isEmpty(); i++) {
+            oxygenGeneratorRatings = filterByIndexWithExpected(oxygenGeneratorRatings, i, criteria.apply(oxygenGeneratorRatings).bitAt(i));
+        }
+
+        return oxygenGeneratorRatings.get(0).asInt();
+    }
+
+    private List<DiagnosticReading> filterByIndexWithExpected(List<DiagnosticReading> readings, int index, int expectedBit) {
+        return readings.stream()
+                .filter(rating -> rating.bitAt(index) == expectedBit)
+                .collect(Collectors.toList());
+    }
+
 }

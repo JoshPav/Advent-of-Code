@@ -12,12 +12,28 @@ public class Day02 extends BaseDay {
 
     @Override
     public String solvePartOne() {
-        return computeAnswerForInitialPosition(new CommandApplierPt1());
+        return computeAnswerForInitialPosition((position, command) -> {
+                switch (command.direction()) {
+                    case UP -> position.depth -= command.amount();
+                    case DOWN -> position.depth += command.amount();
+                    case FORWARD -> position.horizontalPosition += command.amount();
+                }
+        });
     }
 
     @Override
     public String solvePartTwo() {
-        return computeAnswerForInitialPosition(new CommandApplierPt2());
+        return computeAnswerForInitialPosition((position, command) -> {
+            final int amount = command.amount();
+            switch (command.direction()) {
+                case UP -> position.aim -= amount;
+                case DOWN -> position.aim += amount;
+                case FORWARD -> {
+                    position.depth += position.aim * amount;
+                    position.horizontalPosition += amount;
+                }
+            }
+        });
     }
 
     private String computeAnswerForInitialPosition(final CommandApplier applier) {
