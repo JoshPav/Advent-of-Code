@@ -48,13 +48,13 @@ public class Day03 extends BaseDay {
     private int getRatingForBitCriteria(final List<DiagnosticReading> readings,
                                         final Function<List<DiagnosticReading>, DiagnosticReading> criteria) {
 
-        List<DiagnosticReading> oxygenGeneratorRatings = new ArrayList<>(readings);
+        List<DiagnosticReading> oxygenGeneratorReadings = new ArrayList<>(readings);
 
-        for (int i = 0; i < oxygenGeneratorRatings.get(0).bitCount() && !oxygenGeneratorRatings.isEmpty(); i++) {
-            oxygenGeneratorRatings = filterByIndexWithExpected(oxygenGeneratorRatings, i, criteria.apply(oxygenGeneratorRatings).bitAt(i));
+        for (int i = 0; oxygenGeneratorReadings.size() > 1; i++) {
+            oxygenGeneratorReadings = filterByIndexWithExpected(oxygenGeneratorReadings, i, criteria.apply(oxygenGeneratorReadings).bitAt(i));
         }
 
-        return oxygenGeneratorRatings.get(0).asInt();
+        return oxygenGeneratorReadings.get(0).asInt();
     }
 
     private List<DiagnosticReading> filterByIndexWithExpected(List<DiagnosticReading> readings, int index, int expectedBit) {
