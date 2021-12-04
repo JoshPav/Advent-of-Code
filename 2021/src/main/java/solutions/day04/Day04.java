@@ -1,8 +1,10 @@
 package solutions.day04;
 
 import solutions.BaseDay;
+import utils.ListUtils;
 
 import java.util.List;
+import java.util.function.Function;
 
 public class Day04 extends BaseDay {
 
@@ -12,22 +14,16 @@ public class Day04 extends BaseDay {
 
     @Override
     public String solvePartOne() {
-
-        final BingoGame game = GameParser.parseInput(getInputAsList());
-
-        final CompletedBoard winner = game.playBingo().get(0);
-
-        return String.valueOf(winner.getScore());
+        return getBingoResultForBoard(getInputAsList(), ListUtils::first);
     }
 
     @Override
     public String solvePartTwo() {
-        final BingoGame game = GameParser.parseInput(getInputAsList());
-
-        final List<CompletedBoard> results = game.playBingo();
-
-        final CompletedBoard loser = results.get(results.size() - 1);
-
-        return String.valueOf(loser.getScore());
+        return getBingoResultForBoard(getInputAsList(), ListUtils::last);
     }
+
+    private String getBingoResultForBoard(final List<String> input, final Function<List<CompletedBoard>, CompletedBoard> boardSupplier) {
+        return String.valueOf(boardSupplier.apply(GameParser.parseInput(input).playBingo()).getScore());
+    }
+
 }

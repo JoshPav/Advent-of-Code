@@ -2,12 +2,12 @@ package solutions.day04;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class GameParser {
+
+    private static final int BOARD_SIZE = 5;
 
     public static BingoGame parseInput(final List<String> input) {
 
@@ -18,18 +18,15 @@ public class GameParser {
         List<BingoBoard> parsedBoards = new ArrayList<>();
 
         // Skip first two lines
-        for (int i = 2; i < input.size(); i+=6) {
-            // Boards are always 5 lines long + 1 line to seperate
-            parsedBoards.add(createBoard(input.subList(i, i+5)));
+        for (int i = 2; i < input.size(); i += BOARD_SIZE + 1) {
+            parsedBoards.add(createBoard(input.subList(i, i + BOARD_SIZE)));
         }
-
 
         return new BingoGame(numbersCalled, parsedBoards);
     }
 
     private static BingoBoard createBoard(List<String> inputLines) {
-        final BingoNumber[][] boardNumbers = new BingoNumber[5][5];
-
+        final BingoNumber[][] boardNumbers = new BingoNumber[BOARD_SIZE][BOARD_SIZE];
 
         for (int i = 0; i < inputLines.size(); i++) {
             final String[] split = inputLines.get(i).trim().split("\\s+");
