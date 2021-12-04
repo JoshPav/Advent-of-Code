@@ -1,43 +1,48 @@
 package solutions.day04;
 
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 
 import java.util.Arrays;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
-@NoArgsConstructor
 public class BingoBoard {
 
-    private int boardSize;
-    private BingoNumber[][] board;
+    private final int boardSize;
+    private final BingoNumber[][] board;
 
+    @Getter
     private boolean hasWon = false;
 
     public BingoBoard(BingoNumber[][] board) {
-        this.setBoard(board);
-    }
-
-    public void setBoard(final BingoNumber[][] board) {
         this.board = board;
         this.boardSize = board.length;
     }
 
     public int getSumOfUnmarked() {
-        return Arrays.stream(board).flatMap(Arrays::stream)
-                .filter(num -> !num.isChecked())
+        return getMatchingNumbers(num -> !num.isMarked())
                 .map(BingoNumber::getNumber)
                 .reduce(0, Integer::sum);
     }
 
-    public boolean hasWon() {
-        if (!hasWon) {
-            hasWon = (hasFullColumn() || hasFullRow());
-        }
+    public boolean markNumber(final int numberToMark) {
+
+        getMatchingNumbers(num -> num.getNumber() == numberToMark)
+                .findFirst()
+                .ifPresent(toMark -> {
+                    toMark.mark();
+                    checkWin();
+                });
+
         return hasWon;
     }
 
-    public boolean checkWin() {
+    private Stream<BingoNumber> getMatchingNumbers(final Predicate<BingoNumber> predicate) {
+        return Arrays.stream(board).flatMap(Arrays::stream).filter(predicate);
+    }
+
+    private void checkWin() {
         hasWon = (hasFullColumn() || hasFullRow());
-        return hasWon;
     }
 
     private boolean hasFullRow() {
@@ -50,21 +55,21 @@ public class BingoBoard {
     }
 
     private boolean checkRow(final BingoNumber[] row) {
-        return Arrays.stream(row).allMatch(BingoNumber::isChecked);
+        return Arrays.stream(row).allMatch(BingoNumber::isMarked);
     }
 
     private boolean hasFullColumn() {
         for (int columnI = 0; columnI < boardSize; columnI++) {
-            boolean checked = true;
+            boolean complete = true;
 
             for (int rowI = 0; rowI < boardSize; rowI++) {
-                if (!board[rowI][columnI].isChecked()) {
-                    checked = false;
+                if (!board[rowI][columnI].isMarked()) {
+                    complete = false;
                     break;
                 }
 
             }
-            if (checked) {
+            if (complete) {
                 return true;
             }
         }

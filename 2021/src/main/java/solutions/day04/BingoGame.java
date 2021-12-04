@@ -2,11 +2,9 @@ package solutions.day04;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public record BingoGame(List<Integer> numbersCalled,
-                        List<BingoBoard> boards,
-                        Map<Integer, List<BingoNumber>> numberMap) {
+                        List<BingoBoard> boards) {
 
     public List<CompletedBoard> playBingo() {
 
@@ -14,19 +12,16 @@ public record BingoGame(List<Integer> numbersCalled,
 
         for (Integer numberCalled : numbersCalled) {
 
-            for (BingoNumber number : numberMap.get(numberCalled)) {
-                // Update all boards
-                number.check();
-            }
-
-            // Check for a winner
+            final List<BingoBoard> completedThisRound = new ArrayList<>();
             for (BingoBoard board : boards) {
-                if (completedBoards.stream().noneMatch(completedBoard -> completedBoard.isBoard(board))) {
-                    if (board.checkWin()) {
-                        completedBoards.add(new CompletedBoard(board, numberCalled));
-                    }
+
+                if (board.markNumber(numberCalled)) {
+                    completedBoards.add(new CompletedBoard(board, numberCalled));
+                    completedThisRound.add(board);
                 }
+
             }
+            boards.removeAll(completedThisRound);
 
         }
 
