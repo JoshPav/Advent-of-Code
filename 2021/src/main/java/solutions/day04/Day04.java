@@ -12,7 +12,12 @@ public class Day04 extends BaseDay {
 
     @Override
     public String solvePartOne() {
-        return null;
+
+        final BingoGame game = GameParser.parseInput(getInputAsList());
+
+        final CompletedBoard winner = game.playBingo();
+
+        return String.valueOf(winner.getScore());
     }
 
     @Override
