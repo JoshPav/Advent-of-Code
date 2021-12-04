@@ -8,9 +8,12 @@ import lombok.RequiredArgsConstructor;
 public class BingoNumber {
 
     private final int number;
+    private final BingoBoard parent;
     private boolean checked = false;
 
     public void check() {
-        checked = true;
+        if (!parent.hasWon()) {
+            checked = true;
+        }
     }
 }

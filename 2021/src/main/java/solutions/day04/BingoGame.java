@@ -1,5 +1,6 @@
 package solutions.day04;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -7,7 +8,9 @@ public record BingoGame(List<Integer> numbersCalled,
                         List<BingoBoard> boards,
                         Map<Integer, List<BingoNumber>> numberMap) {
 
-    public CompletedBoard playBingo() {
+    public List<CompletedBoard> playBingo() {
+
+        List<CompletedBoard> completedBoards = new ArrayList<>();
 
         for (Integer numberCalled : numbersCalled) {
 
@@ -18,14 +21,16 @@ public record BingoGame(List<Integer> numbersCalled,
 
             // Check for a winner
             for (BingoBoard board : boards) {
-                if (board.hasWon()) {
-                    return new CompletedBoard(board, numberCalled);
+                if (completedBoards.stream().noneMatch(completedBoard -> completedBoard.isBoard(board))) {
+                    if (board.checkWin()) {
+                        completedBoards.add(new CompletedBoard(board, numberCalled));
+                    }
                 }
             }
 
         }
 
-        throw new EveryoneSucksAtBingoException();
+        return completedBoards;
     }
 
 

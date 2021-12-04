@@ -21,24 +21,25 @@ public class GameParser {
         // Skip first two lines
         for (int i = 2; i < input.size(); i+=6) {
             // Boards are always 5 lines long + 1 line to seperate
-            parsedBoards.add(new BingoBoard(createBoard(input.subList(i, i+5), numberReference)));
+            parsedBoards.add(createBoard(input.subList(i, i+5), numberReference));
         }
 
 
         return new BingoGame(numbersCalled, parsedBoards, numberReference);
     }
 
-    private static BingoNumber[][] createBoard(List<String> inputLines, final Map<Integer, List<BingoNumber>> map) {
-        final BingoNumber[][] board = new BingoNumber[5][5];
+    private static BingoBoard createBoard(List<String> inputLines, final Map<Integer, List<BingoNumber>> map) {
+        BingoBoard board = new BingoBoard();
+        final BingoNumber[][] boardNumbers = new BingoNumber[5][5];
 
 
         for (int i = 0; i < inputLines.size(); i++) {
             final String[] split = inputLines.get(i).trim().split("\\s+");
             for (int j = 0; j < split.length; j++) {
                 final Integer parsed = Integer.parseInt(split[j]);
-                BingoNumber num = new BingoNumber(parsed);
+                BingoNumber num = new BingoNumber(parsed, board);
 
-                board[i][j] = num;
+                boardNumbers[i][j] = num;
 
                 if (!map.containsKey(parsed)) {
                     map.put(parsed, new ArrayList<>());
@@ -46,6 +47,8 @@ public class GameParser {
                 map.get(parsed).add(num);
             }
         }
+
+        board.setBoard(boardNumbers);
 
         return board;
 

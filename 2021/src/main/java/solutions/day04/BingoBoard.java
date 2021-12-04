@@ -1,13 +1,22 @@
 package solutions.day04;
 
+import lombok.NoArgsConstructor;
+
 import java.util.Arrays;
 
+@NoArgsConstructor
 public class BingoBoard {
 
-    private final int boardSize;
-    private final BingoNumber[][] board;
+    private int boardSize;
+    private BingoNumber[][] board;
+
+    private boolean hasWon = false;
 
     public BingoBoard(BingoNumber[][] board) {
+        this.setBoard(board);
+    }
+
+    public void setBoard(final BingoNumber[][] board) {
         this.board = board;
         this.boardSize = board.length;
     }
@@ -20,7 +29,15 @@ public class BingoBoard {
     }
 
     public boolean hasWon() {
-        return hasFullColumn() || hasFullRow();
+        if (!hasWon) {
+            hasWon = (hasFullColumn() || hasFullRow());
+        }
+        return hasWon;
+    }
+
+    public boolean checkWin() {
+        hasWon = (hasFullColumn() || hasFullRow());
+        return hasWon;
     }
 
     private boolean hasFullRow() {
