@@ -3,8 +3,6 @@ package solutions.day04;
 import lombok.Getter;
 
 import java.util.Arrays;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 public class BingoBoard {
 
@@ -20,60 +18,39 @@ public class BingoBoard {
     }
 
     public int getSumOfUnmarked() {
-        return getMatchingNumbers(num -> !num.isMarked())
+        return Arrays.stream(board).flatMap(Arrays::stream)
+                .filter(num -> !num.isMarked())
                 .map(BingoNumber::getNumber)
                 .reduce(0, Integer::sum);
     }
 
     public boolean markNumber(final int numberToMark) {
 
-        getMatchingNumbers(num -> num.getNumber() == numberToMark)
-                .findFirst()
-                .ifPresent(toMark -> {
-                    toMark.mark();
-                    checkWin();
-                });
+        for (int row = 0; row < boardSize; row++) {
+            for (int col = 0; col < boardSize; col++) {
+                if (board[row][col].getNumber() == numberToMark) {
+                    board[row][col].mark();
 
+                    hasWon = (checkColumn(col) || checkRow(row));
+
+                    return hasWon;
+                }
+            }
+        }
         return hasWon;
     }
 
-    private Stream<BingoNumber> getMatchingNumbers(final Predicate<BingoNumber> predicate) {
-        return Arrays.stream(board).flatMap(Arrays::stream).filter(predicate);
+    private boolean checkRow(final int rowIndex) {
+        return Arrays.stream(board[rowIndex]).allMatch(BingoNumber::isMarked);
     }
 
-    private void checkWin() {
-        hasWon = (hasFullColumn() || hasFullRow());
-    }
-
-    private boolean hasFullRow() {
-        for (int rowI = 0; rowI < boardSize; rowI++) {
-            if (checkRow(board[rowI])) {
-                return true;
+    private boolean checkColumn(final int colIndex) {
+        for (int i = 0; i < boardSize; i++) {
+            if (!board[i][colIndex].isMarked()) {
+                return false;
             }
         }
-        return false;
-    }
-
-    private boolean checkRow(final BingoNumber[] row) {
-        return Arrays.stream(row).allMatch(BingoNumber::isMarked);
-    }
-
-    private boolean hasFullColumn() {
-        for (int columnI = 0; columnI < boardSize; columnI++) {
-            boolean complete = true;
-
-            for (int rowI = 0; rowI < boardSize; rowI++) {
-                if (!board[rowI][columnI].isMarked()) {
-                    complete = false;
-                    break;
-                }
-
-            }
-            if (complete) {
-                return true;
-            }
-        }
-        return false;
+        return true;
     }
 
 }
