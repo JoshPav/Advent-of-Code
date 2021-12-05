@@ -5,7 +5,7 @@ import static utils.FileUtils.getInput;
 
 public class AdventOfCode {
 
-    private static final short DAY_NUMBER = 4;
+    private static final short DAY_NUMBER = 5;
     private static final short DAYS_COMPLETE = 0;
 
     public static void main(String[] args) {

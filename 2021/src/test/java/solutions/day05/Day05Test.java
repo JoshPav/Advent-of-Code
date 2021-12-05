@@ -13,29 +13,40 @@ public class Day05Test extends BaseTest {
     @Test
     public void testPartOne() {
 
-        assertEquals(null, getDayInstance(getTestInput()).solvePartOne());
+        assertEquals("5", getDayInstance(getTestInput()).solvePartOne());
     }
 
     @Test
     public void testPartOneActualInput() {
 
-        assertEquals(null, getDayInstance(getInput(5)).solvePartOne());
+        assertEquals("5124", getDayInstance(getInput(5)).solvePartOne());
     }
 
     @Test
     public void testPartTwo() {
 
-        assertEquals(null, getDayInstance(getTestInput()).solvePartTwo());
+        assertEquals("12", getDayInstance(getTestInput()).solvePartTwo());
     }
 
     @Test
     public void testPartTwoActualInput() {
 
-        assertEquals(null, getDayInstance(getInput(5)).solvePartTwo());
+        assertEquals("19771", getDayInstance(getInput(5)).solvePartTwo());
     }
 
     private List<String> getTestInput() {
-        return List.of();
+        return List.of(
+                "0,9 -> 5,9",
+                "8,0 -> 0,8",
+                "9,4 -> 3,4",
+                "2,2 -> 2,1",
+                "7,0 -> 7,4",
+                "6,4 -> 2,0",
+                "0,9 -> 2,9",
+                "3,4 -> 1,4",
+                "0,0 -> 8,8",
+                "5,5 -> 8,2"
+        );
     }
 
 }
