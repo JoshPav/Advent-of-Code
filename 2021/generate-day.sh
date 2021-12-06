@@ -56,10 +56,10 @@ fetchInputForDay () {
 }
 
 # Create solution file
-createFromTemplate "${mainRoot}/${packageRoot}/day${day}" "day${day}" "${mainRoot}/${templatePath}"
+createFromTemplate "${mainRoot}/${packageRoot}/day${day}" "Day${day}" "${mainRoot}/${templatePath}"
 
 # Create test file
-createFromTemplate "${testRoot}/${packageRoot}/day${day}" "day${day}Test" "${testRoot}/${templatePath}"
+createFromTemplate "${testRoot}/${packageRoot}/day${day}" "Day${day}Test" "${testRoot}/${templatePath}"
 
 # Attempt to fetch file input data
-fetchInputForday "${day}" "${mainRoot}/resources"
+fetchInputForDay "${day}" "${mainRoot}/resources"
