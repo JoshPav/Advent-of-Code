@@ -24,10 +24,6 @@ public class DiagnosticReading {
         return bits[index];
     }
 
-    public int bitCount() {
-        return bits.length;
-    }
-
     public DiagnosticReading add(DiagnosticReading str) {
         final int[] newBits = new int[bits.length];
         for (int i = 0; i < bits.length; i++) {
