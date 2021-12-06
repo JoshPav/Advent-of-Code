@@ -13,13 +13,13 @@ public class Day06Test extends BaseTest {
     @Test
     public void testPartOne() {
 
-        assertEquals(null, getDayInstance(getTestInput()).solvePartOne());
+        assertEquals("5934", getDayInstance(getTestInput()).solvePartOne());
     }
 
     @Test
     public void testPartOneActualInput() {
 
-        assertEquals(null, getDayInstance(getInput(6)).solvePartOne());
+        assertEquals("363101", getDayInstance(getInput(6)).solvePartOne());
     }
 
     @Test
@@ -35,7 +35,7 @@ public class Day06Test extends BaseTest {
     }
 
     private List<String> getTestInput() {
-        return List.of();
+        return List.of("3,4,3,1,2");
     }
 
 }
