@@ -1,36 +1,65 @@
 #! /bin/bash
 
-DAY=$1
+day=$1
 
-MAIN_ROOT="src/main"
-TEST_ROOT="src/test"
+mainRoot="src/main"
+testRoot="src/test"
 
-PACKAGE_ROOT="java/solutions"
-TEMPLATE_PATH="${PACKAGE_ROOT}/template/template.txt"
+packageRoot="java/solutions"
+templatePath="${packageRoot}/template/template.txt"
 
-if [[ -z "$DAY" ]]; then
-	DAY=$(date +%d)
+if [[ -z "$day" ]]; then
+	day=$(date +%d)
 fi
 
 function createFromTemplate() {
-  DIRECTORY=$1
-  FILE_NAME=$2
-  TEMPLATE_FILE=$3
+  dir=$1
+  fileName=$2
+  template=$3
 
-  TO_CREATE="${DIRECTORY}/${FILE_NAME}.java"
+  toCreate="${dir}/${fileName}.java"
 
-  if [ ! -f ${TO_CREATE} ]; then
-      echo "No existing file ${FILE_NAME}, generating new one..."
-      mkdir -p "${DIRECTORY}" && cp "${TEMPLATE_FILE}" "${TO_CREATE}" && sed -i "" "s|<DAY>|${DAY}|" "${TO_CREATE}"
-      echo "Generated new test file: ${TO_CREATE}"
+  if [ ! -f "${toCreate}" ]; then
+      echo "No existing file ${fileName}, generating new one..."
+      mkdir -p "${dir}" && cp "${template}" "${toCreate}" && sed -i "" "s|<day>|${day}|" "${toCreate}"
+      echo "Generated new test file: ${toCreate}"
   else
-    echo "Existing file ${FILE_NAME}, ignoring."
+    echo "Existing file ${fileName}, ignoring."
   fi
 
 }
 
+fetchInputForDay () {
+  dayNumber=$1
+  pathToInput=$2
+
+  inputFile="${pathToInput}/day${dayNumber}.txt"
+
+  if [ ! -f "${inputFile}" ] || [ ! -s "${inputFile}" ]; then
+        leadingRemoved=$(echo "${dayNumber}" | sed 's/^0*//')
+        echo "No existing input file for day ${leadingRemoved}. Checking for cookie..."
+        cookie=$(cat .cookie)
+        if [ ! -f "${cookie}" ]; then
+            url=https://adventofcode.com/2021/day/${leadingRemoved}/input
+            echo "Cookie found, fetching from ${url}..."
+            curl -b "session=${cookie}" "${url}" > "${inputFile}"
+            echo "Created file ${inputFile}"
+        else
+            echo "No cookie found. Please create a .cookie file..."
+        fi
+
+
+    else
+      echo "Existing input file, ignoring."
+    fi
+
+}
+
 # Create solution file
-createFromTemplate "${MAIN_ROOT}/${PACKAGE_ROOT}/day${DAY}" "Day${DAY}" "${MAIN_ROOT}/${TEMPLATE_PATH}"
+createFromTemplate "${mainRoot}/${packageRoot}/day${day}" "day${day}" "${mainRoot}/${templatePath}"
 
 # Create test file
-createFromTemplate "${TEST_ROOT}/${PACKAGE_ROOT}/day${DAY}" "Day${DAY}Test" "${TEST_ROOT}/${TEMPLATE_PATH}"
+createFromTemplate "${testRoot}/${packageRoot}/day${day}" "day${day}Test" "${testRoot}/${templatePath}"
+
+# Attempt to fetch file input data
+fetchInputForday "${day}" "${mainRoot}/resources"
