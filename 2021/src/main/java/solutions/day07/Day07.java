@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static java.lang.Math.abs;
+import static java.lang.Math.pow;
 import static java.util.Arrays.fill;
 
 public class Day07 extends BaseDay {
@@ -16,44 +17,32 @@ public class Day07 extends BaseDay {
 
     @Override
     public String solvePartOne() {
+        return calculateLowestTotalFuelCost(toMove -> toMove);
+    }
 
-        final List<Integer> horiztonalPositions = Arrays.stream(getInputAsList().get(0).split(","))
-                .map(Integer::parseInt).toList();
+    @Override
+    public String solvePartTwo() {
+        return calculateLowestTotalFuelCost(this::sumToN);
+    }
 
-        final int max = horiztonalPositions.stream().max(Integer::compareTo).orElseThrow();
+    private String calculateLowestTotalFuelCost(final CrabEngineFuelAlgorithm algorithm) {
+        final List<Integer> horizontalPositions = getFirstLineAsIntegerList();
+
+        final int max = horizontalPositions.stream().max(Integer::compareTo).orElseThrow();
 
         int[] fuelCost = new int[max + 1];
         fill(fuelCost, 0);
 
-        for (Integer pos: horiztonalPositions) {
+        for (Integer pos: horizontalPositions) {
             for (int i = 0; i < fuelCost.length; i++) {
-                fuelCost[i] += abs(pos - i);
+                fuelCost[i] += algorithm.calculateFuelCost(abs(pos - i));
             }
         }
 
         return String.valueOf(Arrays.stream(fuelCost).min().orElseThrow());
     }
 
-    @Override
-    public String solvePartTwo() {
-
-        final List<Integer> horiztonalPositions = Arrays.stream(getInputAsList().get(0).split(","))
-                .map(Integer::parseInt).toList();
-
-        final int max = horiztonalPositions.stream().max(Integer::compareTo).orElseThrow();
-
-        int[] fuelCost = new int[max + 1];
-        fill(fuelCost, 0);
-
-        for (Integer pos: horiztonalPositions) {
-            for (int i = 0; i < fuelCost.length; i++) {
-                fuelCost[i] += nthTriangularNumber(abs(pos - i));
-            }
-        }
-
-        return String.valueOf(Arrays.stream(fuelCost).min().orElseThrow());    }
-
-    private int nthTriangularNumber(int number) {
-        return number > 1 ? number + nthTriangularNumber(number - 1) : 1;
+    private int sumToN(int number) {
+        return ((int) pow(number, 2) + number)/2;
     }
 }

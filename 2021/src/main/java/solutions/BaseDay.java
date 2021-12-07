@@ -3,6 +3,7 @@ package solutions;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -26,6 +27,22 @@ public abstract class BaseDay implements PuzzleDay {
 
     protected List<Integer> getInputAsIntegerList() {
         return getInputAsNumberStream().map(Number::intValue).collect(Collectors.toList());
+    }
+
+    protected List<String> getFirstLineAsList() {
+        return getFirstLineAsStream().toList();
+    }
+
+    protected List<Integer> getFirstLineAsIntegerList() {
+        return getFirstLineAsStream().map(Integer::parseInt).toList();
+    }
+
+    protected Stream<String> getFirstLineAsStream() {
+        return Arrays.stream(getInputAsList().get(0).split(","));
+    }
+
+    protected Stream<Integer> getFirstLineAsIntegerStream() {
+        return getFirstLineAsIntegerList().stream();
     }
 
     @Override

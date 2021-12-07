@@ -26,7 +26,7 @@ function createFromTemplate() {
 
   if [ ! -f "${toCreate}" ]; then
       echo "No existing file ${fileName}, generating new one..."
-      mkdir -p "${dir}" && cp "${template}" "${toCreate}" && sed -i "" "s|<day>|${day}|" "${toCreate}"
+      mkdir -p "${dir}" && cp "${template}" "${toCreate}" && sed -i "" "s|<DAY>|${day}|" "${toCreate}"
       echo "Generated new test file: ${toCreate}"
   else
     echo "Existing file ${fileName}, ignoring."
