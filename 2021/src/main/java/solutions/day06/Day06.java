@@ -5,6 +5,8 @@ import solutions.BaseDay;
 import java.util.Arrays;
 import java.util.List;
 
+import static java.util.Arrays.fill;
+
 public class Day06 extends BaseDay {
 
     public Day06(List<String> input) {
@@ -13,28 +15,28 @@ public class Day06 extends BaseDay {
 
     @Override
     public String solvePartOne() {
-        return String.valueOf(getLanternFishCountAfterDays(getInputAsList().get(0), 80));
+        return getLanternFishCountAfterDays(80);
     }
 
     @Override
     public String solvePartTwo() {
-        return String.valueOf(getLanternFishCountAfterDays(getInputAsList().get(0), 256));
+        return getLanternFishCountAfterDays(256);
     }
 
-    private long[] getInitialState(final String input) {
+    private long[] getInitialState() {
         long[] initialState = new long[9];
-        Arrays.fill(initialState, 0L);
+        fill(initialState, 0L);
 
-        for (String daysLeft : input.split(",")) {
+        for (String daysLeft : getFirstLineAsList()) {
             initialState[Short.parseShort(daysLeft)]++;
         }
 
         return initialState;
     }
 
-    private Long getLanternFishCountAfterDays(final String input, final int numberOfDays) {
+    private String getLanternFishCountAfterDays(final int numberOfDays) {
 
-        long[] daysToReproduce = getInitialState(input);
+        long[] daysToReproduce = getInitialState();
 
         for (int day = 1; day <= numberOfDays; day++) {
             final long reproducingFish = daysToReproduce[0];
@@ -43,7 +45,7 @@ public class Day06 extends BaseDay {
             daysToReproduce[8] = reproducingFish;
         }
 
-        return Arrays.stream(daysToReproduce).reduce(Long::sum).orElseThrow();
+        return String.valueOf(Arrays.stream(daysToReproduce).reduce(Long::sum).orElseThrow());
 
     }
 }
