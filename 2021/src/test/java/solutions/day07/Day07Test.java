@@ -13,29 +13,31 @@ public class Day07Test extends BaseTest {
     @Test
     public void testPartOne() {
 
-        assertEquals(null, getDayInstance(getTestInput()).solvePartOne());
+        assertEquals("37", getDayInstance(getTestInput()).solvePartOne());
     }
 
     @Test
     public void testPartOneActualInput() {
 
-        assertEquals(null, getDayInstance(getInput(7)).solvePartOne());
+        assertEquals("341534", getDayInstance(getInput(07)).solvePartOne());
     }
 
     @Test
     public void testPartTwo() {
 
-        assertEquals(null, getDayInstance(getTestInput()).solvePartTwo());
+        assertEquals("168", getDayInstance(getTestInput()).solvePartTwo());
     }
 
     @Test
     public void testPartTwoActualInput() {
 
-        assertEquals(null, getDayInstance(getInput(7)).solvePartTwo());
+        assertEquals(null, getDayInstance(getInput(07)).solvePartTwo());
     }
 
     private List<String> getTestInput() {
-        return List.of();
+        return List.of(
+            "16,1,2,0,4,2,7,1,2,14"
+        );
     }
 
 }

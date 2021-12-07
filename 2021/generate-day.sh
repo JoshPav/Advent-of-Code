@@ -1,12 +1,17 @@
 #! /bin/bash
 
-day=$1
+year=$1
+day=$2
 
 mainRoot="src/main"
 testRoot="src/test"
 
 packageRoot="java/solutions"
 templatePath="${packageRoot}/template/template.txt"
+
+if [[ -z "$year" ]]; then
+	year=$(date +%Y)
+fi
 
 if [[ -z "$day" ]]; then
 	day=$(date +%d)
@@ -40,7 +45,7 @@ fetchInputForDay () {
         echo "No existing input file for day ${leadingRemoved}. Checking for cookie..."
         cookie=$(cat .cookie)
         if [ ! -f "${cookie}" ]; then
-            url=https://adventofcode.com/2021/day/${leadingRemoved}/input
+            url=https://adventofcode.com/${year}/day/${leadingRemoved}/input
             echo "Cookie found, fetching from ${url}..."
             curl -b "session=${cookie}" "${url}" > "${inputFile}"
             echo "Created file ${inputFile}"

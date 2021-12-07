@@ -15,12 +15,4 @@ public final class MathUtils {
         return range;
     }
 
-    public static List<Integer> fill(int toFill, int size) {
-        List<Integer> nums = new ArrayList<>();
-        for (int i = 0; i < size; i++) {
-            nums.add(toFill);
-        }
-        return nums;
-    }
-
 }
