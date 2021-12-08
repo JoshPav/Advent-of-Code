@@ -50,18 +50,18 @@ public class Day08 extends BaseDay {
             // Determine 8
             final String eight = getNumberForPredicate(digits, getStringOfLength(7));
 
-            // Determine numbers with 6 digits - 0, 6, 9
+            // Using the unique numbers we can determine the 6-digit numbers 0, 6 and 9
 
             // Nine has all parts of four inside
             final String nine = getNumberForPredicate(digits, getStringOfLength(6).and(containsAllChars(four)));
 
             // Zero has seven inside and is not nine
-            final String zero = getNumberForPredicate(digits, getStringOfLength(6).and(containsAllChars(seven).and(str -> !str.equals(nine))));
+            final String zero = getNumberForPredicate(digits, getStringOfLength(6).and(containsAllChars(seven).and(not(nine::equals))));
 
-            // Six is the remaining 6 digit number
-            final String six = getNumberForPredicate(digits, getStringOfLength(6).and(str -> !str.equals(zero)).and(str -> !str.equals(nine)));
+            // Six is the remaining 6-digit number
+            final String six = getNumberForPredicate(digits, getStringOfLength(6).and(not(zero::equals)).and(not(nine::equals)));
 
-            // Determine numbers with 5 digits - 2, 3, 5,
+            // Next, lets determine the 5-digit numbers 2, 3 & 5
 
             // Three has both parts of one inside
             final String three = getNumberForPredicate(digits, getStringOfLength(5).and(containsAllChars(one)));
@@ -70,9 +70,8 @@ public class Day08 extends BaseDay {
             final String missingLetters = String.valueOf(lettersMissing(nine, eight).get(0));
             final String two = getNumberForPredicate(digits, getStringOfLength(5).and(containsAllChars(missingLetters)));
 
-            // Five is the remaining 5 digit number
-            final String five = getNumberForPredicate(digits, getStringOfLength(5).and(str -> !str.equals(three)).and(str -> !str.equals(two)));
-
+            // Five is the remaining 5-digit number
+            final String five = getNumberForPredicate(digits, getStringOfLength(5).and(not(three::equals)).and(not(two::equals)));
 
             final Map<String, String> digitMap = Map.of(
                     zero, "0",
