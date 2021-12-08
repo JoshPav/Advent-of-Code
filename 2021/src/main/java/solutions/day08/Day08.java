@@ -1,15 +1,16 @@
 package solutions.day08;
 
-import shared.math.geometry.Line;
 import solutions.BaseDay;
+import utils.ListUtils;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
 import static java.util.function.Predicate.not;
-import static java.util.stream.Collectors.groupingBy;
+import static utils.ListUtils.parseList;
 
 public class Day08 extends BaseDay {
 
@@ -19,13 +20,14 @@ public class Day08 extends BaseDay {
 
     @Override
     public String solvePartOne() {
-
-        var uniqueValues = getInputAsStream()
-                .map(line -> line.split("\\|")[1])
-                .flatMap(output -> Arrays.stream(output.split("\\s+")))
-                .collect(groupingBy(String::length));
-
-        return String.valueOf(uniqueValues.get(2).size() + uniqueValues.get(3).size() + uniqueValues.get(4).size() + uniqueValues.get(7).size());
+        return String.valueOf(
+            getInputAsStream()
+                    .map(line -> line.split("\\|")[1].trim())
+                    .map(ListUtils::parseList)
+                    .flatMap(Collection::stream)
+                    .filter(str -> List.of(2, 3, 4, 7).contains(str.length()))
+                    .count()
+        );
     }
 
     @Override
@@ -36,7 +38,7 @@ public class Day08 extends BaseDay {
         for (String line : getInputAsList()) {
             final String[] split = line.split("\\|");
 
-            final List<String> digits = Arrays.stream(split[0].split("\\s+")).toList();
+            final List<String> digits = parseList(split[0]);
 
             // Determine 1
             final String one = getNumberForPredicate(digits, getStringOfLength(2));
@@ -86,7 +88,7 @@ public class Day08 extends BaseDay {
                     nine, "9"
             );
 
-            final List<String> outputDigits = Arrays.stream(split[1].trim().split("\\s+")).toList();
+            final List<String> outputDigits = parseList(split[1]);
 
             StringBuilder output = new StringBuilder();
 

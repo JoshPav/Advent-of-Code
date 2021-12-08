@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static utils.ListUtils.parseList;
+
 public class GameParser {
 
     private static final int BOARD_SIZE = 5;
@@ -29,9 +31,9 @@ public class GameParser {
         final BingoNumber[][] boardNumbers = new BingoNumber[BOARD_SIZE][BOARD_SIZE];
 
         for (int i = 0; i < inputLines.size(); i++) {
-            final String[] split = inputLines.get(i).trim().split("\\s+");
-            for (int j = 0; j < split.length; j++) {
-                boardNumbers[i][j] = new BingoNumber(Integer.parseInt(split[j]));
+            final List<String> split = parseList(inputLines.get(i).trim());
+            for (int j = 0; j < split.size(); j++) {
+                boardNumbers[i][j] = new BingoNumber(Integer.parseInt(split.get(j)));
             }
         }
 
