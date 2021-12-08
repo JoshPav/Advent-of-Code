@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ListUtils {
@@ -21,8 +22,16 @@ public final class ListUtils {
         return parseList(toParse, "\\s+");
     }
 
+    public static <T> List<T> parseList(String toParse, Function<String, T> mapper) {
+        return parseList(toParse, "\\s+", mapper);
+    }
+
     public static List<String> parseList(String toParse, String regex) {
-        return Arrays.stream(toParse.split(regex)).toList();
+        return parseList(toParse, regex, s -> s);
+    }
+
+    public static <T> List<T> parseList(String toParse, String regex, final Function<String, T> mapper) {
+        return Arrays.stream(toParse.split(regex)).map(mapper).toList();
     }
 
 }
