@@ -1,5 +1,6 @@
 package solutions.day09;
 
+import shared.TwoDimensionalArray;
 import solutions.BaseDay;
 
 import java.util.ArrayList;
@@ -32,31 +33,15 @@ public class Day09 extends BaseDay {
 
     @Override
     public String solvePartTwo() {
-//        final Integer tubeSize = getInputAsList().get(0).length();
-//        final List<Integer> heights = getInputAsStream()
-//                .flatMap(line -> asIntegerList(line).stream())
-//                .toList();
-//
-//        final var foo = getAdjacentLowPoints(heights, tubeSize)
-//                .stream()
-//                .sorted(Comparator.comparing(List::size, Comparator.reverseOrder()))
-//                .toList();
-//
-//        final List<Integer> sorted = getAdjacentLowPoints(heights, tubeSize)
-//                .stream()
-//                .sorted(Comparator.comparing(List::size, Comparator.reverseOrder()))
-//                .map(List::size)
-//                .sorted()
-//                .toList();
 
-        final boolean[][] computed = createARray(getInputAsList().size(), getInputAsList().get(0).length());
         final List<List<Integer>> heightMap = parseHeightMap(getInputAsList());
+        final TwoDimensionalArray<Boolean> computed = new TwoDimensionalArray<>(heightMap.get(0).size(), heightMap.size(), false);
 
         final List<Integer> totals = new ArrayList<>();
 
         for (int i = 0; i < heightMap.size() - 1; i++) {
-            for (int j = 0; j < heightMap.get(0).size(); j++) {
-                if (!computed[i][j]) {
+            for (int j = 0; j < heightMap.get(0).size() - 1; j++) {
+                if (!computed.get(i, j)) {
                     final Integer count = getBasinPoints2(heightMap, i, j, computed);
                     if (count != 0)
                         totals.add(count);
@@ -105,18 +90,18 @@ public class Day09 extends BaseDay {
         return index < 0 || index >= list.size();
     }
 
-    private Integer getBasinPoints2(List<List<Integer>> heightMap, int i, int j, final boolean[][] computedIndices) {
+    private Integer getBasinPoints2(List<List<Integer>> heightMap, int i, int j, final TwoDimensionalArray<Boolean> computedIndices) {
 
-        if (doesNotExist(heightMap, i) || doesNotExist(heightMap.get(i), j) || computedIndices[i][j]) {
+        if (doesNotExist(heightMap, i) || doesNotExist(heightMap.get(i), j) || computedIndices.get(i, j)) {
             return 0;
         }
 
         if (heightMap.get(i).get(j) == 9) {
-            computedIndices[i][j] = true;
+            computedIndices.set(i, j, true);
             return 0;
         }
         int total = 0;
-        computedIndices[i][j] = true;
+        computedIndices.set(i, j, true);
 
         total += getBasinPoints2(heightMap, i - 1, j, computedIndices);
         total += getBasinPoints2(heightMap, i + 1, j, computedIndices);
