@@ -13,7 +13,7 @@ public class Day09Test extends BaseTest {
     @Test
     public void testPartOne() {
 
-        assertEquals(null, getDayInstance(getTestInput()).solvePartOne());
+        assertEquals("15", getDayInstance(getTestInput()).solvePartOne());
     }
 
     @Test
@@ -35,7 +35,13 @@ public class Day09Test extends BaseTest {
     }
 
     private List<String> getTestInput() {
-        return List.of();
+        return List.of(
+                "2199943210",
+                "3987894921",
+                "9856789892",
+                "8767896789",
+                "9899965678"
+        );
     }
 
 }
