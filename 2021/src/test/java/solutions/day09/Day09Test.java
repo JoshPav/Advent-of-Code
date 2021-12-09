@@ -19,19 +19,19 @@ public class Day09Test extends BaseTest {
     @Test
     public void testPartOneActualInput() {
 
-        assertEquals(null, getDayInstance(getInput(9)).solvePartOne());
+        assertEquals("452", getDayInstance(getInput(9)).solvePartOne());
     }
 
     @Test
     public void testPartTwo() {
 
-        assertEquals(null, getDayInstance(getTestInput()).solvePartTwo());
+        assertEquals("1134", getDayInstance(getTestInput()).solvePartTwo());
     }
 
     @Test
     public void testPartTwoActualInput() {
 
-        assertEquals(null, getDayInstance(getInput(9)).solvePartTwo());
+        assertEquals("1263735", getDayInstance(getInput(9)).solvePartTwo());
     }
 
     private List<String> getTestInput() {
