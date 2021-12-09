@@ -1,7 +1,9 @@
 package solutions.day09;
 
 import shared.TwoDimensionalArray;
+import shared.math.MathUtils;
 import solutions.BaseDay;
+import shared.ListUtils;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -33,13 +35,15 @@ public class Day09 extends BaseDay {
                 .toList()
                 .subList(0, 3)
                 .stream()
-                .reduce((a, b) -> a * b)
+                .reduce(MathUtils::product)
                 .map(String::valueOf)
                 .orElseThrow();
     }
 
     private TwoDimensionalArray<Integer> getHeightMap() {
-        return new TwoDimensionalArray<>(to2dList(getInputAsList()));
+        return new TwoDimensionalArray<>(
+                getInputAsStream().map(ListUtils::parseDigits).toList()
+        );
     }
 
     private List<Integer> getBasinSizes(final TwoDimensionalArray<Integer> heightMap) {
@@ -59,18 +63,6 @@ public class Day09 extends BaseDay {
         return basinSizes;
     }
 
-    private List<Integer> findLowPoints(List<Integer> heightMap, final Integer tubeSize) {
-        final List<Integer> lowPoints = new ArrayList<>();
-        for (int i = 0; i < heightMap.size() - 1; i++) {
-
-            if (lessThan(i, i - 1, heightMap) && lessThan(i, i + 1, heightMap) &&
-                    lessThan(i, i - tubeSize, heightMap) && lessThan(i, i + tubeSize, heightMap)) {
-                lowPoints.add(heightMap.get(i));
-            }
-        }
-        return lowPoints;
-    }
-
     private List<Integer> findLowPoints(TwoDimensionalArray<Integer> heightMap) {
         final List<Integer> lowPoints = new ArrayList<>();
 
@@ -84,10 +76,6 @@ public class Day09 extends BaseDay {
         }
 
         return lowPoints;
-    }
-
-    private List<List<Integer>> to2dList(final List<String> input) {
-        return input.stream().map(this::asIntegerList).toList();
     }
 
     private Integer getBasinPoints(TwoDimensionalArray<Integer> heightMap, int i, int j, final TwoDimensionalArray<Boolean> computedIndices) {
@@ -108,18 +96,8 @@ public class Day09 extends BaseDay {
         return adjacentCount;
     }
 
-    private boolean lessThan(final int valIndex, final int toCheckIndex, final List<Integer> ints) {
-        if (toCheckIndex < 0 || toCheckIndex >= ints.size())
-            return true;
-        return ints.get(valIndex) < ints.get(toCheckIndex);
-    }
-
     private Integer getRiskLevel(final Integer height) {
         return height + 1;
-    }
-
-    private List<Integer> asIntegerList(String str) {
-        return str.chars().mapToObj(Character::getNumericValue).toList();
     }
 
 }

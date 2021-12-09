@@ -1,7 +1,7 @@
 package solutions.day08;
 
 import solutions.BaseDay;
-import utils.ListUtils;
+import shared.ListUtils;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -11,7 +11,7 @@ import java.util.function.Predicate;
 
 import static java.util.function.Predicate.not;
 import static solutions.day08.DisplayDigit.*;
-import static utils.ListUtils.parseList;
+import static shared.ListUtils.parseList;
 
 public class Day08 extends BaseDay {
 

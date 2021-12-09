@@ -15,4 +15,8 @@ public final class MathUtils {
         return range;
     }
 
+    public static Integer product(Integer a, Integer b) {
+        return a * b;
+    }
+
 }

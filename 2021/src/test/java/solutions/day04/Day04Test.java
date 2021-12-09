@@ -6,7 +6,7 @@ import solutions.BaseTest;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static utils.FileUtils.getInput;
+import static shared.FileUtils.getInput;
 
 public class Day04Test extends BaseTest {
 

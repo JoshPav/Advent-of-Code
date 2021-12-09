@@ -1,7 +1,7 @@
 import solutions.PuzzleDay;
-import utils.PuzzleDayFactory;
+import shared.PuzzleDayFactory;
 
-import static utils.FileUtils.getInput;
+import static shared.FileUtils.getInput;
 
 public class AdventOfCode {
 

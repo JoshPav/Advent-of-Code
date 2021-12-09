@@ -1,7 +1,7 @@
 package solutions.day04;
 
 import solutions.BaseDay;
-import utils.ListUtils;
+import shared.ListUtils;
 
 import java.util.List;
 import java.util.function.Function;

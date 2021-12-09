@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static utils.ListUtils.first;
+import static shared.ListUtils.first;
 
 @RequiredArgsConstructor
 public class TwoDimensionalArray<E> implements Iterable<E> {

@@ -1,6 +1,6 @@
 package solutions;
 
-import utils.PuzzleDayFactory;
+import shared.PuzzleDayFactory;
 
 import java.util.List;
 import java.util.regex.Matcher;

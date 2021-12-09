@@ -1,4 +1,4 @@
-package utils;
+package shared;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -16,6 +16,10 @@ public final class ListUtils {
 
     public static <T> T last(List<T> list) {
         return list.get(list.size() - 1);
+    }
+
+    public static List<Integer> parseDigits(final String number) {
+        return number.chars().mapToObj(Character::getNumericValue).toList();
     }
 
     public static List<String> parseList(String toParse) {
