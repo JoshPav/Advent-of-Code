@@ -28,17 +28,17 @@ public class GameParser {
     }
 
     private static BingoBoard createBoard(List<String> inputLines) {
-        final BingoNumber[][] boardNumbers = new BingoNumber[BOARD_SIZE][BOARD_SIZE];
+        return new BingoBoard(inputLines.stream()
+                .map(GameParser::toNumberList)
+                .toList());
+    }
 
-        for (int i = 0; i < inputLines.size(); i++) {
-            final List<String> split = parseList(inputLines.get(i).trim());
-            for (int j = 0; j < split.size(); j++) {
-                boardNumbers[i][j] = new BingoNumber(Integer.parseInt(split.get(j)));
-            }
-        }
+    private static List<BingoNumber> toNumberList(final String str) {
+        return parseList(str.trim()).stream().map(GameParser::toBingoNumber).toList();
+    }
 
-        return new BingoBoard(boardNumbers);
-
+    private static BingoNumber toBingoNumber(final String num) {
+        return new BingoNumber(Integer.parseInt(num));
     }
 
 }

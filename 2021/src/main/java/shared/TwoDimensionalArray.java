@@ -11,6 +11,7 @@ import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static utils.ListUtils.first;
 
@@ -126,6 +127,10 @@ public class TwoDimensionalArray<E> implements Iterable<E> {
     @SuppressWarnings("unchecked")
     private E[][] cast2d(Object[][] arr) {
         return (E[][]) arr;
+    }
+
+    public Stream<E> stream() {
+        return getAllData().stream();
     }
 
     @Override
