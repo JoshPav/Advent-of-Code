@@ -4,7 +4,7 @@ import shared.TwoDimensionalArray;
 import solutions.BaseDay;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import static java.lang.Math.abs;
@@ -18,12 +18,7 @@ public class Day09 extends BaseDay {
 
     @Override
     public String solvePartOne() {
-        final Integer tubeSize = getInputAsList().get(0).length();
-        final List<Integer> heights = getInputAsStream()
-                .flatMap(line -> asIntegerList(line).stream())
-                .toList();
-
-        return findLowPoints(heights, tubeSize)
+        return findLowPoints(getHeightMap())
                 .stream()
                 .map(this::getRiskLevel)
                 .reduce(Integer::sum)
@@ -33,27 +28,35 @@ public class Day09 extends BaseDay {
 
     @Override
     public String solvePartTwo() {
+        return getBasinSizes(getHeightMap())
+                .stream().sorted(Comparator.reverseOrder())
+                .toList()
+                .subList(0, 3)
+                .stream()
+                .reduce((a, b) -> a * b)
+                .map(String::valueOf)
+                .orElseThrow();
+    }
 
-        final List<List<Integer>> heightMap = parseHeightMap(getInputAsList());
-        final TwoDimensionalArray<Boolean> computed = new TwoDimensionalArray<>(heightMap.get(0).size(), heightMap.size(), false);
+    private TwoDimensionalArray<Integer> getHeightMap() {
+        return new TwoDimensionalArray<>(to2dList(getInputAsList()));
+    }
 
-        final List<Integer> totals = new ArrayList<>();
+    private List<Integer> getBasinSizes(final TwoDimensionalArray<Integer> heightMap) {
 
-        for (int i = 0; i < heightMap.size() - 1; i++) {
-            for (int j = 0; j < heightMap.get(0).size() - 1; j++) {
-                if (!computed.get(i, j)) {
-                    final Integer count = getBasinPoints2(heightMap, i, j, computed);
-                    if (count != 0)
-                        totals.add(count);
+        var alreadyComputed = new TwoDimensionalArray<>(heightMap.rowCount(), heightMap.columnCount(), false);
+
+        final List<Integer> basinSizes = new ArrayList<>();
+
+        for (int i = 0; i < heightMap.rowCount() - 1; i++) {
+            for (int j = 0; j < heightMap.columnCount() - 1; j++) {
+                if (!alreadyComputed.get(i, j)) {
+                    basinSizes.add(getBasinPoints(heightMap, i, j, alreadyComputed));
                 }
-
             }
         }
 
-
-        var sorted = totals.stream().sorted().toList();
-        var size = sorted.size();
-        return String.valueOf(sorted.get(size - 1) * sorted.get(size - 2) * sorted.get(size - 3));
+        return basinSizes;
     }
 
     private List<Integer> findLowPoints(List<Integer> heightMap, final Integer tubeSize) {
@@ -68,60 +71,47 @@ public class Day09 extends BaseDay {
         return lowPoints;
     }
 
-    private boolean[][] createARray(final int iSize, int jSize) {
+    private List<Integer> findLowPoints(TwoDimensionalArray<Integer> heightMap) {
+        final List<Integer> lowPoints = new ArrayList<>();
 
-        final var arr = new boolean[iSize][];
-
-        for (int i = 0; i < iSize; i++) {
-            var arr2 = new boolean[jSize];
-            fill(arr2, false);
-
-            arr[i] = arr2;
+        for (int i = 0; i < heightMap.rowCount(); i++) {
+            for (int j = 0; j < heightMap.columnCount(); j++) {
+                final int height = heightMap.get(i, j);
+                if (heightMap.getAdjacent(i, j).stream().allMatch(adjHeight -> adjHeight > height)) {
+                    lowPoints.add(height);
+                }
+            }
         }
 
-        return arr;
+        return lowPoints;
     }
 
-    private List<List<Integer>> parseHeightMap(final List<String> input) {
+    private List<List<Integer>> to2dList(final List<String> input) {
         return input.stream().map(this::asIntegerList).toList();
     }
 
-    private <T> boolean doesNotExist(List<T> list, int index) {
-        return index < 0 || index >= list.size();
-    }
+    private Integer getBasinPoints(TwoDimensionalArray<Integer> heightMap, int i, int j, final TwoDimensionalArray<Boolean> computedIndices) {
+        int adjacentCount = 0;
 
-    private Integer getBasinPoints2(List<List<Integer>> heightMap, int i, int j, final TwoDimensionalArray<Boolean> computedIndices) {
-
-        if (doesNotExist(heightMap, i) || doesNotExist(heightMap.get(i), j) || computedIndices.get(i, j)) {
-            return 0;
-        }
-
-        if (heightMap.get(i).get(j) == 9) {
+        if (heightMap.exists(i, j) && !computedIndices.get(i, j)) {
             computedIndices.set(i, j, true);
-            return 0;
+            if (!(heightMap.get(i, j) == 9)) {
+                adjacentCount += 1;
+                adjacentCount += getBasinPoints(heightMap, i - 1, j, computedIndices);
+                adjacentCount += getBasinPoints(heightMap, i + 1, j, computedIndices);
+                adjacentCount += getBasinPoints(heightMap, i, j - 1, computedIndices);
+                adjacentCount += getBasinPoints(heightMap, i, j + 1, computedIndices);
+            }
+
         }
-        int total = 0;
-        computedIndices.set(i, j, true);
 
-        total += getBasinPoints2(heightMap, i - 1, j, computedIndices);
-        total += getBasinPoints2(heightMap, i + 1, j, computedIndices);
-        total += getBasinPoints2(heightMap, i, j - 1, computedIndices);
-        total += getBasinPoints2(heightMap, i, j + 1, computedIndices);
-
-        return total + 1;
-
+        return adjacentCount;
     }
 
     private boolean lessThan(final int valIndex, final int toCheckIndex, final List<Integer> ints) {
         if (toCheckIndex < 0 || toCheckIndex >= ints.size())
             return true;
         return ints.get(valIndex) < ints.get(toCheckIndex);
-    }
-
-    private boolean diffOfOne(final int valIndex, final int toCheckIndex, final List<Integer> ints) {
-        if (toCheckIndex < 0 || toCheckIndex >= ints.size())
-            return false;
-        return abs(ints.get(valIndex) - ints.get(toCheckIndex)) == 1;
     }
 
     private Integer getRiskLevel(final Integer height) {

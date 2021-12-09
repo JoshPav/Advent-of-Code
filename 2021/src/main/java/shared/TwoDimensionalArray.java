@@ -1,5 +1,7 @@
 package shared;
 
+import lombok.RequiredArgsConstructor;
+
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -7,27 +9,43 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Spliterator;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
-public class TwoDimensionalArray<T> implements Iterable<T> {
+import static utils.ListUtils.first;
 
-    private final T[][] arr;
+@RequiredArgsConstructor
+public class TwoDimensionalArray<E> implements Iterable<E> {
 
-    public TwoDimensionalArray(final Class<T> clazz, int width, int height) {
-        this.arr = createArray(clazz, width, height);
+    private final E[][] arr;
+
+    public TwoDimensionalArray(Class<E> clazz, int rowCount, int columnCount) {
+        this.arr = cast2d((Object[][]) Array.newInstance(clazz, rowCount, columnCount));
     }
 
-    public TwoDimensionalArray(int width, int height, final T initialValue) {
-        this((Class<T>) initialValue.getClass(), width, height);
+    @SuppressWarnings("unchecked")
+    public TwoDimensionalArray(int rowCount, int columnCount, final E initialValue) {
+        this((Class<E>) initialValue.getClass(), rowCount, columnCount);
         fill(initialValue);
     }
 
-    public void fill(final T value) {
+    @SuppressWarnings("unchecked")
+    public TwoDimensionalArray(List<List<E>> data) {
+        this((Class<E>) first(first(data)).getClass(), data.size(), first(data).size());
+
+        for (int i = 0; i < data.size(); i++) {
+            var row = data.get(i);
+            for (int j = 0; j < row.size(); j++) {
+                set(i, j, row.get(j));
+            }
+        }
+    }
+
+    public void fill(final E value) {
         IntStream.range(0, arr.length).forEach(row -> fillRow(row, value));
     }
 
-    public void fillRow(final int row, final T value) {
+    public void fillRow(final int row, final E value) {
         Arrays.fill(arr[row], value);
     }
 
@@ -39,7 +57,7 @@ public class TwoDimensionalArray<T> implements Iterable<T> {
         return arr.length > 0 ? arr[0].length : 0;
     }
 
-    public void fillColumn(final int column, final T value) {
+    public void fillColumn(final int column, final E value) {
         IntStream.range(0, arr.length).forEach(row -> set(row, column, value));
     }
 
@@ -48,80 +66,91 @@ public class TwoDimensionalArray<T> implements Iterable<T> {
     }
 
     private boolean exists(Object[] arr, int index) {
-        return index > 0 && index < arr.length;
+        return index >= 0 && index < arr.length;
     }
 
-    public void set(int row, int column, T value) {
+    public void set(int row, int column, E value) {
         arr[row][column] = value;
     }
 
-    public T get(final int row, final int column) {
+    public E get(final int row, final int column) {
         return arr[row][column];
     }
 
-    public Optional<T> maybeGet(final int row, final int column) {
+    public List<E> getAdjacent(final int row, final int column) {
+        return List.of(
+                maybeGet(row - 1, column),
+                maybeGet(row, column + 1),
+                maybeGet(row + 1, column),
+                maybeGet(row, column - 1)
+        ).stream().filter(Optional::isPresent).map(Optional::get).toList();
+    }
+
+    public Optional<E> maybeGet(final int row, final int column) {
         return exists(row, column) ? Optional.ofNullable(get(row, column)) : Optional.empty();
     }
 
-    public List<T> getAllData() {
+    public List<E> getAllData() {
         return Arrays.stream(arr).flatMap(Arrays::stream).toList();
     }
 
-    public T[] getRow(final int row) {
+    public E[] getRowAsArray(final int row) {
         return arr[row].clone();
     }
 
-    public List<T> getRowAsList(final int row) {
-        return List.of(getRow(row));
+    public List<E> getRow(final int row) {
+        return List.of(getRowAsArray(row));
     }
 
-    public T[] rows() {
-        return toArray(Arrays.stream(arr).map(row -> row.clone()));
+    public List<List<E>> rows() {
+        return IntStream.range(0, arr.length).mapToObj(this::getRow).toList();
     }
 
-    public T[] getColumn(final int column) {
-        return toArray(getColumnAsList(column));
+    public E[] getColumnAsArray(final int column) {
+        return cast(getColumn(column).toArray());
     }
 
-    public List<T> getColumnAsList(final int column) {
+    public List<E> getColumn(final int column) {
         return Arrays.stream(arr).map(row -> row[column]).toList();
     }
 
-    public T[] columns() {
-        return toArray(IntStream.range(0, arr[0].length).mapToObj(this::getColumn));
+    public List<List<E>> columns() {
+        return IntStream.range(0, arr[0].length).mapToObj(this::getColumn).toList();
     }
 
     @SuppressWarnings("unchecked")
-    private T[][] createArray(Class<T> clazz, int width, int height) {
-        T[][] y = (T[][]) new Object[height][];
-        for (int i = 0; i < height; i++) {
-            y[i] = (T[]) Array.newInstance(clazz, width);
-        }
-        return y;
+    private E[] cast(Object[] arr) {
+        return (E[]) arr;
     }
 
     @SuppressWarnings("unchecked")
-    private T[] toArray(final Stream<T[]> stream) {
-        return (T[]) stream.toArray();
-    }
-
-    @SuppressWarnings("unchecked")
-    private T[] toArray(final List<T> list) {
-        return (T[]) list.toArray();
+    private E[][] cast2d(Object[][] arr) {
+        return (E[][]) arr;
     }
 
     @Override
-    public Iterator<T> iterator() {
+    public Iterator<E> iterator() {
         return getAllData().iterator();
     }
 
     @Override
-    public void forEach(Consumer<? super T> action) {
+    public void forEach(Consumer<? super E> action) {
         getAllData().forEach(action);
     }
 
     @Override
-    public Spliterator<T> spliterator() {
+    public Spliterator<E> spliterator() {
         return getAllData().spliterator();
     }
+
+    @Override
+    public String toString() {
+        return rows().stream()
+                .map(row ->
+                        String.format("[%s]", row.stream()
+                                .map(Object::toString)
+                                .collect(Collectors.joining(", ")))
+                ).collect(Collectors.joining(", "));
+    }
+
 }
