@@ -1,5 +1,6 @@
 package solutions.day07;
 
+import com.google.common.collect.Streams;
 import solutions.BaseDay;
 
 import java.util.Arrays;

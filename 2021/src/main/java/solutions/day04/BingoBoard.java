@@ -1,18 +1,13 @@
 package solutions.day04;
 
-import lombok.Getter;
 import shared.TwoDimensionalArray;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class BingoBoard {
 
     private final int boardSize;
     private final TwoDimensionalArray<BingoNumber> board;
-
-    @Getter
-    private boolean hasWon = false;
 
     public BingoBoard(List<List<BingoNumber>> board) {
         this.board = new TwoDimensionalArray<>(board);
@@ -33,13 +28,11 @@ public class BingoBoard {
                 if (board.get(row, col).getNumber() == numberToMark) {
                     board.get(row, col).mark();
 
-                    hasWon = (checkColumn(col) || checkRow(row));
-
-                    return hasWon;
+                    return (checkColumn(col) || checkRow(row));
                 }
             }
         }
-        return hasWon;
+        return false;
     }
 
     private boolean checkRow(final int rowIndex) {
