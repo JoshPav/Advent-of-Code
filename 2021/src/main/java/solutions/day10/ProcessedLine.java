@@ -10,14 +10,14 @@ import java.util.Stack;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class ProcessedLine {
 
-    Character firstInvalid;
-    Stack<Character> missingCharacters;
+    ChunkEnd firstInvalid;
+    Stack<ChunkEnd> missingCharacters;
 
-    public static ProcessedLine createInvalid(final Character firstInvalid) {
+    public static ProcessedLine createInvalid(final ChunkEnd firstInvalid) {
         return new ProcessedLine(firstInvalid, null);
     }
 
-    public static ProcessedLine createIncomplete(final Stack<Character> characters) {
+    public static ProcessedLine createIncomplete(final Stack<ChunkEnd> characters) {
         return new ProcessedLine(null, characters);
     }
 

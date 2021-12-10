@@ -1,5 +1,6 @@
 package solutions.day10;
 
+import com.google.common.collect.Iterables;
 import solutions.BaseDay;
 
 import java.util.ArrayList;
@@ -9,27 +10,15 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.stream.Stream;
 
+import static solutions.day10.ChunkEnd.*;
+
 public class Day10 extends BaseDay {
 
-    private static final Map<Character, Integer> SYNTAX_POINTS = Map.of(
-            ')', 3,
-            ']', 57,
-            '}', 1197,
-            '>', 25137
-    );
-
-    private static final Map<Character, Long> AUTOCOMPLETE_POINTS = Map.of(
-            ')', 1L,
-            ']', 2L,
-            '}', 3L,
-            '>', 4L
-    );
-
-    private static final Map<Character, Character> BRACKET_PAIRS = Map.of(
-            '(', ')',
-            '[', ']',
-            '{', '}',
-            '<', '>'
+    private static final Map<Character, ChunkEnd> BRACKET_PAIRS = Map.of(
+            '(', ROUND,
+            '[', SQUARE,
+            '{', CURLY,
+            '<', ANGLE
     );
 
     public Day10(List<String> input) {
@@ -40,8 +29,10 @@ public class Day10 extends BaseDay {
     public String solvePartOne() {
         return processInput()
                 .filter(ProcessedLine::isInvalid)
-                .map(processedLine -> SYNTAX_POINTS.get(processedLine.getFirstInvalid()))
-                .reduce(Integer::sum)
+                .map(ProcessedLine::getFirstInvalid)
+                .map(ChunkEnd::getSyntaxPoints)
+                .map(Integer::toUnsignedLong)
+                .reduce(Long::sum)
                 .map(String::valueOf)
                 .orElseThrow();
     }
@@ -62,24 +53,22 @@ public class Day10 extends BaseDay {
     }
 
     private ProcessedLine processLine(String line) {
-        final Stack<Character> closingBrackets = new Stack<>();
+        final Stack<ChunkEnd> chunkEnds = new Stack<>();
         for (char c: line.toCharArray()) {
             if (BRACKET_PAIRS.containsKey(c)) {
-                closingBrackets.push(BRACKET_PAIRS.get(c));
-            } else {
-                var toMatch = closingBrackets.pop();
-                if (toMatch != c) {
-                    return ProcessedLine.createInvalid(c);
-                }
+                chunkEnds.push(BRACKET_PAIRS.get(c));
+            } else if (chunkEnds.pop().getCharacter() != c) {
+                return ProcessedLine.createInvalid(ChunkEnd.parse(c));
             }
         }
 
-        return ProcessedLine.createIncomplete(closingBrackets);
+        return ProcessedLine.createIncomplete(chunkEnds);
     }
 
-    private Long calculateScoreForMissingCharacters(Stack<Character> missing) {
+    private Long calculateScoreForMissingCharacters(Stack<ChunkEnd> missing) {
         return asList(missing).stream()
-                .map(AUTOCOMPLETE_POINTS::get)
+                .map(ChunkEnd::getAutocompletePoints)
+                .map(Integer::toUnsignedLong)
                 .reduce(0L, (a, b) -> a * 5 + b);
     }
 
