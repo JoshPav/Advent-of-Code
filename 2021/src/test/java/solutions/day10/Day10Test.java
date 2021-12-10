@@ -13,13 +13,13 @@ public class Day10Test extends BaseTest {
     @Test
     public void testPartOne() {
 
-        assertEquals(null, getDayInstance(getTestInput()).solvePartOne());
+        assertEquals("26397", getDayInstance(getTestInput()).solvePartOne());
     }
 
     @Test
     public void testPartOneActualInput() {
 
-        assertEquals(null, getDayInstance(getInput(10)).solvePartOne());
+        assertEquals("388713", getDayInstance(getInput(10)).solvePartOne());
     }
 
     @Test
@@ -35,7 +35,18 @@ public class Day10Test extends BaseTest {
     }
 
     private List<String> getTestInput() {
-        return List.of();
+        return List.of(
+                "[({(<(())[]>[[{[]{<()<>>",
+                "[(()[<>])]({[<{<<[]>>(",
+                "{([(<{}[<>[]}>{[]{[(<()>",
+                "(((({<>}<{<{<>}{[]{[]{}",
+                "[[<[([]))<([[{}[[()]]]",
+                "[{[{({}]{}}([{[{{{}}([]",
+                "{<[[]]>}<{[{[{[]{()[[[]",
+                "[<(<(<(<{}))><([]([]()",
+                "<{([([[(<>()){}]>(<<{{",
+                "<{([{{}}[<[[[<>{}]]]>[]]"
+        );
     }
 
 }
