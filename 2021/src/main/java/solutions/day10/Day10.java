@@ -2,11 +2,12 @@ package solutions.day10;
 
 import solutions.BaseDay;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Stack;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Day10 extends BaseDay {
 
@@ -15,6 +16,13 @@ public class Day10 extends BaseDay {
             ']', 57,
             '}', 1197,
             '>', 25137
+    );
+
+    private static final Map<Character, Long> AUTOCOMPLETE_POINTS = Map.of(
+            ')', 1L,
+            ']', 2L,
+            '}', 3L,
+            '>', 4L
     );
 
     private static final Map<Character, Character> BRACKET_PAIRS = Map.of(
@@ -30,22 +38,30 @@ public class Day10 extends BaseDay {
 
     @Override
     public String solvePartOne() {
-
-        var foo = getInputAsStream()
-                .map(this::findFirstIllegalCharacter)
-                .collect(Collectors.toList());
-
-        return getInputAsStream()
-                .map(this::findFirstIllegalCharacter)
-                .filter(Objects::nonNull)
-                .map(SYNTAX_POINTS::get)
+        return processInput()
+                .filter(ProcessedLine::isInvalid)
+                .map(processedLine -> SYNTAX_POINTS.get(processedLine.getFirstInvalid()))
                 .reduce(Integer::sum)
                 .map(String::valueOf)
                 .orElseThrow();
     }
 
-    private Character findFirstIllegalCharacter(String line) {
+    @Override
+    public String solvePartTwo() {
+        var scores = processInput()
+                .filter(ProcessedLine::isMissingCharacters)
+                .map(processedLine -> calculateScoreForMissingCharacters(processedLine.getMissingCharacters()))
+                .sorted()
+                .toList();
 
+        return String.valueOf(scores.get((scores.size()) / 2));
+    }
+
+    private Stream<ProcessedLine> processInput() {
+        return getInputAsStream().map(this::processLine);
+    }
+
+    private ProcessedLine processLine(String line) {
         final Stack<Character> closingBrackets = new Stack<>();
         for (char c: line.toCharArray()) {
             if (BRACKET_PAIRS.containsKey(c)) {
@@ -53,16 +69,24 @@ public class Day10 extends BaseDay {
             } else {
                 var toMatch = closingBrackets.pop();
                 if (toMatch != c) {
-                    return c;
+                    return ProcessedLine.createInvalid(c);
                 }
             }
         }
 
-        return null;
+        return ProcessedLine.createIncomplete(closingBrackets);
     }
 
-    @Override
-    public String solvePartTwo() {
-        return null;
+    private Long calculateScoreForMissingCharacters(Stack<Character> missing) {
+        return asList(missing).stream()
+                .map(AUTOCOMPLETE_POINTS::get)
+                .reduce(0L, (a, b) -> a * 5 + b);
     }
+
+    private <T> List<T> asList(Stack<T> stack) {
+        var asList = new ArrayList<>(stack);
+        Collections.reverse(asList);
+        return asList;
+    }
+
 }

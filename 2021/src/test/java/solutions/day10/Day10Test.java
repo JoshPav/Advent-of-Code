@@ -25,13 +25,13 @@ public class Day10Test extends BaseTest {
     @Test
     public void testPartTwo() {
 
-        assertEquals(null, getDayInstance(getTestInput()).solvePartTwo());
+        assertEquals("288957", getDayInstance(getTestInput()).solvePartTwo());
     }
 
     @Test
     public void testPartTwoActualInput() {
 
-        assertEquals(null, getDayInstance(getInput(10)).solvePartTwo());
+        assertEquals("3539961434", getDayInstance(getInput(10)).solvePartTwo());
     }
 
     private List<String> getTestInput() {
