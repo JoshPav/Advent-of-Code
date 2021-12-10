@@ -1,6 +1,5 @@
 package solutions.day10;
 
-import com.google.common.collect.Iterables;
 import solutions.BaseDay;
 
 import java.util.ArrayList;
@@ -29,7 +28,7 @@ public class Day10 extends BaseDay {
     public String solvePartOne() {
         return processInput()
                 .filter(ProcessedLine::isInvalid)
-                .map(ProcessedLine::getFirstInvalid)
+                .map(ProcessedLine::getFirstInvalidChunk)
                 .map(ChunkEnd::getSyntaxPoints)
                 .map(Integer::toUnsignedLong)
                 .reduce(Long::sum)

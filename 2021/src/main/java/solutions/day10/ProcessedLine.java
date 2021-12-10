@@ -10,7 +10,7 @@ import java.util.Stack;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class ProcessedLine {
 
-    ChunkEnd firstInvalid;
+    ChunkEnd firstInvalidChunk;
     Stack<ChunkEnd> missingCharacters;
 
     public static ProcessedLine createInvalid(final ChunkEnd firstInvalid) {
@@ -22,7 +22,7 @@ public class ProcessedLine {
     }
 
     public boolean isInvalid() {
-        return firstInvalid != null;
+        return firstInvalidChunk != null;
     }
 
     public boolean isMissingCharacters() {
