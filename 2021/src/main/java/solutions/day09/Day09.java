@@ -69,7 +69,7 @@ public class Day09 extends BaseDay {
         for (int i = 0; i < heightMap.rowCount(); i++) {
             for (int j = 0; j < heightMap.columnCount(); j++) {
                 final int height = heightMap.get(i, j);
-                if (heightMap.getAdjacent(i, j).stream().allMatch(adjHeight -> adjHeight > height)) {
+                if (heightMap.getHorizontalAdjacent(i, j).stream().allMatch(adjHeight -> adjHeight > height)) {
                     lowPoints.add(height);
                 }
             }
