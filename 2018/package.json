@@ -1,0 +1,23 @@
+{
+  "name": "adventofcode",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/main.ts",
+  "scripts": {
+    "solve": "ts-node src/main.ts",
+    "test": "test"
+  },
+  "author": "bradleyEvans",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.2.2",
+    "@types/jest": "^27.0.3",
+    "@types/node": "^16.11.11",
+    "jest": "^27.4.4",
+    "jest-cli": "^24.0.0",
+    "ts-jest": "^27.1.1",
+    "ts-node": "^10.4.0",
+    "ttypescript": "^1.5.13",
+    "typescript": "^4.5.3"
+  }
+}
