@@ -1,6 +1,5 @@
 package shared;
 
-import com.google.common.collect.Collections2;
 import lombok.RequiredArgsConstructor;
 
 import java.lang.reflect.Array;
@@ -80,21 +79,21 @@ public class TwoDimensionalArray<E> implements Iterable<E> {
     }
 
     public List<E> getHorizontalAdjacent(final int row, final int column) {
-        return List.of(
+        return Stream.of(
                 maybeGet(row - 1, column),
                 maybeGet(row, column + 1),
                 maybeGet(row + 1, column),
                 maybeGet(row, column - 1)
-        ).stream().filter(Optional::isPresent).map(Optional::get).toList();
+        ).filter(Optional::isPresent).map(Optional::get).toList();
     }
 
     public List<E> getDiagonalAdjacent(final int row, final int column) {
-        return List.of(
+        return Stream.of(
                 maybeGet(row - 1, column - 1),
                 maybeGet(row - 1 , column + 1),
                 maybeGet(row + 1, column - 1),
                 maybeGet(row + 1, column + 1)
-        ).stream().filter(Optional::isPresent).map(Optional::get).toList();
+        ).filter(Optional::isPresent).map(Optional::get).toList();
     }
 
     public List<E> getAllAdjacent(final int row, final int column) {

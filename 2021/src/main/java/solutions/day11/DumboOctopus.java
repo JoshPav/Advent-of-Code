@@ -1,5 +1,6 @@
 package solutions.day11;
 
+import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
@@ -7,21 +8,22 @@ import java.util.List;
 public class DumboOctopus {
 
     private short energyLevel;
-    private boolean hasFlashed;
+    @Getter
+    private boolean flashed;
 
     @Setter
     private List<DumboOctopus> neighbours;
 
     public DumboOctopus(short energyLevel) {
         this.energyLevel = energyLevel;
-        this.hasFlashed = false;
+        this.flashed = false;
     }
 
     public int incrementEnergyLevel() {
         int totalFlashes = 0;
         energyLevel++;
-        if (energyLevel > 9 && !hasFlashed) {
-            hasFlashed = true;
+        if (energyLevel > 9 && !flashed) {
+            flashed = true;
             totalFlashes += 1;
 
             for (var neighbour : neighbours) {
@@ -35,7 +37,7 @@ public class DumboOctopus {
     public void resetHasFlashed() {
         if (energyLevel > 9) {
             energyLevel = 0;
-            hasFlashed = false;
+            flashed = false;
         }
     }
 
