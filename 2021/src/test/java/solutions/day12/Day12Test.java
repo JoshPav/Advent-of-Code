@@ -31,13 +31,25 @@ public class Day12Test extends BaseTest {
     @Test
     public void testPartOneActualInput() {
 
-        assertEquals(null, getDayInstance(getInput(12)).solvePartOne());
+        assertEquals("4970", getDayInstance(getInput(12)).solvePartOne());
     }
 
     @Test
-    public void testPartTwo() {
+    public void testPartTwoA() {
 
-        assertEquals(null, getDayInstance(getTestInputA()).solvePartTwo());
+        assertEquals("36", getDayInstance(getTestInputA()).solvePartTwo());
+    }
+
+    @Test
+    public void testPartTwoB() {
+
+        assertEquals("103", getDayInstance(getTestInputB()).solvePartTwo());
+    }
+
+    @Test
+    public void testPartTwoC() {
+
+        assertEquals("3509", getDayInstance(getTestInputC()).solvePartTwo());
     }
 
     @Test

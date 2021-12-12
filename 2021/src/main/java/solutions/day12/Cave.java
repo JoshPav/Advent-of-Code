@@ -59,12 +59,56 @@ public class Cave {
                 final List<String> pathCopy = new ArrayList<>(path);
                 pathCopy.add(c.name);
                 allPaths.add(pathCopy);
+                allPaths.addAll(c.getAllPathsToEndRec(pathCopy));
+            }
+        }
 
-                var x = c.getAllPathsToEndRec(pathCopy);
+        return allPaths;
+    }
+
+
+    public List<List<String>> getAllPathsToEnd2() {
+
+        final List<List<String>> paths = new ArrayList<>();
+        for (Cave c : connectedTo) {
+            final List<String> path = new ArrayList<>();
+            path.add(this.name);
+            path.add(c.name);
+            paths.addAll(c.getAllPathsToEndRec2(path));
+        }
+
+        return paths;
+
+    }
+
+    private List<List<String>> getAllPathsToEndRec2(List<String> path) {
+
+        List<List<String>> allPaths = new ArrayList<>();
+
+        for (Cave c : connectedTo) {
+            if (!this.isEnd() && !c.isStart() &&
+                    (!c.isSmall()
+                            || (c.isSmall() && !path.contains(c.name))
+                            || (c.isSmall() && !hasSmallCaveTwice(path)))) {
+                final List<String> pathCopy = new ArrayList<>(path);
+                pathCopy.add(c.name);
+                allPaths.add(pathCopy);
+
+                var x = c.getAllPathsToEndRec2(pathCopy);
                 allPaths.addAll(x);
             }
         }
 
         return allPaths;
+    }
+
+    private long count(List<String> list, String find) {
+        return list.stream().filter(find::equals).count();
+    }
+
+    private boolean hasSmallCaveTwice(List<String> list) {
+        return list.stream().filter(str -> str.equals(str.toLowerCase())).collect(Collectors.groupingBy(a -> a))
+                .values().stream().map(List::size)
+                .anyMatch(size -> size > 1);
     }
 }

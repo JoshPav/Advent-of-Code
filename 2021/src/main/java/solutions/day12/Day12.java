@@ -16,13 +16,7 @@ public class Day12 extends BaseDay {
     @Override
     public String solvePartOne() {
 
-        Map<String, Cave> caves = new HashMap<>();
-
-        for (String line : getInputAsList()) {
-            String[] split = line.split("-");
-            caves.computeIfAbsent(split[0], Cave::new).addConnectedTo(caves.computeIfAbsent(split[1], Cave::new));
-            caves.get(split[1]).addConnectedTo(caves.get(split[0]));
-        }
+        Map<String, Cave> caves = createCaveMap();
 
         List<List<String>> pathsThroughCave = caves.get("start").getAllPathsToEnd();
         List<String> paths = pathsThroughCave.stream()
@@ -30,14 +24,30 @@ public class Day12 extends BaseDay {
                 .map(path -> String.join(",", path))
                 .collect(Collectors.toList());
 
-//        paths.forEach(System.out::println);
-
-
         return String.valueOf(paths.size());
+    }
+
+    private Map<String, Cave> createCaveMap() {
+        Map<String, Cave> caves = new HashMap<>();
+
+        for (String line : getInputAsList()) {
+            String[] split = line.split("-");
+            caves.computeIfAbsent(split[0], Cave::new).addConnectedTo(caves.computeIfAbsent(split[1], Cave::new));
+            caves.get(split[1]).addConnectedTo(caves.get(split[0]));
+        }
+        return caves;
     }
 
     @Override
     public String solvePartTwo() {
-        return null;
-    }
+
+        Map<String, Cave> caves = createCaveMap();
+
+        List<List<String>> pathsThroughCave = caves.get("start").getAllPathsToEnd2();
+        List<String> paths = pathsThroughCave.stream()
+                .filter(path -> path.contains("end"))
+                .map(path -> String.join(",", path))
+                .collect(Collectors.toList());
+
+        return String.valueOf(paths.size());    }
 }
