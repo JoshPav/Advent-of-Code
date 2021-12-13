@@ -12,10 +12,6 @@ public record Point(double x, double y, double z) {
         this(x, y, 0);
     }
 
-    public static void main(String[] args) {
-        System.out.println("lol");
-    }
-
     public static Point parse(final String point) {
         String[] split = point.split(SPLIT_REGEX);
         return new Point(
@@ -35,6 +31,14 @@ public record Point(double x, double y, double z) {
 
     public Point addZ(double toAdd) {
         return new Point(x, y, z + toAdd);
+    }
+
+    public Point flipX(double xLine) {
+        return new Point(xLine + (xLine - x), y, z);
+    }
+
+    public Point flipY(double yLine) {
+        return new Point(x, yLine + (yLine - y), z);
     }
 
     public Point add(Vector v) {
