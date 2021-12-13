@@ -1,5 +1,6 @@
 package solutions.day12;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import solutions.BaseTest;
 
@@ -52,10 +53,10 @@ public class Day12Test extends BaseTest {
         assertEquals("3509", getDayInstance(getTestInputC()).solvePartTwo());
     }
 
-    @Test
+    @Ignore
     public void testPartTwoActualInput() {
 
-        assertEquals(null, getDayInstance(getInput(12)).solvePartTwo());
+        assertEquals("137948", getDayInstance(getInput(12)).solvePartTwo());
     }
 
     private List<String> getTestInputA() {

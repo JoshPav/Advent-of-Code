@@ -3,9 +3,13 @@ package solutions.day12;
 import lombok.Value;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.function.Predicate.not;
 
 @Value
 public class Cave {
@@ -17,7 +21,7 @@ public class Cave {
         this.connectedTo.add(c);
     }
 
-    public boolean isSmall() {
+    private boolean isSmall() {
         return name.toLowerCase().equals(name);
     }
 
@@ -37,37 +41,45 @@ public class Cave {
     }
 
     public List<List<String>> getAllPathsToEnd() {
-
-        final List<List<String>> paths = new ArrayList<>();
-        for (Cave c : connectedTo) {
-            final List<String> path = new ArrayList<>();
-            path.add(this.name);
-            path.add(c.name);
-            paths.addAll(c.getAllPathsToEndRec(path));
-        }
-
-        return paths;
-
+        return getAllPathsToEnd(List.of(this.name));
     }
 
-    private List<List<String>> getAllPathsToEndRec(List<String> path) {
-
-        List<List<String>> allPaths = new ArrayList<>();
-
-        for (Cave c : connectedTo) {
-            if (!this.isEnd() && !c.isStart() && (!c.isSmall() || (c.isSmall() && !path.contains(c.name)))) {
-                final List<String> pathCopy = new ArrayList<>(path);
-                pathCopy.add(c.name);
-                allPaths.add(pathCopy);
-                allPaths.addAll(c.getAllPathsToEndRec(pathCopy));
-            }
-        }
-
-        return allPaths;
+    private Stream<Cave> getValidCaves(final List<String> path) {
+        return connectedTo.stream().filter(
+                not(Cave::isStart)
+                        .and(not(Cave::isSmall).or(((Predicate<Cave>) Cave::isSmall).and(not(haveAlreadyVisitedCave(path)))
+                        ))
+        );
     }
 
+    private List<List<String>> getAllPathsToEnd(List<String> path) {
+        if (this.isEnd()) {
+            return Collections.emptyList();
+        }
+
+        return getValidCaves(path).flatMap(cave -> {
+            List<List<String>> allPaths2 = new ArrayList<>();
+            final List<String> pathCopy = cave.addThis(path);
+            allPaths2.add(pathCopy);
+            allPaths2.addAll(cave.getAllPathsToEnd(pathCopy));
+            return allPaths2.stream();
+        }).toList();
+    }
+
+    private List<String> addThis(final List<String> existingPath) {
+        var copy = new ArrayList<>(existingPath);
+        copy.add(name);
+        return copy;
+    }
+
+    private Predicate<Cave> haveAlreadyVisitedCave(final List<String> path) {
+        return cave -> path.contains(cave.name);
+    }
 
     public List<List<String>> getAllPathsToEnd2() {
+        if (!isEnd()) {
+            return Collections.emptyList();
+        }
 
         final List<List<String>> paths = new ArrayList<>();
         for (Cave c : connectedTo) {
@@ -88,22 +100,16 @@ public class Cave {
         for (Cave c : connectedTo) {
             if (!this.isEnd() && !c.isStart() &&
                     (!c.isSmall()
-                            || (c.isSmall() && !path.contains(c.name))
-                            || (c.isSmall() && !hasSmallCaveTwice(path)))) {
+                            || (c.isSmall() && (!path.contains(c.name) || !hasSmallCaveTwice(path))))) {
                 final List<String> pathCopy = new ArrayList<>(path);
                 pathCopy.add(c.name);
                 allPaths.add(pathCopy);
 
-                var x = c.getAllPathsToEndRec2(pathCopy);
-                allPaths.addAll(x);
+                allPaths.addAll(c.getAllPathsToEndRec2(pathCopy));
             }
         }
 
         return allPaths;
-    }
-
-    private long count(List<String> list, String find) {
-        return list.stream().filter(find::equals).count();
     }
 
     private boolean hasSmallCaveTwice(List<String> list) {
