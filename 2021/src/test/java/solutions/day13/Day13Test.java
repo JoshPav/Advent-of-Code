@@ -19,19 +19,32 @@ public class Day13Test extends BaseTest {
     @Test
     public void testPartOneActualInput() {
 
-        assertEquals(null, getDayInstance(getInput(13)).solvePartOne());
+        assertEquals("720", getDayInstance(getInput(13)).solvePartOne());
     }
 
     @Test
     public void testPartTwo() {
 
-        assertEquals(null, getDayInstance(getTestInput()).solvePartTwo());
+        assertEquals(
+                "█████\n" +
+                         "█░░░█\n" +
+                         "█░░░█\n" +
+                         "█░░░█\n" +
+                         "█████",
+                getDayInstance(getTestInput()).solvePartTwo());
     }
 
     @Test
     public void testPartTwoActualInput() {
 
-        assertEquals(null, getDayInstance(getInput(13)).solvePartTwo());
+        assertEquals(
+                "░██░░█░░█░███░░███░░███░░░██░░█░░█░████\n" +
+                        "█░░█░█░░█░█░░█░█░░█░█░░█░█░░█░█░░█░░░░█\n" +
+                        "█░░█░████░█░░█░█░░█░█░░█░█░░█░█░░█░░░█░\n" +
+                        "████░█░░█░███░░███░░███░░████░█░░█░░█░░\n" +
+                        "█░░█░█░░█░█░░░░█░█░░█░░░░█░░█░█░░█░█░░░\n" +
+                        "█░░█░█░░█░█░░░░█░░█░█░░░░█░░█░░██░░████",
+                getDayInstance(getInput(13)).solvePartTwo());
     }
 
     private List<String> getTestInput() {
