@@ -21,31 +21,41 @@ public class Day14 extends BaseDay {
         return solve(getInputAsList(), 10);
     }
 
-    private String solve(final List<String> input, int steps) {
-        String polymer = input.get(0);
-        Map<String, String> polymerRules = getInsertionRules(input.subList(2, input.size()));
+    @Override
+    public String solvePartTwo() {
+        return solve(getInputAsList(), 40);
+    }
 
-        var pairCounts = toPairMap(polymer);
+    private String solve(final List<String> input, int steps) {
+        final String polymer = input.get(0);
+        final Map<String, String> polymerRules = getInsertionRules(input.subList(2, input.size()));
+
+        Map<String, Long> pairCounts = toPairMap(polymer);
 
         for (int i = 0; i < steps; i++) {
             pairCounts = step(pairCounts, polymerRules);
         }
 
+        final List<Long> counts = computeLetterCounts(pairCounts, polymer)
+                .values().stream()
+                .sorted().toList();
+
+        return String.valueOf(last(counts) - first(counts));
+    }
+
+    private Map<Character, Long> computeLetterCounts(final Map<String, Long> pairCounts, final String originalPolymer) {
         Map<Character, Long> counts = new HashMap<>();
+
         for (var entry : pairCounts.entrySet()) {
             var c = entry.getKey().charAt(0);
             counts.put(c, entry.getValue() + counts.getOrDefault(c, 0L));
         }
 
         // Add final letter back
-        var finalChar = polymer.charAt(polymer.length() - 1);
+        var finalChar = originalPolymer.charAt(originalPolymer.length() - 1);
         counts.put(finalChar, counts.get(finalChar) + 1);
 
-        var otherAnswer = counts.values().stream()
-                .sorted()
-                .toList();
-
-        return String.valueOf(last(otherAnswer) - first(otherAnswer));
+        return counts;
     }
 
     private Map<String, String> getInsertionRules(final List<String> insertionRules) {
@@ -58,11 +68,7 @@ public class Day14 extends BaseDay {
         Map<String, Long> pairCounts = new HashMap<>();
         for (int i = 0; i < polymer.length() - 1; i++) {
             var pair = polymer.substring(i, i + 2);
-            var count = 1L;
-            if (pairCounts.containsKey(pair)) {
-                count += pairCounts.get(pair);
-            }
-            pairCounts.put(pair, count);
+            pairCounts.put(pair, 1 + pairCounts.getOrDefault(pair, 0L));
         }
         return pairCounts;
     }
@@ -83,8 +89,4 @@ public class Day14 extends BaseDay {
         return newMap;
     }
 
-    @Override
-    public String solvePartTwo() {
-        return solve(getInputAsList(), 40);
-    }
 }

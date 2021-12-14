@@ -36,7 +36,7 @@ public class Day14Test extends BaseTest {
 
     private List<String> getTestInput() {
         return List.of(
-                    "NNCB",
+                "NNCB",
                 "",
                 "CH -> B",
                 "HH -> N",
