@@ -31,7 +31,7 @@ public class Day14Test extends BaseTest {
     @Test
     public void testPartTwoActualInput() {
 
-        assertEquals(null, getDayInstance(getInput(14)).solvePartTwo());
+        assertEquals("3232426226464", getDayInstance(getInput(14)).solvePartTwo());
     }
 
     private List<String> getTestInput() {
