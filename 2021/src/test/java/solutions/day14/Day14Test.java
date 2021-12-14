@@ -13,19 +13,19 @@ public class Day14Test extends BaseTest {
     @Test
     public void testPartOne() {
 
-        assertEquals(null, getDayInstance(getTestInput()).solvePartOne());
+        assertEquals("1588", getDayInstance(getTestInput()).solvePartOne());
     }
 
     @Test
     public void testPartOneActualInput() {
 
-        assertEquals(null, getDayInstance(getInput(14)).solvePartOne());
+        assertEquals("2947", getDayInstance(getInput(14)).solvePartOne());
     }
 
     @Test
     public void testPartTwo() {
 
-        assertEquals(null, getDayInstance(getTestInput()).solvePartTwo());
+        assertEquals("2188189693529", getDayInstance(getTestInput()).solvePartTwo());
     }
 
     @Test
@@ -35,7 +35,26 @@ public class Day14Test extends BaseTest {
     }
 
     private List<String> getTestInput() {
-        return List.of();
+        return List.of(
+                    "NNCB",
+                "",
+                "CH -> B",
+                "HH -> N",
+                "CB -> H",
+                "NH -> C",
+                "HB -> C",
+                "HC -> B",
+                "HN -> C",
+                "NN -> C",
+                "BH -> H",
+                "NC -> B",
+                "NB -> B",
+                "BN -> B",
+                "BB -> N",
+                "BC -> B",
+                "CC -> N",
+                "CN -> C"
+        );
     }
 
 }
