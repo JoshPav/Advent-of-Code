@@ -1,7 +1,5 @@
 package solutions.day15;
 
-import lombok.Getter;
-import lombok.Setter;
 import shared.TwoDimensionalArray;
 
 import java.util.Collections;
@@ -10,16 +8,11 @@ import java.util.function.Supplier;
 
 public class Chiton extends DijkstraNode {
 
-    private final int row;
-    private final int col;
+    private final Supplier<List<Chiton>> neighboursGetter;
 
-    @Setter @Getter
-    private Supplier<TwoDimensionalArray<Chiton>> map;
-
-    public Chiton(int row, int col, int distance) {
+    public Chiton(int distance, Supplier<List<Chiton>> neighboursGetter) {
         super(distance);
-        this.row = row;
-        this.col = col;
+        this.neighboursGetter = neighboursGetter;
     }
 
     @Override
@@ -29,7 +22,7 @@ public class Chiton extends DijkstraNode {
 
     @Override
     public List<? extends DijkstraNode> getNeighbours() {
-        return map == null ? Collections.emptyList() : map.get().getHorizontalAdjacent(row, col);
+        return neighboursGetter == null ? Collections.emptyList() : neighboursGetter.get();
     }
 
 }

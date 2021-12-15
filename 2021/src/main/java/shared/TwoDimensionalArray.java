@@ -33,13 +33,7 @@ public class TwoDimensionalArray<E> implements Iterable<E> {
     @SuppressWarnings("unchecked")
     public TwoDimensionalArray(List<List<E>> data) {
         this((Class<E>) first(first(data)).getClass(), data.size(), first(data).size());
-
-        for (int i = 0; i < data.size(); i++) {
-            var row = data.get(i);
-            for (int j = 0; j < row.size(); j++) {
-                set(i, j, row.get(j));
-            }
-        }
+        setAll(data);
     }
 
     public void fill(final E value) {
@@ -72,6 +66,20 @@ public class TwoDimensionalArray<E> implements Iterable<E> {
 
     public void set(int row, int column, E value) {
         arr[row][column] = value;
+    }
+
+    public void setAll(List<List<E>> data) {
+        if (data.size() == rowCount() || data.get(0).size() == columnCount()) {
+            for (int i = 0; i < data.size(); i++) {
+                var row = data.get(i);
+                for (int j = 0; j < row.size(); j++) {
+                    set(i, j, row.get(j));
+                }
+            }
+        } else {
+            throw new RuntimeException();
+        }
+
     }
 
     public E get(final int row, final int column) {
