@@ -4,7 +4,6 @@ import shared.ListUtils;
 import shared.TwoDimensionalArray;
 import solutions.BaseDay;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -27,8 +26,11 @@ public class Day15 extends BaseDay {
 
     private String solveForCaveScale(final int cavernScale) {
         TwoDimensionalArray<Chiton> cavern = getCavern(cavernScale);
-        var goal = cavern.get(cavern.rowCount()  - 1, cavern.columnCount() - 1);
-        return String.valueOf(DijkstraPathFinder.getTotalDistance(cavern.getAllData(), goal));
+        return String.valueOf(
+                DijkstraPathFinder.getTotalDistance(
+                        cavern.getDiagonal(0 ),
+                        cavern.getDiagonal(cavern.rowCount()  - 1))
+        );
     }
 
     private TwoDimensionalArray<Chiton> getCavern(final Integer cavernScale) {
@@ -47,6 +49,7 @@ public class Day15 extends BaseDay {
         return cavern;
     }
 
+    // Since the neighbours may not exist yet, we can create a function that will return them once they do exist
     private Supplier<List<Chiton>> getNeighbourSupplier(TwoDimensionalArray<Chiton> cavern, int i, int j) {
         return () -> cavern.getHorizontalAdjacent(i, j);
     }

@@ -1,21 +1,18 @@
 package solutions.day15;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.Collection;
+import java.util.PriorityQueue;
 
-import static shared.ListUtils.first;
 
 public class DijkstraPathFinder {
 
-    public static int getTotalDistance(final List<? extends DijkstraNode> allNodes, DijkstraNode goalNode) {
+    public static int getTotalDistance(final DijkstraNode startNode, DijkstraNode goalNode) {
 
         // Instead of looking at all unvisited, only look at the unvisited ones we have updated.
-        Set<DijkstraNode> unvisitedUpdated = new HashSet<>();
+        Collection<DijkstraNode> unvisitedUpdated = new PriorityQueue<>();
 
         // Set initial node
-        var current = first(allNodes);
+        var current = startNode;
         current.setAsStartNode();
 
         do {
@@ -26,6 +23,7 @@ public class DijkstraPathFinder {
                     // Update neighbouring nodes
                     neighbour.compareCurrentNode(current);
                     // Add as an unvisited node
+                    unvisitedUpdated.remove(neighbour);
                     unvisitedUpdated.add(neighbour);
                 }
             }
@@ -38,7 +36,7 @@ public class DijkstraPathFinder {
             }
 
             // Update next node
-            current = Collections.min(unvisitedUpdated);
+            current = unvisitedUpdated.iterator().next();
         } while (!goalNode.isVisited());
 
         return goalNode.getTentativeDistance();

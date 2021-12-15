@@ -86,6 +86,10 @@ public class TwoDimensionalArray<E> implements Iterable<E> {
         return arr[row][column];
     }
 
+    public E getDiagonal(final int index) {
+        return arr[index][index];
+    }
+
     public List<E> getHorizontalAdjacent(final int row, final int column) {
         return Stream.of(
                 maybeGet(row - 1, column),
