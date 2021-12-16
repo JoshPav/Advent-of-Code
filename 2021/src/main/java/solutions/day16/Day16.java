@@ -105,7 +105,7 @@ public class Day16 extends BaseDay {
                     // next 15 bits are a number that represents the total length in bits
                     int subPacketsLength = Integer.parseInt(packet.substring(i, i + 15), 2);
                     i += 15;
-                    packets.addAll(parsePacket(packet.substring(i, i + subPacketsLength), 0, version));
+                    packets.add(new OperatorBitPacket(packetVersion, typeId, parsePacket(packet.substring(i, i + subPacketsLength), 0, version)));
                     i += subPacketsLength;
                 } else {
                     i++;
@@ -113,7 +113,7 @@ public class Day16 extends BaseDay {
                     int subPacketCount = Integer.parseInt(packet.substring(i, i + 11), 2);
                     i += 11;
                     var x = parseNPackets(packet, i, subPacketCount, version);
-                    packets.addAll(x.packets);
+                    packets.add(new OperatorBitPacket(packetVersion, typeId, x.packets));
                     i = x.newI;
                 }
             }
@@ -156,7 +156,7 @@ public class Day16 extends BaseDay {
                     // next 15 bits are a number that represents the total length in bits
                     int subPacketsLength = Integer.parseInt(packet.substring(i, i + 15), 2);
                     i += 15;
-                    packets.addAll(parsePacket(packet.substring(i, i + subPacketsLength), 0, v));
+                    packets.add(new OperatorBitPacket(packetVersion, typeId, parsePacket(packet.substring(i, i + subPacketsLength), 0, v)));
                     i += subPacketsLength;
                     read++;
                 } else {
@@ -165,7 +165,7 @@ public class Day16 extends BaseDay {
                     int subPacketCount = Integer.parseInt(packet.substring(i, i + 11), 2);
                     i += 11;
                     var x = parseNPackets(packet, i, subPacketCount, v);
-                    packets.addAll(x.packets);
+                    packets.add(new OperatorBitPacket(packetVersion, typeId, x.packets));
                     i = x.newI;
                     read++;
                 }
@@ -201,6 +201,16 @@ public class Day16 extends BaseDay {
 
     @Override
     public String solvePartTwo() {
-        return null;
+
+        String binary = getFirstLine().chars()
+                .mapToObj(num -> HEX_BINARY.get((char) num))
+                .reduce(String::concat)
+                .orElseThrow();
+
+        var version = new Version(0);
+
+        var packets = parsePacket(binary, 0, version);
+
+        return String.valueOf(packets.get(0).getValue());
     }
 }

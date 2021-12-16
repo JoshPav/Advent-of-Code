@@ -71,13 +71,55 @@ public class Day16Test extends BaseTest {
     @Test
     public void testPartOneActualInput() {
 
-        assertEquals(null, getDayInstance(getInput(16)).solvePartOne());
+        assertEquals("936", getDayInstance(getInput(16)).solvePartOne());
     }
 
     @Test
-    public void testPartTwo() {
+    public void testPartTwoA() {
 
-        assertEquals(null, getDayInstance(getTestInput()).solvePartTwo());
+        assertEquals("3", getDayInstance(List.of("C200B40A82")).solvePartTwo());
+    }
+
+    @Test
+    public void testPartTwoB() {
+
+        assertEquals("54", getDayInstance(List.of("04005AC33890")).solvePartTwo());
+    }
+
+    @Test
+    public void testPartTwoC() {
+
+        assertEquals("7", getDayInstance(List.of("880086C3E88112")).solvePartTwo());
+    }
+
+    @Test
+    public void testPartTwoD() {
+
+        assertEquals("9", getDayInstance(List.of("CE00C43D881120")).solvePartTwo());
+    }
+
+    @Test
+    public void testPartTwoE() {
+
+        assertEquals("1", getDayInstance(List.of("D8005AC2A8F0")).solvePartTwo());
+    }
+
+    @Test
+    public void testPartTwoF() {
+
+        assertEquals("0", getDayInstance(List.of("F600BC2D8F")).solvePartTwo());
+    }
+
+    @Test
+    public void testPartTwoG() {
+
+        assertEquals("0", getDayInstance(List.of("9C005AC2F8F0")).solvePartTwo());
+    }
+
+    @Test
+    public void testPartTwoH() {
+
+        assertEquals("1", getDayInstance(List.of("9C0141080250320F1802104A08")).solvePartTwo());
     }
 
     @Test

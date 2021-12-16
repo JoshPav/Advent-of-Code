@@ -11,4 +11,9 @@ public class LiteralBitPacket extends BitPacket {
         super(packetVersion, 4);
         this.literalValue = literalValue;
     }
+
+    @Override
+    public long getValue() {
+        return literalValue;
+    }
 }

@@ -19,4 +19,8 @@ public final class MathUtils {
         return a * b;
     }
 
+    public static Long product(Long a, Long b) {
+        return a * b;
+    }
+
 }

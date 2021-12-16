@@ -10,4 +10,6 @@ public abstract class BitPacket {
     private final int packetVersion;
     private final int packetTypeId;
 
+    public abstract long getValue();
+
 }
