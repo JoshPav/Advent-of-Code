@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static shared.FileUtils.getInput;
 
 public class Day16Test extends BaseTest {
@@ -36,15 +37,35 @@ public class Day16Test extends BaseTest {
     }
 
     @Test
-    public void testPartOneE() {
+    public void testParseLiteralPacket() {
 
-        assertEquals("??", getDayInstance(Collections.singletonList("D2FE28")).solvePartOne());
+        var packet = Day16.parsePacket("110100101111111000101000", 0, new Day16.Version(0)).get(0);
+
+        assertTrue(packet instanceof LiteralBitPacket);
+        assertEquals(2021, ((LiteralBitPacket) packet).getLiteralValue());
+        assertEquals(6, packet.getPacketVersion());
     }
 
     @Test
-    public void testPartOneF() {
+    public void testFixedLength() {
 
-        assertEquals("??", getDayInstance(Collections.singletonList("38006F45291200")).solvePartOne());
+        var packets = Day16.parsePacket("00111000000000000110111101000101001010010001001000000000", 0, new Day16.Version(0));
+
+        assertEquals(2, packets.size());
+        assertEquals(10, ((LiteralBitPacket) packets.get(0)).getLiteralValue());
+        assertEquals(20, ((LiteralBitPacket) packets.get(1)).getLiteralValue());
+
+    }
+
+    @Test
+    public void testFixedPacketAmount() {
+
+        var packets = Day16.parsePacket("11101110000000001101010000001100100000100011000001100000", 0, new Day16.Version(0));
+
+        assertEquals(3, packets.size());
+        assertEquals(1, ((LiteralBitPacket) packets.get(0)).getLiteralValue());
+        assertEquals(2, ((LiteralBitPacket) packets.get(1)).getLiteralValue());
+        assertEquals(3, ((LiteralBitPacket) packets.get(2)).getLiteralValue());
     }
 
     @Test

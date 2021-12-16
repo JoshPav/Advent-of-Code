@@ -1,5 +1,7 @@
 package solutions.day16;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import solutions.BaseDay;
 
 import java.util.ArrayList;
@@ -56,62 +58,145 @@ public class Day16 extends BaseDay {
                 .reduce(String::concat)
                 .orElseThrow();
 
-        parsePacket(binary, 0);
+        var version = new Version(0);
+
+        parsePacket(binary, 0, version);
+
+        return String.valueOf(version.getVersion());
     }
 
-    private Integer parsePacket(final String packet, final int startIndex) {
+    @Getter
+    @AllArgsConstructor
+    public static class Version {
+        private Integer version;
+
+        public void add(int amount) {
+            version += amount;
+        }
+    }
+
+    public static List<BitPacket> parsePacket(final String packet, final int startIndex, final Version version) {
 
         // Every packet begins with a standard header:
         int i = startIndex;
 
-        // the first three bits encode the packet version
-        Integer packetVersion = BINARY_NUMBERS.get("0" + packet.substring(i, i + 3));
+        List<BitPacket> packets = new ArrayList<>();
 
-        i += 3;
+        while (i < packet.length() && !packet.substring(i).chars().mapToObj(num -> (char) num).allMatch(c -> c.equals('0'))) {
+            // the first three bits encode the packet version
+            Integer packetVersion = BINARY_NUMBERS.get("0" + packet.substring(i, i + 3));
+            version.add(packetVersion);
+            i += 3;
 
-        //  and the next three bits encode the packet type ID
-        Integer typeId = BINARY_NUMBERS.get("0" + packet.substring(i, i + 3));
+            //  and the next three bits encode the packet type ID
+            Integer typeId = BINARY_NUMBERS.get("0" + packet.substring(i, i + 3));
 
-        i += 3;
+            i += 3;
 
-        if (typeId == LITERAL_VALUE_IDENTIFIER) {
-            int literalValue = parseLiteralValue(packet, i);
-            return packetVersion;
-        } else {
-            // Operator type
-
-            if (getLengthTypeId(packet, i) == '0') {
-                i++;
-                // next 15 bits are a number that represents the total length in bits
-                int subPacketsLength = Integer.parseInt(packet.substring(i, i + 15), 2);
+            if (typeId == LITERAL_VALUE_IDENTIFIER) {
+                var parsedValue = parseLiteralValue(packet, i);
+                packets.add(new LiteralBitPacket(packetVersion, parsedValue.literalValue));
+                i += 5 * parsedValue.groups;
             } else {
-                i++;
-                // the next 11 bits are a number that represents the number of sub-packets immediately contained by this packet
-                int subPacketCount = Integer.parseInt(packet.substring(i, i + 11), 2);
+                // Operator type
 
+                if (getLengthTypeId(packet, i) == '0') {
+                    i++;
+                    // next 15 bits are a number that represents the total length in bits
+                    int subPacketsLength = Integer.parseInt(packet.substring(i, i + 15), 2);
+                    i += 15;
+                    packets.addAll(parsePacket(packet.substring(i, i + subPacketsLength), 0, version));
+                    i += subPacketsLength;
+                } else {
+                    i++;
+                    // the next 11 bits are a number that represents the number of sub-packets immediately contained by this packet
+                    int subPacketCount = Integer.parseInt(packet.substring(i, i + 11), 2);
+                    i += 11;
+                    var x = parseNPackets(packet, i, subPacketCount, version);
+                    packets.addAll(x.packets);
+                    i = x.newI;
+                }
             }
         }
 
+        return packets;
     }
 
-    private char getLengthTypeId(String binaryString, int i) {
+    private record PacketsRead (List<BitPacket> packets, int newI) { }
+
+    public static PacketsRead parseNPackets(final String packet, final int startIndex, final int toRead, final Version v) {
+
+        // Every packet begins with a standard header:
+        int i = startIndex;
+        int read = 0;
+        List<BitPacket> packets = new ArrayList<>();
+
+        while (i < packet.length() && !packet.substring(i).chars().mapToObj(num -> (char) num).allMatch(c -> c.equals('0')) && read < toRead) {
+            // the first three bits encode the packet version
+            Integer packetVersion = BINARY_NUMBERS.get("0" + packet.substring(i, i + 3));
+            v.add(packetVersion);
+
+            i += 3;
+
+            //  and the next three bits encode the packet type ID
+            Integer typeId = BINARY_NUMBERS.get("0" + packet.substring(i, i + 3));
+
+            i += 3;
+
+            if (typeId == LITERAL_VALUE_IDENTIFIER) {
+                var parsedValue = parseLiteralValue(packet, i);
+                packets.add(new LiteralBitPacket(packetVersion, parsedValue.literalValue));
+                read++;
+                i += 5 * parsedValue.groups;
+            } else {
+                // Operator type
+
+                if (getLengthTypeId(packet, i) == '0') {
+                    i++;
+                    // next 15 bits are a number that represents the total length in bits
+                    int subPacketsLength = Integer.parseInt(packet.substring(i, i + 15), 2);
+                    i += 15;
+                    packets.addAll(parsePacket(packet.substring(i, i + subPacketsLength), 0, v));
+                    i += subPacketsLength;
+                    read++;
+                } else {
+                    i++;
+                    // the next 11 bits are a number that represents the number of sub-packets immediately contained by this packet
+                    int subPacketCount = Integer.parseInt(packet.substring(i, i + 11), 2);
+                    i += 11;
+                    var x = parseNPackets(packet, i, subPacketCount, v);
+                    packets.addAll(x.packets);
+                    i = x.newI;
+                    read++;
+                }
+            }
+        }
+
+        return new PacketsRead(packets, i);
+    }
+
+    private static char getLengthTypeId(String binaryString, int i) {
         return binaryString.charAt(i);
     }
 
-    private Integer parseLiteralValue(final String binaryString, final int startIndex) {
-        List<String> binaryStrings = new ArrayList<>();
+    private record LiteralValue(long literalValue, int groups) {}
 
-        var i = startIndex;
+    private static LiteralValue parseLiteralValue(final String binaryString, int index) {
+        List<String> binaryStrings = new ArrayList<>();
         var lastGroup = false;
         while (!lastGroup) {
-            if (binaryString.charAt(i) == '0') {
+            if (binaryString.charAt(index) == '0') {
                 lastGroup = true;
             }
-            binaryStrings.add(binaryString.substring(i + 1, i + 5));
-            i += 5;
+            binaryStrings.add(binaryString.substring(index + 1, index + 5));
+            index += 5;
         }
 
-        return Integer.parseInt(binaryStrings.stream().reduce(String::concat).orElseThrow(), 2);
+        var str = binaryStrings.stream().reduce(String::concat).orElseThrow();
+
+        return new LiteralValue(
+                Long.parseLong(str, 2),
+                binaryStrings.size());
     }
 
     @Override
