@@ -5,16 +5,13 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
+@Getter
 @RequiredArgsConstructor
 public abstract class DijkstraNode implements Comparable<DijkstraNode> {
 
-    @Getter
     private final int distance;
 
-    @Getter
     private boolean visited = false;
-
-    @Getter
     private int tentativeDistance = Integer.MAX_VALUE;
 
     public void compareCurrentNode(DijkstraNode current) {
