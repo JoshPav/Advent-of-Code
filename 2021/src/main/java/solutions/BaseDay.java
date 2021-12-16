@@ -38,7 +38,11 @@ public abstract class BaseDay implements PuzzleDay {
     }
 
     protected Stream<String> getFirstLineAsStream() {
-        return Arrays.stream(getInputAsList().get(0).split(","));
+        return Arrays.stream(getFirstLine().split(","));
+    }
+
+    protected String getFirstLine() {
+        return getInputAsList().get(0);
     }
 
     protected Stream<Integer> getFirstLineAsIntegerStream() {
