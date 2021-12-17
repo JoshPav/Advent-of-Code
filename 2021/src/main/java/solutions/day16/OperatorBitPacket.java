@@ -10,8 +10,8 @@ public class OperatorBitPacket extends BitPacket {
 
     private final List<BitPacket> subPackets;
 
-    public OperatorBitPacket(int packetVersion, int packetTypeId, List<BitPacket> subPackets) {
-        super(packetVersion, packetTypeId);
+    public OperatorBitPacket(int packetVersion, PacketType packetType, List<BitPacket> subPackets) {
+        super(packetVersion, packetType);
         this.subPackets = subPackets;
     }
 
@@ -30,7 +30,7 @@ public class OperatorBitPacket extends BitPacket {
 
     @Override
     public long getValue() {
-        return subPackets.stream().map(BitPacket::getValue).reduce(packetTypeReducer(getPacketTypeId())).orElseThrow();
+        return subPackets.stream().map(BitPacket::getValue).reduce(packetTypeReducer(getPacketType().getId())).orElseThrow();
     }
 
     @Override

@@ -11,7 +11,7 @@ public class LiteralBitPacket extends BitPacket {
     private final long literalValue;
 
     public LiteralBitPacket(int packetVersion, long literalValue) {
-        super(packetVersion, 4);
+        super(packetVersion, PacketType.LITERAL);
         this.literalValue = literalValue;
     }
 

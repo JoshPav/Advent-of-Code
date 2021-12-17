@@ -10,7 +10,7 @@ import java.util.List;
 public abstract class BitPacket {
 
     private final int packetVersion;
-    private final int packetTypeId;
+    private final PacketType packetType;
 
     public abstract long getValue();
 
