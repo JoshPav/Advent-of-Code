@@ -1,8 +1,5 @@
 package solutions.day16;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,10 +7,16 @@ public class BITReader {
 
     private final String message;
     private final MutableInteger addressPointer;
+    private final int packetsToRead;
 
     private BITReader(final String binaryMessage) {
-        message = binaryMessage;
-        addressPointer = new MutableInteger();
+        this(binaryMessage, Integer.MAX_VALUE);
+    }
+
+    private BITReader(final String binaryMessage, final int packetsToRead) {
+        this.message = binaryMessage;
+        this.addressPointer = new MutableInteger();
+        this.packetsToRead = packetsToRead;
     }
 
     public static BITReader forHexadecimal(final String hexadecimalMessage) {
@@ -26,22 +29,32 @@ public class BITReader {
 
     private List<BitPacket> readPackets() {
         List<BitPacket> packets = new ArrayList<>();
+        int packetsRead = 0;
 
-        while (!isExhausted()) {
+        while (!isExhausted() && packetsRead < packetsToRead) {
             int packetVersion = readBitsToInt(3);
 
             if (PacketType.LITERAL.equals(readBitsToInt(3))) {
                 packets.add(new LiteralBitPacket(packetVersion, readLiteralValue()));
             } else if (PacketType.BIT_LENGTH.equals(readBitsToInt(1))){
-                // BIT_LENGTH
-                int subPacketsLength = readBitsToInt(15);
-                packets.add(new OperatorBitPacket(packetVersion, PacketType.BIT_LENGTH, new BITReader(readBits(subPacketsLength)).readPackets()));
+                packets.add(new OperatorBitPacket(packetVersion, PacketType.BIT_LENGTH, readPacketsInBits()));
             } else {
-                // FIXED LENGTH
+                packets.add(new OperatorBitPacket(packetVersion, PacketType.PACKET_LENGTH, readNPackets()));
             }
+            packetsRead++;
         }
 
         return packets;
+    }
+
+    private List<BitPacket> readPacketsInBits() {
+        int subPacketsLength = readBitsToInt(15);
+        return new BITReader(readBits(subPacketsLength)).readPackets();
+    }
+
+    private List<BitPacket> readNPackets() {
+        int subPacketCount = readBitsToInt(11);
+        return new BITReader(remainingMessage(), subPacketCount).readPackets();
     }
 
     private boolean isExhausted() {

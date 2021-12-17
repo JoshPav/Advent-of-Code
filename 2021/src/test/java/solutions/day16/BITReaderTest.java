@@ -28,4 +28,15 @@ public class BITReaderTest {
         assertEquals(1, bit.getPacketVersion());
     }
 
+    @Test
+    public void testFixedPacketOperator() {
+
+        var bit = BITReader.forHexadecimal("EE00D40C823060").read();
+
+        assertTrue(bit instanceof OperatorBitPacket);
+        assertEquals(6, bit.getValue());
+        assertEquals(PacketType.PACKET_LENGTH, bit.getPacketType());
+        assertEquals(7, bit.getPacketVersion());
+    }
+
 }
