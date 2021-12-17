@@ -2,6 +2,9 @@ package solutions.day16;
 
 import lombok.Getter;
 
+import java.util.Collections;
+import java.util.List;
+
 public class LiteralBitPacket extends BitPacket {
 
     @Getter
@@ -15,5 +18,15 @@ public class LiteralBitPacket extends BitPacket {
     @Override
     public long getValue() {
         return literalValue;
+    }
+
+    @Override
+    public List<BitPacket> getPackets() {
+        return Collections.singletonList(this);
+    }
+
+    @Override
+    public long getVersionSum() {
+        return getPacketVersion();
     }
 }

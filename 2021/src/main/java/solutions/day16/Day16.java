@@ -58,24 +58,12 @@ public class Day16 extends BaseDay {
                 .reduce(String::concat)
                 .orElseThrow();
 
-        var version = new Version(0);
+        var x = parsePacket(binary, 0);
 
-        parsePacket(binary, 0, version);
-
-        return String.valueOf(version.getVersion());
+        return String.valueOf(x.get(0).getVersionSum());
     }
 
-    @Getter
-    @AllArgsConstructor
-    public static class Version {
-        private Integer version;
-
-        public void add(int amount) {
-            version += amount;
-        }
-    }
-
-    public static List<BitPacket> parsePacket(final String packet, final int startIndex, final Version version) {
+    private static List<BitPacket> parsePacket(final String packet, final int startIndex) {
 
         // Every packet begins with a standard header:
         int i = startIndex;
@@ -85,7 +73,6 @@ public class Day16 extends BaseDay {
         while (i < packet.length() && !packet.substring(i).chars().mapToObj(num -> (char) num).allMatch(c -> c.equals('0'))) {
             // the first three bits encode the packet version
             Integer packetVersion = BINARY_NUMBERS.get("0" + packet.substring(i, i + 3));
-            version.add(packetVersion);
             i += 3;
 
             //  and the next three bits encode the packet type ID
@@ -105,14 +92,14 @@ public class Day16 extends BaseDay {
                     // next 15 bits are a number that represents the total length in bits
                     int subPacketsLength = Integer.parseInt(packet.substring(i, i + 15), 2);
                     i += 15;
-                    packets.add(new OperatorBitPacket(packetVersion, typeId, parsePacket(packet.substring(i, i + subPacketsLength), 0, version)));
+                    packets.add(new OperatorBitPacket(packetVersion, typeId, parsePacket(packet.substring(i, i + subPacketsLength), 0)));
                     i += subPacketsLength;
                 } else {
                     i++;
                     // the next 11 bits are a number that represents the number of sub-packets immediately contained by this packet
                     int subPacketCount = Integer.parseInt(packet.substring(i, i + 11), 2);
                     i += 11;
-                    var x = parseNPackets(packet, i, subPacketCount, version);
+                    var x = parseNPackets(packet, i, subPacketCount);
                     packets.add(new OperatorBitPacket(packetVersion, typeId, x.packets));
                     i = x.newI;
                 }
@@ -124,7 +111,7 @@ public class Day16 extends BaseDay {
 
     private record PacketsRead (List<BitPacket> packets, int newI) { }
 
-    public static PacketsRead parseNPackets(final String packet, final int startIndex, final int toRead, final Version v) {
+    private static PacketsRead parseNPackets(final String packet, final int startIndex, final int toRead) {
 
         // Every packet begins with a standard header:
         int i = startIndex;
@@ -134,7 +121,6 @@ public class Day16 extends BaseDay {
         while (i < packet.length() && !packet.substring(i).chars().mapToObj(num -> (char) num).allMatch(c -> c.equals('0')) && read < toRead) {
             // the first three bits encode the packet version
             Integer packetVersion = BINARY_NUMBERS.get("0" + packet.substring(i, i + 3));
-            v.add(packetVersion);
 
             i += 3;
 
@@ -156,7 +142,7 @@ public class Day16 extends BaseDay {
                     // next 15 bits are a number that represents the total length in bits
                     int subPacketsLength = Integer.parseInt(packet.substring(i, i + 15), 2);
                     i += 15;
-                    packets.add(new OperatorBitPacket(packetVersion, typeId, parsePacket(packet.substring(i, i + subPacketsLength), 0, v)));
+                    packets.add(new OperatorBitPacket(packetVersion, typeId, parsePacket(packet.substring(i, i + subPacketsLength), 0)));
                     i += subPacketsLength;
                     read++;
                 } else {
@@ -164,7 +150,7 @@ public class Day16 extends BaseDay {
                     // the next 11 bits are a number that represents the number of sub-packets immediately contained by this packet
                     int subPacketCount = Integer.parseInt(packet.substring(i, i + 11), 2);
                     i += 11;
-                    var x = parseNPackets(packet, i, subPacketCount, v);
+                    var x = parseNPackets(packet, i, subPacketCount);
                     packets.add(new OperatorBitPacket(packetVersion, typeId, x.packets));
                     i = x.newI;
                     read++;
@@ -207,9 +193,7 @@ public class Day16 extends BaseDay {
                 .reduce(String::concat)
                 .orElseThrow();
 
-        var version = new Version(0);
-
-        var packets = parsePacket(binary, 0, version);
+        var packets = parsePacket(binary, 0);
 
         return String.valueOf(packets.get(0).getValue());
     }

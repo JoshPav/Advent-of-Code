@@ -32,4 +32,14 @@ public class OperatorBitPacket extends BitPacket {
     public long getValue() {
         return subPackets.stream().map(BitPacket::getValue).reduce(packetTypeReducer(getPacketTypeId())).orElseThrow();
     }
+
+    @Override
+    public List<BitPacket> getPackets() {
+        return subPackets;
+    }
+
+    @Override
+    public long getVersionSum() {
+        return getPacketVersion() + getPackets().stream().map(BitPacket::getVersionSum).reduce(Long::sum).orElseThrow();
+    }
 }
