@@ -47,11 +47,36 @@ public class BITReader {
         return packets;
     }
 
+    /**
+     * Reads in groups of five bits until a group is prefixed by 0.
+     * The literal value is the parsed value of the bits concatenated together.
+     */
+    private Long readLiteralValue() {
+        StringBuilder binary = new StringBuilder();
+
+        String groupStart;
+        do {
+            groupStart = readBits(1);
+            binary.append(readBits(4));
+
+        } while (!groupStart.equals("0"));
+
+        return Long.parseLong(binary.toString(), 2);
+    }
+
+    /**
+     * Reads the next fifteen bits to determine N - the amount of bits to read for the next packet(s).
+     * Then reads the next N bits and returns the packet(s) in these bits.
+     */
     private List<BitPacket> readPacketsInBits() {
         int subPacketsLength = readBitsToInt(15);
         return new BITReader(readBits(subPacketsLength)).readPackets();
     }
 
+    /**
+     * Reads the next eleven bits to determine N - the amount of packets to read.
+     * Then reads and returns the next N packets.
+     */
     private List<BitPacket> readNPackets() {
         int subPacketCount = readBitsToInt(11);
         return new BITReader(remainingMessage(), subPacketCount).readPackets();
@@ -76,19 +101,6 @@ public class BITReader {
 
     private static String decode(final String hexadecimalMessage) {
         return HexadecimalParser.toBinaryString(hexadecimalMessage, 4);
-    }
-
-    private Long readLiteralValue() {
-        StringBuilder binary = new StringBuilder();
-
-        String groupStart;
-        do {
-            groupStart = readBits(1);
-            binary.append(readBits(4));
-
-        } while (!groupStart.equals("0"));
-
-        return Long.parseLong(binary.toString(), 2);
     }
 
 }
