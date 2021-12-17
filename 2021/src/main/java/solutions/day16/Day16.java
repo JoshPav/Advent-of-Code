@@ -1,26 +1,11 @@
 package solutions.day16;
 
-import lombok.AllArgsConstructor;
 import solutions.BaseDay;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class Day16 extends BaseDay {
-
-    private static final Map<String, Integer> BINARY_NUMBERS = Map.of(
-            "0000", 0,
-            "0001", 1,
-            "0010", 2,
-            "0011", 3,
-            "0100", 4,
-            "0101", 5,
-            "0110", 6,
-            "0111", 7,
-            "1000", 8,
-            "1001", 9
-    );
 
     private static final int LITERAL_VALUE_IDENTIFIER = 4;
 
@@ -39,34 +24,18 @@ public class Day16 extends BaseDay {
     }
 
     private BitPacket parsePacketFromInput() {
-        return parsePacket(HexadecimalParser.toBinaryString(getFirstLine())).get(0);
+        return parsePacket(HexadecimalParser.toBinaryString(getFirstLine(), 4)).get(0);
     }
 
-    private boolean isExhausted(final String packet, final int currentIndex) {
-        return packet.substring(currentIndex)
+    private boolean isNotExhausted(final String packet, final int currentIndex) {
+        return !packet.substring(currentIndex)
                 .chars()
                 .mapToObj(num -> (char) num)
                 .allMatch(c -> c.equals('0'));
     }
 
-    @AllArgsConstructor
-    private static class MutableInteger {
-
-        private int value;
-
-        public int add(int amount) {
-            value += amount;
-            return value;
-        }
-
-        public int value() {
-            return value;
-        }
-
-        public void set(int value) {
-            this.value = value;
-        }
-
+    private Integer parseBinary(final String binary) {
+        return Integer.parseInt(binary, 2);
     }
 
     private List<BitPacket> parsePacket(final String packet) {
@@ -76,28 +45,28 @@ public class Day16 extends BaseDay {
 
         List<BitPacket> packets = new ArrayList<>();
 
-        while (currIndex.value() < packet.length() && !isExhausted(packet, currIndex.value())) {
+        while (currIndex.value() < packet.length() && isNotExhausted(packet, currIndex.value())) {
             // the first three bits encode the packet version
-            Integer packetVersion = BINARY_NUMBERS.get("0" + packet.substring(currIndex.value, currIndex.add(3)));
+            int packetVersion = parseBinary(readBits(packet, currIndex, 3));
 
             //  and the next three bits encode the packet type ID
-            Integer typeId = BINARY_NUMBERS.get("0" + packet.substring(currIndex.value, currIndex.add(3)));
+            int typeId = parseBinary(readBits(packet, currIndex, 3));
 
             if (typeId == LITERAL_VALUE_IDENTIFIER) {
-                var parsedValue = parseLiteralValue(packet, currIndex.value);
+                var parsedValue = parseLiteralValue(packet, currIndex.value());
                 packets.add(new LiteralBitPacket(packetVersion, parsedValue.literalValue));
                 currIndex.add(5 * parsedValue.groups);
             } else {
-                if (getLengthTypeId(packet, currIndex.value) == '0') {
+                if (getLengthTypeId(packet, currIndex.value()) == '0') {
 
                     // next 15 bits are a number that represents the total length in bits
                     int subPacketsLength = Integer.parseInt(packet.substring(currIndex.add(1), currIndex.add(15)), 2);
 
-                    packets.add(new OperatorBitPacket(packetVersion, typeId, parsePacket(packet.substring(currIndex.value, currIndex.add(subPacketsLength)))));
+                    packets.add(new OperatorBitPacket(packetVersion, typeId, parsePacket(packet.substring(currIndex.value(), currIndex.add(subPacketsLength)))));
                 } else {
                     // the next 11 bits are a number that represents the number of sub-packets immediately contained by this packet
                     int subPacketCount = Integer.parseInt(packet.substring(currIndex.add(1), currIndex.add(11)), 2);
-                    var x = parseNPackets(packet, currIndex.value, subPacketCount);
+                    var x = parseNPackets(packet, currIndex.value(), subPacketCount);
                     packets.add(new OperatorBitPacket(packetVersion, typeId, x.packets));
                     currIndex.set(x.newI);
                 }
@@ -109,6 +78,10 @@ public class Day16 extends BaseDay {
 
     private record PacketsRead (List<BitPacket> packets, int newI) { }
 
+    private String readBits(final String packet, final MutableInteger currIndex, final int toRead) {
+        return packet.substring(currIndex.value(), currIndex.add(toRead));
+    }
+
     private PacketsRead parseNPackets(final String packet, final int startIndex, final int toRead) {
 
         // Every packet begins with a standard header:
@@ -116,32 +89,32 @@ public class Day16 extends BaseDay {
         int read = 0;
         List<BitPacket> packets = new ArrayList<>();
 
-        while (currIndex.value() < packet.length() && !isExhausted(packet, currIndex.value()) && read < toRead) {
+        while (currIndex.value() < packet.length() && isNotExhausted(packet, currIndex.value()) && read < toRead) {
             // the first three bits encode the packet version
-            Integer packetVersion = BINARY_NUMBERS.get("0" + packet.substring(currIndex.value, currIndex.add(3)));
+            int packetVersion = parseBinary(readBits(packet, currIndex, 3));
 
             //  and the next three bits encode the packet type ID
-            Integer typeId = BINARY_NUMBERS.get("0" + packet.substring(currIndex.value, currIndex.add(3)));
+            int typeId = parseBinary(readBits(packet, currIndex, 3));
 
             if (typeId == LITERAL_VALUE_IDENTIFIER) {
-                var parsedValue = parseLiteralValue(packet, currIndex.value);
+                var parsedValue = parseLiteralValue(packet, currIndex.value());
                 packets.add(new LiteralBitPacket(packetVersion, parsedValue.literalValue));
                 read++;
                 currIndex.add(5 * parsedValue.groups);
             } else {
                 // Operator type
 
-                if (getLengthTypeId(packet, currIndex.value) == '0') {
+                if (getLengthTypeId(packet, currIndex.value()) == '0') {
                     // next 15 bits are a number that represents the total length in bits
                     int subPacketsLength = Integer.parseInt(packet.substring(currIndex.add(1), currIndex.add(15)), 2);
 
-                    packets.add(new OperatorBitPacket(packetVersion, typeId, parsePacket(packet.substring(currIndex.value, currIndex.add(subPacketsLength)))));
+                    packets.add(new OperatorBitPacket(packetVersion, typeId, parsePacket(packet.substring(currIndex.value(), currIndex.add(subPacketsLength)))));
                     read++;
                 } else {
                     // the next 11 bits are a number that represents the number of sub-packets immediately contained by this packet
                     int subPacketCount = Integer.parseInt(packet.substring(currIndex.add(1), currIndex.add(11)), 2);
 
-                    var x = parseNPackets(packet, currIndex.value, subPacketCount);
+                    var x = parseNPackets(packet, currIndex.value(), subPacketCount);
                     packets.add(new OperatorBitPacket(packetVersion, typeId, x.packets));
                     currIndex.set(x.newI);
                     read++;
@@ -149,7 +122,7 @@ public class Day16 extends BaseDay {
             }
         }
 
-        return new PacketsRead(packets, currIndex.value);
+        return new PacketsRead(packets, currIndex.value());
     }
 
     private char getLengthTypeId(String binaryString, int i) {
