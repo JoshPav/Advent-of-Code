@@ -9,10 +9,6 @@ public class BITReader {
     private final MutableInteger addressPointer;
     private final int packetsToRead;
 
-    private BITReader(final String binaryMessage) {
-        this(binaryMessage, Integer.MAX_VALUE);
-    }
-
     private BITReader(final String binaryMessage, final int packetsToRead) {
         this.message = binaryMessage;
         this.addressPointer = new MutableInteger();
@@ -20,7 +16,11 @@ public class BITReader {
     }
 
     public static BITReader forHexadecimal(final String hexadecimalMessage) {
-        return new BITReader(decode(hexadecimalMessage));
+        return forBinary(decode(hexadecimalMessage));
+    }
+
+    public static BITReader forBinary(final String binaryMessage) {
+        return new BITReader(binaryMessage, Integer.MAX_VALUE);
     }
 
     public BitPacket read() {
@@ -70,7 +70,7 @@ public class BITReader {
      */
     private List<BitPacket> readPacketsInBits() {
         int subPacketsLength = readBitsToInt(15);
-        return new BITReader(readBits(subPacketsLength)).readPackets();
+        return BITReader.forBinary(readBits(subPacketsLength)).readPackets();
     }
 
     /**
@@ -79,7 +79,12 @@ public class BITReader {
      */
     private List<BitPacket> readNPackets() {
         int subPacketCount = readBitsToInt(11);
-        return new BITReader(remainingMessage(), subPacketCount).readPackets();
+        BITReader subPacketReader = new BITReader(remainingMessage(), subPacketCount);
+        var packets = subPacketReader.readPackets();
+
+        // Update the address pointer so it is at the same point the sub packet parser left off.
+        addressPointer.set(message.length() - subPacketReader.remainingMessage().length());
+        return packets;
     }
 
     private boolean isExhausted() {
