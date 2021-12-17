@@ -25,7 +25,7 @@ public class Day17Test extends BaseTest {
     @Test
     public void testPartTwo() {
 
-        assertEquals(null, getDayInstance(getTestInput()).solvePartTwo());
+        assertEquals("112", getDayInstance(getTestInput()).solvePartTwo());
     }
 
     @Test
