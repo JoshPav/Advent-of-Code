@@ -10,8 +10,10 @@ import java.util.Optional;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
 
+import static java.lang.Math.abs;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+import static java.lang.Math.sqrt;
 
 public class Day17 extends BaseDay {
 
@@ -33,8 +35,9 @@ public class Day17 extends BaseDay {
         SquareBounds bounds = getBoundsFromInput();
         List<List<Point>> validTrajectories = new ArrayList<>();
 
-        for (int xVel = 1; xVel <= bounds.rightBound(); xVel++) {
-            for (int yVel = 1000; yVel > -1000; yVel--) {
+        for (int xVel = minVelocity(bounds.leftBound()); xVel <= bounds.rightBound(); xVel++) {
+            // Must be a better way for initial
+            for (int yVel = 100; yVel >= bounds.bottomBound(); yVel--) {
                 getTrajectoryIfInBounds(bounds, new Vector(xVel, yVel)).ifPresent(validTrajectories::add);
             }
         }
@@ -43,14 +46,7 @@ public class Day17 extends BaseDay {
     }
 
     private int minVelocity(double distance) {
-        // 30 away
-        // 30 = vel + (vel - 1) + (vel - 2) + (vel - 3)
-
-        // 30 / vel > 0
-        // 30 / 7 = 5
-        // 30 / 6 = 5
-        // 30 / 5 = 6
-        return 1;
+        return abs((int) (-0.5d - sqrt(1 + 4 * 2 * distance))/ 2);
     }
 
     private String getMaxHeight(List<List<Point>> trajectories) {

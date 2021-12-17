@@ -6,8 +6,8 @@ import shared.math.geometry.Point;
 @RequiredArgsConstructor
 public class SquareBounds {
 
-    public final Point topLeft;
-    public final Point bottomRight;
+    private final Point topLeft;
+    private final Point bottomRight;
 
     public double leftBound() {
         return topLeft.x();
@@ -26,21 +26,12 @@ public class SquareBounds {
     }
 
     public boolean pointBeyond(Point p) {
-        return p.x() > bottomRight.x() || p.y() < bottomRight.y();
+        return p.x() > rightBound() || p.y() < bottomBound();
     }
 
     public boolean pointWithin(Point p) {
-        return p.x() >= topLeft.x() && p.y() <= topLeft.y()
-                && p.x() <= bottomRight.x() && p.y() >= bottomRight.y();
+        return p.x() >= leftBound() && p.y() <= topBound()
+                && p.x() <= rightBound() && p.y() >= bottomBound();
     }
-
-//    public boolean pointBeyond(Point p) {
-//        return p.x() > rightBound() || p.y() < bottomBound();
-//    }
-//
-//    public boolean pointWithin(Point p) {
-//        return p.x() >= leftBound() && p.y() <= topBound()
-//                && p.x() <= rightBound() && p.y() >= bottomBound();
-//    }
 
 }
