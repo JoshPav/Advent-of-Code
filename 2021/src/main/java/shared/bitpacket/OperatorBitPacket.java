@@ -1,4 +1,4 @@
-package solutions.day16;
+package shared.bitpacket;
 
 import java.util.List;
 
@@ -16,13 +16,8 @@ public class OperatorBitPacket extends BitPacket {
         return subPackets.stream().map(BitPacket::getValue).reduce(getPacketType().getReducer()).orElseThrow();
     }
 
-    @Override
-    public List<BitPacket> getPackets() {
+    List<BitPacket> getSubPackets() {
         return subPackets;
     }
 
-    @Override
-    public long getVersionSum() {
-        return getPacketVersion() + getPackets().stream().map(BitPacket::getVersionSum).reduce(Long::sum).orElseThrow();
-    }
 }

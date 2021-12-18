@@ -1,4 +1,4 @@
-package solutions.day16;
+package shared.bitpacket;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

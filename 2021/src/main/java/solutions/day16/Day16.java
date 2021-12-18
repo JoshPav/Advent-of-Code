@@ -1,5 +1,7 @@
 package solutions.day16;
 
+import shared.bitpacket.BitPacket;
+import shared.bitpacket.BitPacketReader;
 import solutions.BaseDay;
 
 import java.util.List;
@@ -14,7 +16,13 @@ public class Day16 extends BaseDay {
 
     @Override
     public String solvePartOne() {
-        return String.valueOf(BitPacketReader.forHexadecimal(getFirstLine()).read().getVersionSum());
+
+        return BitPacketReader.forHexadecimal(getFirstLine()).read().getAllPackets()
+                .stream()
+                .map(BitPacket::getPacketVersion)
+                .reduce(Integer::sum)
+                .map(String::valueOf)
+                .orElseThrow();
     }
 
     @Override

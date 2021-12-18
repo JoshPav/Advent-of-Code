@@ -1,4 +1,4 @@
-package solutions.day16;
+package shared;
 
 import com.google.common.base.Strings;
 

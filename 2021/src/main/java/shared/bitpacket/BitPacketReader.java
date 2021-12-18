@@ -1,5 +1,6 @@
-package solutions.day16;
+package shared.bitpacket;
 
+import shared.HexadecimalParser;
 import shared.math.MutableInteger;
 
 import java.util.ArrayList;
@@ -39,7 +40,7 @@ public class BitPacketReader {
             if (PacketType.LITERAL.equals(packetType)) {
                 packets.add(new LiteralBitPacket(packetVersion, readLiteralValue()));
             } else if (readBitsToInt(1) == 0){
-                    packets.add(new OperatorBitPacket(packetVersion, packetType, readPacketsInBits()));
+                packets.add(new OperatorBitPacket(packetVersion, packetType, readPacketsInBits()));
             } else {
                 packets.add(new OperatorBitPacket(packetVersion, packetType, readNPackets()));
             }
@@ -84,7 +85,7 @@ public class BitPacketReader {
         BitPacketReader subPacketReader = new BitPacketReader(remainingMessage(), subPacketCount);
         var packets = subPacketReader.readPackets();
 
-        // Update the address pointer so it is at the same point the sub packet parser left off.
+        // Update the address pointer, so it is at the same point the sub packet parser left off.
         addressPointer.set(message.length() - subPacketReader.remainingMessage().length());
         return packets;
     }
@@ -103,7 +104,7 @@ public class BitPacketReader {
     }
 
     private int readBitsToInt(final int toRead) {
-        return Integer.parseInt( readBits(toRead), 2);
+        return Integer.parseInt(readBits(toRead), 2);
     }
 
     private static String decode(final String hexadecimalMessage) {

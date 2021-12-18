@@ -1,10 +1,11 @@
-package solutions.day16;
+package shared.bitpacket;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -29,7 +30,7 @@ public class BitPacketReaderTest {
 
         assertTrue(packet instanceof OperatorBitPacket);
 
-        var subPackets = packet.getPackets();
+        var subPackets = packet.getSubPackets();
         assertEquals(2, subPackets.size());
 
         assertEquals(10, subPackets.get(0).getValue());
@@ -45,7 +46,7 @@ public class BitPacketReaderTest {
 
         assertTrue(packet instanceof OperatorBitPacket);
 
-        var subPackets = packet.getPackets();
+        var subPackets = packet.getSubPackets();
         assertEquals(3, subPackets.size());
 
         assertEquals(1, subPackets.get(0).getValue());
@@ -62,7 +63,7 @@ public class BitPacketReaderTest {
         var packet = BitPacketReader.forHexadecimal("8A004A801A8002F478").read();
 
         assertTrue(packet instanceof OperatorBitPacket);
-        assertEquals(16, packet.getVersionSum());
+        assertEquals(16, sumPacketVersions(packet.getAllPackets()));
         assertEquals(4, packet.getPacketVersion());
     }
 
@@ -72,7 +73,7 @@ public class BitPacketReaderTest {
         var packet = BitPacketReader.forHexadecimal("620080001611562C8802118E34").read();
 
         assertTrue(packet instanceof OperatorBitPacket);
-        assertEquals(12, packet.getVersionSum());
+        assertEquals(12, sumPacketVersions(packet.getAllPackets()));
         assertEquals(3, packet.getPacketVersion());
     }
 
@@ -82,7 +83,7 @@ public class BitPacketReaderTest {
         var packet = BitPacketReader.forHexadecimal("C0015000016115A2E0802F182340").read();
 
         assertTrue(packet instanceof OperatorBitPacket);
-        assertEquals(23, packet.getVersionSum());
+        assertEquals(23, sumPacketVersions(packet.getAllPackets()));
     }
 
     @Test
@@ -91,7 +92,7 @@ public class BitPacketReaderTest {
         var packet = BitPacketReader.forHexadecimal("A0016C880162017C3686B18A3D4780").read();
 
         assertTrue(packet instanceof OperatorBitPacket);
-        assertEquals(31, packet.getVersionSum());
+        assertEquals(31, sumPacketVersions(packet.getAllPackets()));
     }
 
     @ParameterizedTest
@@ -113,6 +114,10 @@ public class BitPacketReaderTest {
                 Arguments.of("9C005AC2F8F0", 0),
                 Arguments.of("9C0141080250320F1802104A08", 1)
         );
+    }
+
+    private int sumPacketVersions(List<BitPacket> packets) {
+        return packets.stream().map(BitPacket::getPacketVersion).reduce(Integer::sum).orElseThrow();
     }
 
 }

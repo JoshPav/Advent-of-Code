@@ -1,13 +1,10 @@
-package solutions.day16;
-
-import lombok.Getter;
+package shared.bitpacket;
 
 import java.util.Collections;
 import java.util.List;
 
 public class LiteralBitPacket extends BitPacket {
 
-    @Getter
     private final long literalValue;
 
     public LiteralBitPacket(int packetVersion, long literalValue) {
@@ -21,12 +18,8 @@ public class LiteralBitPacket extends BitPacket {
     }
 
     @Override
-    public List<BitPacket> getPackets() {
-        return Collections.singletonList(this);
+    List<BitPacket> getSubPackets() {
+        return Collections.emptyList();
     }
 
-    @Override
-    public long getVersionSum() {
-        return getPacketVersion();
-    }
 }
