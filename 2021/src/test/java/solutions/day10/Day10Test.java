@@ -1,11 +1,11 @@
 package solutions.day10;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import solutions.BaseTest;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static shared.FileUtils.getInput;
 
 public class Day10Test extends BaseTest {

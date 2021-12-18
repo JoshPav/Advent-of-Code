@@ -1,13 +1,10 @@
 package solutions.day16;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import solutions.BaseTest;
 
-import java.util.Collections;
-import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static shared.FileUtils.getInput;
 
 public class Day16Test extends BaseTest {

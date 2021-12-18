@@ -49,5 +49,6 @@ public class Day12 extends BaseDay {
                 .map(path -> String.join(",", path))
                 .collect(Collectors.toList());
 
-        return String.valueOf(paths.size());    }
+        return String.valueOf(paths.size());
+    }
 }

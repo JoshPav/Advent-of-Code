@@ -1,12 +1,12 @@
 package solutions.day12;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import solutions.BaseTest;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static shared.FileUtils.getInput;
 
 public class Day12Test extends BaseTest {
@@ -53,7 +53,8 @@ public class Day12Test extends BaseTest {
         assertEquals("3509", getDayInstance(getTestInputC()).solvePartTwo());
     }
 
-    @Ignore
+    @Test
+    @Disabled("Failing for some reason")
     public void testPartTwoActualInput() {
 
         assertEquals("137948", getDayInstance(getInput(12)).solvePartTwo());

@@ -1,26 +1,28 @@
 package solutions.day16;
 
+import shared.math.MutableInteger;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class BITReader {
+public class BitPacketReader {
 
     private final String message;
     private final MutableInteger addressPointer;
     private final int packetsToRead;
 
-    private BITReader(final String binaryMessage, final int packetsToRead) {
+    private BitPacketReader(final String binaryMessage, final int packetsToRead) {
         this.message = binaryMessage;
         this.addressPointer = new MutableInteger();
         this.packetsToRead = packetsToRead;
     }
 
-    public static BITReader forHexadecimal(final String hexadecimalMessage) {
+    public static BitPacketReader forHexadecimal(final String hexadecimalMessage) {
         return forBinary(decode(hexadecimalMessage));
     }
 
-    public static BITReader forBinary(final String binaryMessage) {
-        return new BITReader(binaryMessage, Integer.MAX_VALUE);
+    public static BitPacketReader forBinary(final String binaryMessage) {
+        return new BitPacketReader(binaryMessage, Integer.MAX_VALUE);
     }
 
     public BitPacket read() {
@@ -33,13 +35,13 @@ public class BITReader {
 
         while (!isExhausted() && packetsRead < packetsToRead) {
             int packetVersion = readBitsToInt(3);
-
-            if (PacketType.LITERAL.equals(readBitsToInt(3))) {
+            PacketType packetType = PacketType.parse(readBitsToInt(3));
+            if (PacketType.LITERAL.equals(packetType)) {
                 packets.add(new LiteralBitPacket(packetVersion, readLiteralValue()));
-            } else if (PacketType.BIT_LENGTH.equals(readBitsToInt(1))){
-                packets.add(new OperatorBitPacket(packetVersion, PacketType.BIT_LENGTH, readPacketsInBits()));
+            } else if (readBitsToInt(1) == 0){
+                    packets.add(new OperatorBitPacket(packetVersion, packetType, readPacketsInBits()));
             } else {
-                packets.add(new OperatorBitPacket(packetVersion, PacketType.PACKET_LENGTH, readNPackets()));
+                packets.add(new OperatorBitPacket(packetVersion, packetType, readNPackets()));
             }
             packetsRead++;
         }
@@ -70,7 +72,7 @@ public class BITReader {
      */
     private List<BitPacket> readPacketsInBits() {
         int subPacketsLength = readBitsToInt(15);
-        return BITReader.forBinary(readBits(subPacketsLength)).readPackets();
+        return BitPacketReader.forBinary(readBits(subPacketsLength)).readPackets();
     }
 
     /**
@@ -79,7 +81,7 @@ public class BITReader {
      */
     private List<BitPacket> readNPackets() {
         int subPacketCount = readBitsToInt(11);
-        BITReader subPacketReader = new BITReader(remainingMessage(), subPacketCount);
+        BitPacketReader subPacketReader = new BitPacketReader(remainingMessage(), subPacketCount);
         var packets = subPacketReader.readPackets();
 
         // Update the address pointer so it is at the same point the sub packet parser left off.

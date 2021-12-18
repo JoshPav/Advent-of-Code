@@ -14,12 +14,12 @@ public class Day16 extends BaseDay {
 
     @Override
     public String solvePartOne() {
-        return String.valueOf(BITReader.forHexadecimal(getFirstLine()).read().getVersionSum());
+        return String.valueOf(BitPacketReader.forHexadecimal(getFirstLine()).read().getVersionSum());
     }
 
     @Override
     public String solvePartTwo() {
-        return null;
+        return String.valueOf(BitPacketReader.forHexadecimal(getFirstLine()).read().getValue());
     }
 
 }

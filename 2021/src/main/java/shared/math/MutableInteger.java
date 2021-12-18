@@ -1,4 +1,4 @@
-package solutions.day16;
+package shared.math;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -12,12 +12,6 @@ public class MutableInteger {
     public int add(int amount) {
         value += amount;
         return value;
-    }
-
-    public int postAdd(int amount) {
-        int temp = value;
-        value += amount;
-        return temp;
     }
 
     public int value() {
