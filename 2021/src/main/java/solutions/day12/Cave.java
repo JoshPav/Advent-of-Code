@@ -47,8 +47,10 @@ public class Cave {
     private Stream<Cave> getValidCaves(final List<String> path) {
         return connectedTo.stream().filter(
                 not(Cave::isStart)
-                        .and(not(Cave::isSmall).or(((Predicate<Cave>) Cave::isSmall).and(not(haveAlreadyVisitedCave(path)))
-                        ))
+                        .and(
+                                not(Cave::isSmall)
+                                .or(((Predicate<Cave>) Cave::isSmall).and(not(haveAlreadyVisitedCave(path))))
+                        )
         );
     }
 
@@ -58,11 +60,11 @@ public class Cave {
         }
 
         return getValidCaves(path).flatMap(cave -> {
-            List<List<String>> allPaths2 = new ArrayList<>();
+            List<List<String>> allPaths = new ArrayList<>();
             final List<String> pathCopy = cave.addThis(path);
-            allPaths2.add(pathCopy);
-            allPaths2.addAll(cave.getAllPathsToEnd(pathCopy));
-            return allPaths2.stream();
+            allPaths.add(pathCopy);
+            allPaths.addAll(cave.getAllPathsToEnd(pathCopy));
+            return allPaths.stream();
         }).toList();
     }
 
@@ -77,9 +79,6 @@ public class Cave {
     }
 
     public List<List<String>> getAllPathsToEnd2() {
-        if (!isEnd()) {
-            return Collections.emptyList();
-        }
 
         final List<List<String>> paths = new ArrayList<>();
         for (Cave c : connectedTo) {
@@ -100,7 +99,7 @@ public class Cave {
         for (Cave c : connectedTo) {
             if (!this.isEnd() && !c.isStart() &&
                     (!c.isSmall()
-                            || (c.isSmall() && (!path.contains(c.name) || !hasSmallCaveTwice(path))))) {
+                            || (c.isSmall() && !path.contains(c.name)) || (c.isSmall() && !hasSmallCaveTwice(path)))) {
                 final List<String> pathCopy = new ArrayList<>(path);
                 pathCopy.add(c.name);
                 allPaths.add(pathCopy);

@@ -54,7 +54,6 @@ public class Day12Test extends BaseTest {
     }
 
     @Test
-    @Disabled("Failing for some reason")
     public void testPartTwoActualInput() {
 
         assertEquals("137948", getDayInstance(getInput(12)).solvePartTwo());
