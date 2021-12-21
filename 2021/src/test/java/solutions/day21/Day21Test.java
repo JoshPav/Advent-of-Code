@@ -13,13 +13,13 @@ public class Day21Test extends BaseTest {
     @Test
     public void testPartOne() {
 
-        assertEquals(null, getDayInstance(getTestInput()).solvePartOne());
+        assertEquals("739785", getDayInstance(getTestInput()).solvePartOne());
     }
 
     @Test
     public void testPartOneActualInput() {
 
-        assertEquals(null, getDayInstance(getInput(21)).solvePartOne());
+        assertEquals("1185480", getDayInstance(getInput(21)).solvePartOne());
     }
 
     @Test
@@ -35,7 +35,10 @@ public class Day21Test extends BaseTest {
     }
 
     private List<String> getTestInput() {
-        return List.of();
+        return List.of(
+                "Player 1 starting position: 4",
+                "Player 2 starting position: 8"
+        );
     }
 
 }
