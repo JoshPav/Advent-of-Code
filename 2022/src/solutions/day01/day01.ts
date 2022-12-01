@@ -12,8 +12,11 @@ function getElfSnacks(input: string[]): number[][] {
     } else {
       currArr.push(parseInt(curr));
     }
-  }
 
+    if (i === input.length - 1) {
+      snacksArr.push(currArr);
+    }
+  }
   return snacksArr;
 }
 
@@ -32,7 +35,6 @@ export default {
 
     cals.sort((a, b) => b - a);
 
-    console.log(cals);
     return cals
       .sort((a, b) => b - a)
       .slice(0, 3)

@@ -25,7 +25,7 @@ function createFromTemplate() {
 
   if [ ! -f "${toCreate}" ]; then
       echo "No existing file ${fileName}, generating new one..."
-      mkdir -p "${dir}" && cp "${template}" "${toCreate}" && sed -i "" "s|<DAY>|${day}|" "${toCreate}"
+      mkdir -p "${dir}" && cp "${template}" "${toCreate}" && sed -i "" "s/<DAY>/${day}/g" "${toCreate}"
       echo "Generated new test file: ${toCreate}"
   else
     echo "Existing file ${fileName}, ignoring."
@@ -63,7 +63,7 @@ fetchInputForDay () {
 createFromTemplate "${solutionRoot}/day${day}" "day${day}" "${templateRoot}/solution.txt"
 
 # Create test file
-createFromTemplate "${testRoot}/${packageRoot}/day${day}" "day${day}.spec" "{templateRoot}/test.txt"
+createFromTemplate "${solutionRoot}/day${day}" "day${day}.spec" "${templateRoot}/test.txt"
 
 # Attempt to fetch file input data
 fetchInputForDay "${day}" "${packageRoot}/data"

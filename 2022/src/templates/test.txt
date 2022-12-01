@@ -1,26 +1,26 @@
 import { PuzzleExample } from "@src/types/examples";
 import day<DAY> from './day<DAY>'
 
-describe("Day <DAY> examples", () => {
-
-  describe('Part one examples', () => {
-
-    it.each(getPartOneExamples())('', ({ input, expected }) => {
-        expect(day<DAY>.solvePartOne(input).toBe(expected))
-    })
-
-  })
-
-  describe('Part two examples', () => {
-
-    it.each(getPartTwoExamples())('', ({ input, expected }) => {
-        expect(day<DAY>.solvePartTwo(input).toBe(expected))
-    })
-
-  })
-
-})
-
 const getPartOneExamples = (): PuzzleExample[] => [];
 
 const getPartTwoExamples = (): PuzzleExample[] => [];
+
+describe("Day <DAY> examples", () => {
+  describe("Part one examples", () => {
+    it.each(getPartOneExamples())(
+      "should return $expected",
+      ({ input, expected }) => {
+        expect(day<DAY>.solvePartOne(input)).toBe(expected);
+      }
+    );
+  });
+
+  describe("Part two examples", () => {
+    it.each(getPartTwoExamples())(
+      "should return $expected",
+      ({ input, expected }) => {
+        expect(day<DAY>.solvePartTwo(input)).toBe(expected);
+      }
+    );
+  });
+});
