@@ -1,6 +1,6 @@
 import { readFileForDay, readTestFileForDay } from "./shared/fileToArray";
 
-const dayNumber = 0;
+const dayNumber = 1;
 
 solveForDay(dayNumber);
 
