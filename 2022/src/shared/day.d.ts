@@ -1,5 +1,4 @@
-
 export interface Day {
-  solvePartOne: (input: string[]) => string
-  solvePartTwo: (input: string[]) => string
+  solvePartOne: (input: string[]) => string | number;
+  solvePartTwo: (input: string[]) => string | number;
 }

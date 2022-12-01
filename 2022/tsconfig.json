@@ -6,7 +6,11 @@
     "moduleResolution": "node",
     "sourceMap": true,
     "outDir": "dist",
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "baseUrl": "src/",
+    "paths": {
+      "@src/*": ["./*"]
+    }
   },
   "lib": ["es2015"]
 }

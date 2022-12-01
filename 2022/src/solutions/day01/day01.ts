@@ -1,4 +1,4 @@
-import { Day } from "../shared/day";
+import { Day } from "../../shared/day";
 
 function getElfSnacks(input: string[]): number[][] {
   const snacksArr = [];

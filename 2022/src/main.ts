@@ -1,4 +1,4 @@
-import { readFileForDay, readTestFileForDay } from "./shared/fileToArray";
+import { readFileForDay } from "./shared/fileToArray";
 
 const dayNumber = 1;
 
