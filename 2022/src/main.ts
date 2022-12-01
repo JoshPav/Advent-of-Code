@@ -1,17 +1,19 @@
-import { readFileForDay } from "./shared/fileToArray";
+import { readFileForDay } from "./utils/io";
 
-const dayNumber = 1;
-
-solveForDay(dayNumber);
+solveForDay(1);
 
 async function solveForDay(dayNumber: number): Promise<void> {
-  const input = readFileForDay(dayNumber);
+  const paddedDayNumber = String(dayNumber).padStart(2, "0");
 
-  console.log("🎄 Advent of Code 2021 🎁");
-  console.log(`Day ${dayNumber}`);
+  const input = readFileForDay(paddedDayNumber);
+
+  console.log("🎄 Advent of Code 2022 🎁");
+  console.log(`Day ${paddedDayNumber}`);
 
   // Dynamically import the day from the file. This assumes the file and folder are named correctly. And the file exports a default Day
-  const { default: day } = await import(`./day${dayNumber}/day${dayNumber}`);
+  const { default: day } = await import(
+    `./solutions/day${paddedDayNumber}/day${paddedDayNumber}`
+  );
 
   const partOneAnswer = day.solvePartOne(input);
   console.log(`Part 1: ${partOneAnswer}`);

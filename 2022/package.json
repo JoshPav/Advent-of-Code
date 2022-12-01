@@ -5,7 +5,7 @@
   "main": "src/main.ts",
   "scripts": {
     "solve": "ts-node src/main.ts",
-    "test": "test"
+    "test": "jest"
   },
   "author": "JoshPaveley",
   "license": "ISC",

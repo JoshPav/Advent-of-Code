@@ -1,4 +1,4 @@
-import { Day } from "../../shared/day";
+import { Day } from "../../types/day";
 
 export default {
   solvePartOne: (input: string[]): string | number => {

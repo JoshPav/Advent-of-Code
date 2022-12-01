@@ -1,4 +1,4 @@
-import { PuzzleExample } from "@src/types/examples";
+import { PuzzleExample } from "../../types/examples";
 import day<DAY> from './day<DAY>'
 
 const getPartOneExamples = (): PuzzleExample[] => [];

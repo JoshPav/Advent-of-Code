@@ -1,4 +1,6 @@
-import { Day } from "../../shared/day";
+import { max, sum } from "../../utils/reducers";
+import { funcSortDesc } from "../../utils/sort";
+import { Day } from "../../types/day";
 
 function getElfSnacks(input: string[]): number[][] {
   const snacksArr = [];
@@ -21,23 +23,16 @@ function getElfSnacks(input: string[]): number[][] {
 }
 
 function getCaloriesCarried(arr: number[]): number {
-  return arr.reduce((prev, curr) => prev + curr, 0);
+  return arr.reduce(sum, 0);
 }
 
 export default {
   solvePartOne: (input: string[]): string | number => {
-    return getElfSnacks(input)
-      .map(getCaloriesCarried)
-      .reduce((prev, curr) => Math.max(prev, curr), 0);
+    return getElfSnacks(input).map(getCaloriesCarried).reduce(max, 0);
   },
   solvePartTwo: (input: string[]): string | number => {
     const cals = getElfSnacks(input).map(getCaloriesCarried);
 
-    cals.sort((a, b) => b - a);
-
-    return cals
-      .sort((a, b) => b - a)
-      .slice(0, 3)
-      .reduce((prev, curr) => prev + curr, 0);
+    return funcSortDesc(cals).slice(0, 3).reduce(sum, 0);
   },
 } as Day;
