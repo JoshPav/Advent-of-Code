@@ -1,61 +1,97 @@
 import { Day } from "../../types/day";
+import { flip } from "../../utils/collections";
 import { sum } from "../../utils/reducers";
 
-const choices: Record<string, number> = {
-  A: 1,
-  B: 2,
-  C: 3,
-  X: 1,
-  Y: 2,
-  Z: 3,
+enum RpsMove {
+  Rock = 1,
+  Paper = 2,
+  Scissors = 3,
+}
+
+enum RpsOutcome {
+  Win = 6,
+  Draw = 3,
+  Loss = 0,
+}
+
+const losingMappings: Record<RpsMove, RpsMove> = {
+  [RpsMove.Rock]: RpsMove.Scissors,
+  [RpsMove.Paper]: RpsMove.Rock,
+  [RpsMove.Scissors]: RpsMove.Paper,
 };
 
-const parseStrategyGuide = (line: string): [number, number] => {
-  const [opp, me] = line.split(" ");
-  return [choices[opp], choices[me]];
+const winningMappings: Record<RpsMove, RpsMove> = {
+  [RpsMove.Scissors]: RpsMove.Rock,
+  [RpsMove.Rock]: RpsMove.Paper,
+  [RpsMove.Paper]: RpsMove.Scissors,
 };
 
-const getPointsForOutcome = (oppMove: number, myMove: number): number => {
-  if (oppMove === myMove) return 3;
-
-  // Wrap around
-  if (myMove == 3 && oppMove == 1) return 0;
-
-  if (myMove > oppMove || (oppMove == 3 && myMove === 1)) return 6;
-
-  return 0;
+const encryptionMappings: Record<string, RpsMove> = {
+  A: RpsMove.Rock,
+  B: RpsMove.Paper,
+  C: RpsMove.Scissors,
+  X: RpsMove.Rock,
+  Y: RpsMove.Paper,
+  Z: RpsMove.Scissors,
 };
 
-const getRoundScore = (oppMove: number, myMove: number): number =>
-  getPointsForOutcome(oppMove, myMove) + myMove;
+const encryptedOutcomeMappings: Record<string, RpsOutcome> = {
+  X: RpsOutcome.Loss,
+  Y: RpsOutcome.Draw,
+  Z: RpsOutcome.Win,
+};
 
-const getMyMove = (oppMove: number, outcome: number): number => {
-  if (outcome === 3) {
-    if (oppMove === 3) return 1;
+const parseDesiredMoveStrategyGuide = (round: string): [RpsMove, RpsMove] => {
+  const [opp, me] = round.split(" ");
+  return [encryptionMappings[opp], encryptionMappings[me]];
+};
 
-    return oppMove + 1;
+const parseDesiredOutcomeStrategyGuide = (
+  round: string
+): [RpsMove, RpsOutcome] => {
+  const [opp, me] = round.split(" ");
+  return [encryptionMappings[opp], encryptedOutcomeMappings[me]];
+};
+
+const getPointsForOutcome = (oppMove: RpsMove, myMove: RpsMove): number => {
+  console.log(`${oppMove} vs ${myMove}`);
+
+  if (oppMove === myMove) return RpsOutcome.Draw;
+
+  return winningMappings[myMove] === oppMove ? RpsOutcome.Loss : RpsOutcome.Win;
+};
+
+const getRoundScore = (oppMove: RpsMove, myMove: RpsMove): number => {
+  const x = getPointsForOutcome(oppMove, myMove) + myMove;
+  console.log(x);
+  return x;
+};
+
+const getMyMove = (oppMove: RpsMove, outcome: RpsOutcome): RpsMove => {
+  console.log("opo " + oppMove);
+  switch (outcome) {
+    case RpsOutcome.Win:
+      return winningMappings[oppMove];
+    case RpsOutcome.Draw:
+      return oppMove;
+    case RpsOutcome.Loss:
+      return losingMappings[oppMove];
   }
-
-  if (outcome === 2) {
-    return oppMove;
-  }
-
-  if (oppMove === 1) return 3;
-
-  return oppMove - 1;
 };
 
 export default {
   solvePartOne: (strategyGuide: string[]): string | number => {
     return strategyGuide
-      .map(parseStrategyGuide)
+      .map(parseDesiredMoveStrategyGuide)
       .map(([opp, me]) => getRoundScore(opp, me))
       .reduce(sum, 0);
   },
   solvePartTwo: (strategyGuide: string[]): string | number => {
     return strategyGuide
-      .map(parseStrategyGuide)
-      .map(([opp, outcome]) => getRoundScore(opp, getMyMove(opp, outcome)))
+      .map(parseDesiredOutcomeStrategyGuide)
+      .map(([oppMove, desiredOutcome]) =>
+        getRoundScore(oppMove, getMyMove(oppMove, desiredOutcome))
+      )
       .reduce(sum, 0);
   },
 } as Day;
