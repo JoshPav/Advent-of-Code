@@ -1,5 +1,4 @@
 import { Day } from "../../types/day";
-import { flip } from "../../utils/collections";
 import { sum } from "../../utils/reducers";
 
 enum RpsMove {
@@ -54,21 +53,15 @@ const parseDesiredOutcomeStrategyGuide = (
 };
 
 const getPointsForOutcome = (oppMove: RpsMove, myMove: RpsMove): number => {
-  console.log(`${oppMove} vs ${myMove}`);
-
   if (oppMove === myMove) return RpsOutcome.Draw;
 
   return winningMappings[myMove] === oppMove ? RpsOutcome.Loss : RpsOutcome.Win;
 };
 
-const getRoundScore = (oppMove: RpsMove, myMove: RpsMove): number => {
-  const x = getPointsForOutcome(oppMove, myMove) + myMove;
-  console.log(x);
-  return x;
-};
+const getRoundScore = (oppMove: RpsMove, myMove: RpsMove): number =>
+  getPointsForOutcome(oppMove, myMove) + myMove;
 
 const getMyMove = (oppMove: RpsMove, outcome: RpsOutcome): RpsMove => {
-  console.log("opo " + oppMove);
   switch (outcome) {
     case RpsOutcome.Win:
       return winningMappings[oppMove];
