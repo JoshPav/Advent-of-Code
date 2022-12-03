@@ -1,18 +1,8 @@
 import { Day } from "../../types/day";
-import { intersection } from "../../utils/collections";
+import { chunk, intersection } from "../../utils/collections";
 import { sum } from "../../utils/reducers";
 
-function getRucksackGroups(rucksacks: string[]): string[][] {
-  const groups: string[][] = [];
-
-  const groupSize = 3;
-
-  for (let i = 0; i < rucksacks.length; i += groupSize) {
-    groups.push(rucksacks.slice(i, i + groupSize));
-  }
-
-  return groups;
-}
+const getRucksackGroups = (rucksacks: string[]) => chunk(rucksacks, 3);
 
 function getRucksackContents(rucksack: string): string[] {
   const itemsPerCompartment = rucksack.length / 2;
@@ -46,8 +36,6 @@ export default {
       )
       .flatMap((rucksack) => rucksack.map(getPriority))
       .reduce(sum, 0);
-
-    // return "";
   },
   solvePartTwo: (rucksacks: string[]): string | number => {
     return getRucksackGroups(rucksacks)
