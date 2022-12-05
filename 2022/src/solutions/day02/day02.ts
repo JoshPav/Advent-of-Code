@@ -1,4 +1,5 @@
 import { Day } from "../../types/day";
+import { parseSplitPair } from "../../utils/parsing";
 import { sum } from "../../utils/reducers";
 
 enum RpsMove {
@@ -40,17 +41,19 @@ const encryptedOutcomeMappings: Record<string, RpsOutcome> = {
   Z: RpsOutcome.Win,
 };
 
-const parseDesiredMoveStrategyGuide = (round: string): [RpsMove, RpsMove] => {
-  const [opp, me] = round.split(" ");
-  return [encryptionMappings[opp], encryptionMappings[me]];
-};
+const parseDesiredMoveStrategyGuide = (round: string): [RpsMove, RpsMove] =>
+  parseSplitPair(round, " ", (opp, me) => [
+    encryptionMappings[opp],
+    encryptionMappings[me],
+  ]);
 
 const parseDesiredOutcomeStrategyGuide = (
   round: string
-): [RpsMove, RpsOutcome] => {
-  const [opp, me] = round.split(" ");
-  return [encryptionMappings[opp], encryptedOutcomeMappings[me]];
-};
+): [RpsMove, RpsOutcome] =>
+  parseSplitPair(round, " ", (opp, me) => [
+    encryptionMappings[opp],
+    encryptedOutcomeMappings[me],
+  ]);
 
 const getPointsForOutcome = (oppMove: RpsMove, myMove: RpsMove): number => {
   if (oppMove === myMove) return RpsOutcome.Draw;

@@ -1,51 +1,34 @@
 import { Day } from "../../types/day";
-
-type SectionRange = {
-  start: number;
-  end: number;
-};
+import { parseSplitPair } from "../../utils/parsing";
+import { Range } from "../../types/common";
+import { isRangeWithin } from "../../utils/range";
 
 type SectionAssignment = {
-  elfOne: SectionRange;
-  elfTwo: SectionRange;
+  elfOne: Range;
+  elfTwo: Range;
 };
-const parseSectionRange = (sectionRange: string): SectionRange => {
-  const [start, end] = sectionRange.split("-");
-  return {
+
+const parseSectionRange = (range: string): Range =>
+  parseSplitPair(range, "-", (start, end) => ({
     start: parseInt(start),
     end: parseInt(end),
-  };
-};
+  }));
 
 const parseSectionAssignments = (
   sectionAssignments: string
-): SectionAssignment => {
-  const [elfOneRange, elfTwoRange] = sectionAssignments.split(",");
-
-  return {
-    elfOne: parseSectionRange(elfOneRange),
-    elfTwo: parseSectionRange(elfTwoRange),
-  };
-};
-
-const isSectionWithin = (
-  toCheck: SectionRange,
-  section: SectionRange
-): boolean => {
-  return section.start <= toCheck.start && toCheck.end <= section.end;
-};
+): SectionAssignment =>
+  parseSplitPair(sectionAssignments, ",", (rangeOne, rangeTwo) => ({
+    elfOne: parseSectionRange(rangeOne),
+    elfTwo: parseSectionRange(rangeTwo),
+  }));
 
 const doSectionsFullyOverlap = ({
   elfOne,
   elfTwo,
-}: SectionAssignment): boolean => {
-  return isSectionWithin(elfOne, elfTwo) || isSectionWithin(elfTwo, elfOne);
-};
+}: SectionAssignment): boolean =>
+  isRangeWithin(elfOne, elfTwo) || isRangeWithin(elfTwo, elfOne);
 
-const doesSectionOverlap = (
-  toCheck: SectionRange,
-  section: SectionRange
-): boolean => {
+const doesSectionOverlap = (toCheck: Range, section: Range): boolean => {
   return (
     (toCheck.start >= section.start && toCheck.end <= section.start) ||
     (toCheck.end >= section.start && toCheck.end <= section.end)
