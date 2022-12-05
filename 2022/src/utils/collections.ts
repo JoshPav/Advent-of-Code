@@ -15,3 +15,14 @@ export const chunk = <T>(toChunk: T[], chunkSize: number): T[][] => {
 
   return chunks;
 };
+
+export const buildArray = <T>(size: number, getDefaultVal: () => T): T[] => {
+  const arr = [];
+
+  for (let i = 0; i < size; i++) {
+    arr.push(getDefaultVal());
+  }
+  return arr;
+};
+
+export const getLast = <T>(arr: T[]): T => arr[arr.length - 1];
