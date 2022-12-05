@@ -1,11 +1,11 @@
 import { readFileForDay } from "./utils/io";
 
-solveForDay(4);
+solveForDay(5);
 
 async function solveForDay(dayNumber: number): Promise<void> {
   const paddedDayNumber = String(dayNumber).padStart(2, "0");
 
-  const input = readFileForDay(paddedDayNumber).filter((line) => line !== "");
+  const input = readFileForDay(paddedDayNumber);
 
   console.log("🎄 Advent of Code 2022 🎁");
   console.log(`Day ${paddedDayNumber}`);
