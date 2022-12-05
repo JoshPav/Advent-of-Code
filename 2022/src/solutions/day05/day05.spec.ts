@@ -18,7 +18,12 @@ const getPartOneExamples = (): PuzzleExample[] => [
   },
 ];
 
-const getPartTwoExamples = (): PuzzleExample[] => [];
+const getPartTwoExamples = (): PuzzleExample[] => [
+  {
+    input: getPartOneExamples()[0].input,
+    expected: "MCD",
+  },
+];
 
 describe("Day 05 examples", () => {
   describe("Part one examples", () => {
