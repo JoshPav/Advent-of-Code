@@ -1,6 +1,6 @@
 import { Day } from "../../types/day";
 import { buildArray, getLast } from "../../utils/collections";
-import { splitOnEmptyLines } from "../../utils/parsing";
+import { chunkStr, splitOnEmptyLines } from "../../utils/parsing";
 import { concat } from "../../utils/reducers";
 
 type Instruction = {
@@ -16,11 +16,11 @@ type CrateMoverInstructionProcessor = (
 
 const parseInput = (
   input: string[]
-): { crates: string[][]; instructions: Instruction[] } => {
+): { stacks: string[][]; instructions: Instruction[] } => {
   const [crateInput, instructionInput] = splitOnEmptyLines(input);
 
   return {
-    crates: parseCrateInput(crateInput),
+    stacks: parseCrateInput(crateInput),
     instructions: instructionInput.map(parseInstruction),
   };
 };
@@ -34,27 +34,32 @@ const parseInstruction = (instruction: string): Instruction => {
   };
 };
 
+const getCrateLevels = (crateInput: string[]): string[] =>
+  [...crateInput.slice(0, crateInput.length - 1)].reverse();
+
+const getCratesOnLevel = (
+  crateLevel: string
+): { crateName: string; stack: number }[] =>
+  chunkStr(crateLevel, 4)
+    .map((crate, index) => ({
+      crateName: crate.trim(),
+      stack: index,
+    }))
+    .filter(({ crateName: crate }) => crate !== "");
+
 const parseCrateInput = (crateInput: string[]): string[][] => {
   const crateCount = crateInput[crateInput.length - 1]
     .trim()
     .split(/\s+/g).length;
 
-  const crates = buildArray<string[]>(crateCount, () => []);
+  const stacks = buildArray<string[]>(crateCount, () => []);
 
-  [...crateInput.slice(0, crateInput.length - 1)]
-    .reverse()
-    .forEach((crateLevel) => {
-      for (let i = 0; i < crateLevel.length; i += 4) {
-        const crateName = crateLevel
-          .slice(i, Math.min(i + 4, crateLevel.length))
-          .trim();
-
-        if (crateName !== "") {
-          crates[Math.floor(i / 4)].push(crateName.match(/([A-Z])/)[0]);
-        }
-      }
-    });
-  return crates;
+  getCrateLevels(crateInput).forEach((crateLevel) => {
+    getCratesOnLevel(crateLevel).forEach((crate) =>
+      stacks[crate.stack].push(crate.crateName.match(/([A-Z])/)[0])
+    );
+  });
+  return stacks;
 };
 
 const applyCrateMoverInstruction = (
@@ -88,13 +93,13 @@ const rearrangeCrates = (
   input: string[],
   processor: CrateMoverInstructionProcessor
 ): string => {
-  const { crates, instructions } = parseInput(input);
+  const { stacks, instructions } = parseInput(input);
 
   instructions.forEach((instruction) => {
-    processor(instruction, crates);
+    processor(instruction, stacks);
   });
 
-  return getCrateOrder(crates);
+  return getCrateOrder(stacks);
 };
 
 export default {

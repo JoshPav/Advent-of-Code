@@ -1,6 +1,6 @@
 import { PuzzleExample } from "../../types/examples";
 import { readFileForDay } from "../../utils/io";
-import { withSameInput } from "../../utils/test";
+import { withSameInput } from "../../utils/testUtils";
 import day05 from "./day05";
 
 const getPartOneExamples = (): PuzzleExample[] => [
