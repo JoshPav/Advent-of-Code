@@ -26,3 +26,10 @@ export const buildArray = <T>(size: number, getDefaultVal: () => T): T[] => {
 };
 
 export const getLast = <T>(arr: T[]): T => arr[arr.length - 1];
+
+export const isDistinct = <T>(arr: T[]): boolean =>
+  arr.length === new Set(arr).size;
+
+export const addWithCap = <T>(arr: T[], item: T, cap: number): T[] => {
+  return [...arr.slice(-1 * (cap - 1)), item];
+};
