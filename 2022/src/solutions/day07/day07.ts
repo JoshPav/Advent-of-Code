@@ -121,13 +121,11 @@ const buildFileSystem = (commands: Command[]): Folder => {
 function getDirectorySize(dirSizes: number[], folder: Folder): number {
   const filtered = Object.entries(folder).filter(([name]) => name !== "..");
 
-  const mapped = filtered.map(([_, dirItem]) => {
-    if (dirItem.size) {
-      // Is a file
-      return dirItem.size as number;
-    }
-    return getDirectorySize(dirSizes, dirItem as Folder);
-  });
+  const mapped = filtered.map(([_, dirItem]) =>
+    dirItem.size
+      ? (dirItem.size as number)
+      : getDirectorySize(dirSizes, dirItem as Folder)
+  );
 
   const summed = mapped.reduce(sum, 0);
   dirSizes.push(summed);
@@ -148,62 +146,24 @@ export default {
     const sizeLimitApplied = dirSizes.filter((size) => size <= sizeLimit);
 
     return sizeLimitApplied.reduce(sum, 0);
-
-    // console.log(fileSystem);
-    // let currentDir = [];
-
-    // commands.forEach(({ command, commandArgs, output }, i) => {
-    //   if (command === "cd") {
-    //     if (commandArgs === "..") {
-    //       currentDir.pop();
-    //     } else {
-    //       currentDir.push(commandArgs);
-    //       if (!fileSystem[commandArgs]) {
-    //         fileSystem[commandArgs] = [];
-    //       }
-    //     }
-    //   }
-
-    //   if (command === "ls") {
-    //     fileSystem[currentDir[currentDir.length - 1]].push(...output);
-    //   }
-    // });
-
-    // console.log(fileSystem);
-
-    // const alreadySeen: Record<string, number> = {};
-
-    // const totalFolders = Object.keys(fileSystem).length;
-
-    // while (Object.keys(alreadySeen).length < totalFolders) {
-    //   // console.log(`alreadySeen ${Object.keys(alreadySeen).length}`);
-    //   // console.log(`Total ${totalFolders}`);
-
-    //   Object.entries(fileSystem)
-    //     .filter(([name]) => !alreadySeen[name])
-    //     .forEach(([name, contents]) => {
-    //       const subDirectories = getDirNames(contents);
-
-    //       console.log(Object.keys(alreadySeen).length);
-
-    //       if (
-    //         subDirectories.length == 0 ||
-    //         subDirectories.every((dir) => alreadySeen[dir])
-    //       ) {
-    //         const size = getDirSize(alreadySeen, contents);
-    //         alreadySeen[name] = size;
-    //         console.log(`${name}: ${size}`);
-    //       }
-    //     });
-    // }
-
-    // return Object.values(alreadySeen)
-    //   .filter((dirSize) => dirSize <= 100000)
-    //   .reduce(sum, 0);
-
-    return "";
   },
   solvePartTwo: (input: string[]): string | number => {
-    return "";
+    const totalSize = 70000000;
+    const totalSpaceNeeded = 30000000;
+
+    const commands = splitIntoCommands(input);
+
+    const fileSystem = buildFileSystem(commands);
+
+    const dirSizes: number[] = [];
+
+    const actualSize = getDirectorySize(dirSizes, fileSystem);
+
+    const spaceRemaining = totalSize - actualSize;
+    const spaceNeeded = totalSpaceNeeded - spaceRemaining;
+
+    dirSizes.sort((a: number, b: number) => a - b);
+
+    return dirSizes.find((folderSize) => folderSize >= spaceNeeded);
   },
 } as Day;
