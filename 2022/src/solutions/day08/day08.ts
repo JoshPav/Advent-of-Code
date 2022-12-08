@@ -94,32 +94,40 @@ const isVisible = ({ visibility }: Tree): boolean => {
   );
 };
 
+const parseGrid = (input: string[]): Tree[][] => {
+  return input.map((line) =>
+    line.split("").map((treeHeight) => ({
+      height: parseInt(treeHeight),
+      visibility: { left: false, top: false, right: false, bottom: false },
+    }))
+  );
+};
+
+const getProcessedGrid = (input: string[]): Tree[][] => {
+  let treeGrid: Tree[][] = parseGrid(input);
+
+  treeGrid.forEach((row) => {
+    processRow(row, "left", "right");
+  });
+
+  treeGrid = flipGrid(treeGrid);
+
+  treeGrid.forEach((treeCol) => {
+    processRow(treeCol, "top", "bottom");
+  });
+
+  return flipGrid(treeGrid);
+};
+
 export default {
   solvePartOne: (input: string[]): string | number => {
-    const treeGrid: Tree[][] = input.map((line) =>
-      line.split("").map((treeHeight) => ({
-        height: parseInt(treeHeight),
-        visibility: { left: false, top: false, right: false, bottom: false },
-      }))
-    );
-
-    treeGrid.forEach((row) => {
-      processRow(row, "left", "right");
-    });
-
-    const flippedGrid = flipGrid(treeGrid);
-
-    flippedGrid.forEach((treeCol) => {
-      processRow(treeCol, "top", "bottom");
-    });
-
-    const reflipped = flipGrid(flippedGrid);
-
-    return reflipped
+    return getProcessedGrid(input)
       .flatMap((col) => col.map((tree) => tree))
       .filter((tree) => isVisible(tree)).length;
   },
   solvePartTwo: (input: string[]): string | number => {
-    return "";
+    return getProcessedGrid(input)
+      .flatMap((col) => col.map((tree) => tree))
+      .filter((tree) => isVisible(tree)).length;
   },
 } as Day;
