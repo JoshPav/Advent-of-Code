@@ -25,6 +25,22 @@ export const buildArray = <T>(size: number, getDefaultVal: () => T): T[] => {
   return arr;
 };
 
+export const flipGrid = <T>(arr: T[][]): T[][] => {
+  const columns: T[][] = [];
+
+  for (let i = 0; i < arr[0].length; i++) {
+    const column: T[] = [];
+
+    for (let j = 0; j < arr.length; j++) {
+      column.push(arr[j][i]);
+    }
+
+    columns.push(column);
+  }
+
+  return columns;
+};
+
 export const getLast = <T>(arr: T[]): T => arr[arr.length - 1];
 
 export const isDistinct = <T>(arr: T[]): boolean =>
