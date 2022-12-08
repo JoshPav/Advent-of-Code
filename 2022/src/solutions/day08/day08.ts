@@ -13,22 +13,6 @@ type Tree = {
   visibility: Visibility;
 };
 
-const getOutput = (trees: Tree[][]): string => {
-  return trees
-    .map((row) => row.map((tree) => (isVisible(tree) ? "Y" : "N")).join(" "))
-    .join("\n\n");
-};
-
-const getHeights = (trees: Tree[][]): string => {
-  return trees
-    .map((row) => row.map((tree) => tree.height).join(" "))
-    .join("\n\n");
-};
-
-const getNums = (trees: number[][]): string => {
-  return trees.map((row) => row.map((num) => num).join(" ")).join("\n\n");
-};
-
 const processRow = (
   treeRow: Tree[],
   start: "left" | "top",
@@ -58,38 +42,6 @@ const processRow = (
   }
 
   return treeRow;
-};
-
-const processRow2 = (
-  visibleTrees: Partial<Visibility>[],
-  treeRow: number[],
-  start: "left" | "top",
-  end: "right" | "bottom"
-): Partial<Visibility>[] => {
-  let startI = 0;
-  let endI = treeRow.length - 1;
-
-  let tallestFromStart = 0;
-  let tallestFromEnd = 0;
-
-  while (startI < treeRow.length && endI >= 0) {
-    const treeFromStart = treeRow[startI];
-    if (treeFromStart > tallestFromStart) {
-      tallestFromStart = treeFromStart;
-      visibleTrees[startI][start] = true;
-    }
-
-    const treeFromEnd = treeRow[endI];
-    if (treeFromEnd > tallestFromEnd) {
-      tallestFromEnd = treeFromEnd;
-      visibleTrees[endI][end] = true;
-    }
-
-    startI++;
-    endI++;
-  }
-
-  return visibleTrees;
 };
 
 const isVisible = ({ visibility }: Tree): boolean => {
@@ -194,8 +146,6 @@ export default {
 
       allScenicScores.push(rowScenicScores);
     }
-
-    console.log(getNums(allScenicScores));
 
     return allScenicScores
       .flatMap((row) => row)
