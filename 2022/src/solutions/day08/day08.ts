@@ -25,6 +25,10 @@ const getHeights = (trees: Tree[][]): string => {
     .join("\n\n");
 };
 
+const getNums = (trees: number[][]): string => {
+  return trees.map((row) => row.map((num) => num).join(" ")).join("\n\n");
+};
+
 const processRow = (
   treeRow: Tree[],
   start: "left" | "top",
@@ -119,6 +123,54 @@ const getProcessedGrid = (input: string[]): Tree[][] => {
   return flipGrid(treeGrid);
 };
 
+const getScenicScore = (trees: Tree[][], row: number, col: number): number => {
+  // Get score to left
+
+  const treeHeight = trees[row][col].height;
+
+  let ssL = 0;
+  for (let i = col - 1; i >= 0; i--) {
+    if (trees[row][i].height < treeHeight) {
+      ssL++;
+    } else {
+      ssL++;
+      break;
+    }
+  }
+
+  let ssR = 0;
+  for (let i = col + 1; i < trees[row].length; i++) {
+    if (trees[row][i].height < treeHeight) {
+      ssR++;
+    } else {
+      ssR++;
+      break;
+    }
+  }
+
+  let ssT = 0;
+  for (let i = row - 1; i >= 0; i--) {
+    if (trees[i][col].height < treeHeight) {
+      ssT++;
+    } else {
+      ssT++;
+      break;
+    }
+  }
+
+  let ssB = 0;
+  for (let i = row + 1; i < trees.length; i++) {
+    if (trees[i][col].height < treeHeight) {
+      ssB++;
+    } else {
+      ssB++;
+      break;
+    }
+  }
+
+  return ssB * ssL * ssR * ssT;
+};
+
 export default {
   solvePartOne: (input: string[]): string | number => {
     return getProcessedGrid(input)
@@ -126,8 +178,27 @@ export default {
       .filter((tree) => isVisible(tree)).length;
   },
   solvePartTwo: (input: string[]): string | number => {
-    return getProcessedGrid(input)
-      .flatMap((col) => col.map((tree) => tree))
-      .filter((tree) => isVisible(tree)).length;
+    const processedTrees = getProcessedGrid(input);
+
+    const allScenicScores: number[][] = [];
+
+    for (let i = 0; i < processedTrees.length; i++) {
+      const treeRow = processedTrees[i];
+
+      const rowScenicScores: number[] = [];
+
+      for (let j = 0; j < treeRow.length; j++) {
+        const element = treeRow[j];
+        rowScenicScores.push(getScenicScore(processedTrees, i, j));
+      }
+
+      allScenicScores.push(rowScenicScores);
+    }
+
+    console.log(getNums(allScenicScores));
+
+    return allScenicScores
+      .flatMap((row) => row)
+      .reduce((prev, curr) => Math.max(prev, curr), 0);
   },
 } as Day;
