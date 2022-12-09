@@ -18,6 +18,12 @@ type RopeMotion = {
   amount: number;
 };
 
+type RopeKnot = {
+  position: Point;
+  knotBehind?: RopeKnot;
+  logPositions?: boolean;
+};
+
 const parseMotion = (motion: string): RopeMotion => {
   const [dir, amount] = motion.split(" ");
   return {
@@ -70,56 +76,119 @@ const toSingleStepMotions = ({
   return singleStepMotions;
 };
 
+const applyMotionToRope = (
+  head: RopeKnot,
+  motion: RopeMotion,
+  tailPositions: Point[]
+) => {
+  console.log("called");
+
+  head.position = applyMotion(head.position, motion);
+
+  const tail = head.knotBehind;
+
+  if (tail && !isTouching(head.position, tail.position)) {
+    // Move tail
+    if (
+      !(
+        isSameRow(head.position, tail.position) &&
+        isSameCol(head.position, tail.position)
+      )
+    ) {
+      if (
+        motion.direction === Direction.DOWN ||
+        motion.direction === Direction.UP
+      ) {
+        // We need to move Left or right
+        const diff = head.position.x - tail.position.x;
+
+        applyMotionToRope(
+          head.knotBehind,
+          {
+            direction: Direction.RIGHT,
+            amount: diff,
+          },
+          tailPositions
+        );
+      } else {
+        // We need to move Left or right
+        const diff = head.position.y - tail.position.y;
+        applyMotionToRope(
+          head.knotBehind,
+          {
+            direction: Direction.UP,
+            amount: diff,
+          },
+          tailPositions
+        );
+      }
+
+      // We are diagonally off so need to adjust
+      applyMotionToRope(head.knotBehind, motion, tailPositions);
+
+      if (head.knotBehind.logPositions) {
+        console.log("poo");
+
+        tailPositions.push(head.knotBehind.position);
+      }
+    } else {
+      applyMotionToRope(head.knotBehind, motion, tailPositions);
+
+      if (head.knotBehind.logPositions) {
+        console.log("poo");
+
+        tailPositions.push(head.knotBehind.position);
+      }
+    }
+  }
+};
+
+const buildRopeWithKnots = (numberOfKnots: number): RopeKnot => {
+  const head: RopeKnot = {
+    position: { x: 0, y: 0 },
+  };
+
+  let currKnot: RopeKnot = head;
+
+  for (let index = 0; index < numberOfKnots - 1; index++) {
+    currKnot.knotBehind = {
+      position: {
+        x: 0,
+        y: 0,
+      },
+    };
+
+    if (index === numberOfKnots - 2) {
+      currKnot.knotBehind.logPositions = true;
+    } else {
+      currKnot = currKnot.knotBehind;
+    }
+  }
+
+  return head;
+};
+
 export default {
   solvePartOne: (input: string[]): string | number => {
     const motions = input.map(parseMotion);
 
-    let headPoint = { x: 0, y: 0 };
-    let tailPoint = { x: 0, y: 0 };
+    // let head: RopeKnot = {
+    //   position: { x: 0, y: 0 },
+    //   knotBehind: {
+    //     position: { x: 0, y: 0 },
+    //     logPositions: true,
+    //   },
+    // };
 
-    const tailPositions = [tailPoint];
+    const head = buildRopeWithKnots(2);
+
+    const tailPositions = [{ ...head.knotBehind.position }];
 
     motions.forEach((motion) => {
       const singleStepMotions = toSingleStepMotions(motion);
 
       singleStepMotions.forEach((singleMotion) => {
-        headPoint = applyMotion(headPoint, singleMotion);
-
-        if (!isTouching(headPoint, tailPoint)) {
-          // Move tail
-          if (
-            !(
-              isSameRow(headPoint, tailPoint) && isSameCol(headPoint, tailPoint)
-            )
-          ) {
-            if (
-              singleMotion.direction === Direction.DOWN ||
-              singleMotion.direction === Direction.UP
-            ) {
-              // We need to move Left or right
-              const diff = headPoint.x - tailPoint.x;
-              tailPoint = applyMotion(tailPoint, {
-                direction: Direction.RIGHT,
-                amount: diff,
-              });
-            } else {
-              // We need to move Left or right
-              const diff = headPoint.y - tailPoint.y;
-              tailPoint = applyMotion(tailPoint, {
-                direction: Direction.UP,
-                amount: diff,
-              });
-            }
-
-            // We are diagonally off so need to adjust
-            tailPoint = applyMotion(tailPoint, singleMotion);
-            tailPositions.push(tailPoint);
-          } else {
-            // Will always want to do at least the same
-            tailPoint = applyMotion(tailPoint, singleMotion);
-            tailPositions.push(tailPoint);
-          }
-        }
+        applyMotionToRope(head, singleMotion, tailPositions);
       });
     });
 
