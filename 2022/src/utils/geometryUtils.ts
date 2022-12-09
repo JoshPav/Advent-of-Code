@@ -18,6 +18,25 @@ export const isSameCol = ({ x: aX }: Point, { x: bX }: Point): boolean => {
   return aX === bX;
 };
 
+export const clampVector = (
+  { x, y }: Vector,
+  min: number = -1,
+  max: number = 1
+): Point => {
+  return {
+    x: Math.min(Math.max(x, min), max),
+    y: Math.min(Math.max(y, min), max),
+  };
+};
+
+export const getDistances = (
+  { x: aX, y: aY }: Point,
+  { x: bX, y: bY }: Point
+): Vector => ({
+  x: Math.abs(aX - bX),
+  y: Math.abs(aY - bY),
+});
+
 export const applyVector = (
   { x, y }: Point,
   { x: xDir, y: yDir }: Vector
