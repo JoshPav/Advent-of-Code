@@ -1,5 +1,15 @@
+import { groupEnd } from "console";
 import { parse } from "path";
 import { Day } from "../../types/day";
+import { Vector, Point } from "../../types/geometry";
+import {
+  applyVector,
+  areAdjacent,
+  getManhattanDistance,
+  isSameCol,
+  isSameRow,
+  origin,
+} from "../../utils/geometryUtils";
 
 enum Direction {
   UP = "U",
@@ -8,195 +18,180 @@ enum Direction {
   LEFT = "L",
 }
 
-type Point = {
-  x: number;
-  y: number;
-};
-
-type RopeMotion = {
-  direction: Direction;
-  amount: number;
+const directionVectors: Record<Direction, Vector> = {
+  U: { x: 0, y: 1 },
+  R: { x: 1, y: 0 },
+  D: { x: 0, y: -1 },
+  L: { x: -1, y: 0 },
 };
 
 type RopeKnot = {
   position: Point;
   knotBehind?: RopeKnot;
-  logPositions?: boolean;
+  visited: Point[];
 };
 
-const parseMotion = (motion: string): RopeMotion => {
+const parseMotion = (motion: string): Vector[] => {
   const [dir, amount] = motion.split(" ");
-  return {
-    amount: parseInt(amount),
-    direction: dir as Direction,
-  };
+  return toSingleStepVectors(dir as Direction, parseInt(amount));
 };
 
-const isTouching = (a: Point, b: Point): boolean => {
-  const xDiff = Math.abs(a.x - b.x);
-  const yDiff = Math.abs(a.y - b.y);
-
-  return xDiff <= 1 && yDiff <= 1;
-};
-
-const isSameRow = ({ y: aY }: Point, { y: bY }: Point): boolean => {
-  return aY === bY;
-};
-
-const isSameCol = ({ x: aX }: Point, { x: bX }: Point): boolean => {
-  return aX === bX;
-};
-
-const applyMotion = (
-  { x, y }: Point,
-  { amount, direction }: RopeMotion
-): Point => {
-  switch (direction) {
-    case Direction.UP:
-      return { x, y: y + amount };
-    case Direction.DOWN:
-      return { x, y: y - amount };
-    case Direction.RIGHT:
-      return { x: x + amount, y };
-    case Direction.LEFT:
-      return { x: x - amount, y };
-  }
-};
-
-const toSingleStepMotions = ({
-  amount,
-  direction,
-}: RopeMotion): RopeMotion[] => {
-  const singleStepMotions: RopeMotion[] = [];
+const toSingleStepVectors = (
+  direction: Direction,
+  amount: number
+): Vector[] => {
+  const vectors: Vector[] = [];
 
   for (let i = 0; i < amount; i++) {
-    singleStepMotions.push({ amount: 1, direction });
+    vectors.push(directionVectors[direction]);
   }
 
-  return singleStepMotions;
+  return vectors;
 };
 
-const applyMotionToRope = (
-  head: RopeKnot,
-  motion: RopeMotion,
-  tailPositions: Point[]
-) => {
-  console.log("called");
+const isSameRowOrCol = (a: Point, b: Point): boolean => {
+  return isSameRow(a, b) || isSameCol(a, b);
+};
 
-  head.position = applyMotion(head.position, motion);
+const applyMotionToRope = (head: RopeKnot, motion: Vector) => {
+  head.position = applyVector(head.position, motion);
+  head.visited.push(head.position);
 
   const tail = head.knotBehind;
 
-  if (tail && !isTouching(head.position, tail.position)) {
-    // Move tail
+  if (tail) {
     if (
-      !(
-        isSameRow(head.position, tail.position) &&
-        isSameCol(head.position, tail.position)
-      )
+      getManhattanDistance(head.position, tail.position) == 2 &&
+      isSameRowOrCol(head.position, tail.position)
     ) {
-      if (
-        motion.direction === Direction.DOWN ||
-        motion.direction === Direction.UP
-      ) {
-        // We need to move Left or right
-        const diff = head.position.x - tail.position.x;
+      applyMotionToRope(tail, motion);
+      return;
+    }
 
-        applyMotionToRope(
-          head.knotBehind,
-          {
-            direction: Direction.RIGHT,
-            amount: diff,
-          },
-          tailPositions
-        );
-      } else {
-        // We need to move Left or right
-        const diff = head.position.y - tail.position.y;
-        applyMotionToRope(
-          head.knotBehind,
-          {
-            direction: Direction.UP,
-            amount: diff,
-          },
-          tailPositions
-        );
-      }
+    // Move diagonally
+    if (
+      !areAdjacent(head.position, tail.position) &&
+      !isSameRowOrCol(head.position, tail.position)
+    ) {
+      // Make this better
 
-      // We are diagonally off so need to adjust
-      applyMotionToRope(head.knotBehind, motion, tailPositions);
+      const xDiff = head.position.x - tail.position.x;
+      const yDiff = head.position.y - tail.position.y;
 
-      if (head.knotBehind.logPositions) {
-        console.log("poo");
+      const vectorToApply = {
+        x: motion.x + (xDiff % 2),
+        y: motion.y + (yDiff % 2),
+      };
 
-        tailPositions.push(head.knotBehind.position);
-      }
-    } else {
-      applyMotionToRope(head.knotBehind, motion, tailPositions);
-
-      if (head.knotBehind.logPositions) {
-        console.log("poo");
-
-        tailPositions.push(head.knotBehind.position);
-      }
+      applyMotionToRope(tail, vectorToApply);
+      return;
     }
   }
 };
 
-const buildRopeWithKnots = (numberOfKnots: number): RopeKnot => {
+const buildRopeWithKnots = (
+  numberOfKnots: number
+): { head: RopeKnot; tail: RopeKnot } => {
   const head: RopeKnot = {
-    position: { x: 0, y: 0 },
+    position: origin(),
+    visited: [origin()],
   };
 
   let currKnot: RopeKnot = head;
 
   for (let index = 0; index < numberOfKnots - 1; index++) {
     currKnot.knotBehind = {
-      position: {
-        x: 0,
-        y: 0,
-      },
+      position: origin(),
+      visited: [origin()],
     };
 
-    if (index === numberOfKnots - 2) {
-      currKnot.knotBehind.logPositions = true;
-    } else {
-      currKnot = currKnot.knotBehind;
-    }
+    currKnot = currKnot.knotBehind;
   }
 
-  return head;
+  return { head, tail: currKnot };
+};
+
+const getUniquePositionCount = (points: Point[]): number =>
+  new Set(points.map(({ x, y }) => `x${x}y${y}`)).size;
+
+const getUniqueTailPositionsForRope = (
+  motions: string[],
+  numberOfKnots: number
+): number => {
+  const motionVectors = motions.flatMap(parseMotion);
+
+  const { head, tail } = buildRopeWithKnots(numberOfKnots);
+
+  motionVectors.forEach((motion) => {
+    applyMotionToRope(head, motion);
+    // printGrid(6, head);
+  });
+
+  return getUniquePositionCount(tail.visited);
+};
+
+const printGrid = (size: number, rope: RopeKnot) => {
+  const grid = addRopeToGrid(getGridToPrint(size), rope);
+
+  const toPrint = grid.map((row) => row.join("")).join("\n");
+  console.log(toPrint);
+};
+
+const getGridToPrint = (size: number): string[][] => {
+  const grid: string[][] = [];
+
+  for (let i = 0; i < size; i++) {
+    const row: string[] = [];
+    for (let j = 0; j < size; j++) {
+      row.push(".");
+    }
+    grid.push(row);
+  }
+  return grid;
+};
+
+const addRopeToGrid = (grid: string[][], rope: RopeKnot): string[][] => {
+  let currKnot = rope;
+  const gridSize = grid.length;
+
+  let i = 0;
+
+  grid[gridSize - 1][0] = "s";
+
+  while (currKnot) {
+    const symbol = i === 0 ? "H" : !currKnot.knotBehind ? "T" : String(i);
+
+    const row = gridSize - 1 - currKnot.position.y;
+    const col = currKnot.position.x;
+
+    grid[row][col] = symbol;
+    currKnot = currKnot.knotBehind;
+    i++;
+  }
+
+  return grid;
 };
 
 export default {
-  solvePartOne: (input: string[]): string | number => {
-    const motions = input.map(parseMotion);
+  solvePartOne: (input: string[]): string | number =>
+    getUniqueTailPositionsForRope(input, 2),
+  solvePartTwo: (input: string[]): string | number =>
+    getUniqueTailPositionsForRope(input, 10),
+  // solvePartTwo: (input: string[]): string | number => {
+  //   const motions = input.map(parseMotion);
 
-    // let head: RopeKnot = {
-    //   position: { x: 0, y: 0 },
-    //   knotBehind: {
-    //     position: { x: 0, y: 0 },
-    //     logPositions: true,
-    //   },
-    // };
+  //   const { head, tail } = buildRopeWithKnots(10);
 
-    const head = buildRopeWithKnots(2);
+  //   motions.forEach((motion) => {
+  //     const singleStepMotions = toSingleStepVectors(motion);
 
-    const tailPositions = [{ ...head.knotBehind.position }];
+  //     singleStepMotions.forEach((singleMotion) => {
+  //       applyMotionToRope(head, directionVectors[singleMotion.direction]);
+  //     });
+  //   });
 
-    motions.forEach((motion) => {
-      const singleStepMotions = toSingleStepMotions(motion);
+  //   const unique = new Set(tail.visited.map(({ x, y }) => `x${x}y${y}`));
 
-      singleStepMotions.forEach((singleMotion) => {
-        applyMotionToRope(head, singleMotion, tailPositions);
-      });
-    });
-
-    const unique = new Set(tailPositions.map(({ x, y }) => `x${x}y${y}`));
-
-    return unique.size;
-  },
-  solvePartTwo: (input: string[]): string | number => {
-    return "";
-  },
+  //   return unique.size;
+  // },
 } as Day;

@@ -1,0 +1,29 @@
+import { Point, Vector } from "../types/geometry";
+
+export const origin = (): Point => ({ x: 0, y: 0 });
+
+export const getManhattanDistance = (a: Point, b: Point): number => {
+  return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+};
+
+export const areAdjacent = (a: Point, b: Point): boolean => {
+  return Math.abs(a.x - b.x) <= 1 && Math.abs(a.y - b.y) <= 1;
+};
+
+export const isSameRow = ({ y: aY }: Point, { y: bY }: Point): boolean => {
+  return aY === bY;
+};
+
+export const isSameCol = ({ x: aX }: Point, { x: bX }: Point): boolean => {
+  return aX === bX;
+};
+
+export const applyVector = (
+  { x, y }: Point,
+  { x: xDir, y: yDir }: Vector
+): Point => {
+  return {
+    x: x + xDir,
+    y: y + yDir,
+  };
+};
