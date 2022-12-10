@@ -43,11 +43,7 @@ export default {
       processCycles(input)
     ),
   solvePartTwo: (input: string[]): string | number => {
-    const cycleValues = processCycles(input);
-
-    const crtRows = chunk(cycleValues, 40);
-
-    const output = crtRows
+    return chunk(processCycles(input), 40)
       .map((row) =>
         row
           .map((spritePosition, currPixel) =>
@@ -56,9 +52,5 @@ export default {
           .join("")
       )
       .join("\n");
-
-    console.log(output);
-
-    return output;
   },
 } as Day;
