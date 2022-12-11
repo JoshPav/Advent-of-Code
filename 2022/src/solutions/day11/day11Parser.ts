@@ -3,6 +3,7 @@ export type Monkey = {
   inspected: number;
   getNextMonkey: (worryLevel: number) => number;
   inspectItem: (worryLevel: number) => number;
+  divisor: number;
 };
 
 function parseMonkeyItems(items: string): number[] {
@@ -16,13 +17,16 @@ function parseGetNextMonkey(
   test: string,
   ifTrue: string,
   ifFalse: string
-): (worryLevel: number) => number {
-  const divisibleBy = parseInt(test.match(/([0-9]+)/g)[0]);
+): { divisor: number; getNextMonkey: (worryLevel: number) => number } {
+  const divisor = parseInt(test.match(/([0-9]+)/g)[0]);
   const whenTrue = parseInt(ifTrue.match(/([0-9]+)/g)[0]);
   const whenFalse = parseInt(ifFalse.match(/([0-9]+)/g)[0]);
 
-  return (worryLevel) =>
-    worryLevel % divisibleBy === 0 ? whenTrue : whenFalse;
+  return {
+    getNextMonkey: (worryLevel) =>
+      worryLevel % divisor === 0 ? whenTrue : whenFalse,
+    divisor,
+  };
 }
 
 function parseOperation(operation: string): (worryLevel: number) => number {
@@ -41,10 +45,13 @@ export function parseMonkeyNote([
   ifTrue,
   ifFalse,
 ]: string[]): Monkey {
+  const { getNextMonkey, divisor } = parseGetNextMonkey(test, ifTrue, ifFalse);
+
   return {
     items: parseMonkeyItems(startingItems),
     inspected: 0,
     inspectItem: parseOperation(operation),
-    getNextMonkey: parseGetNextMonkey(test, ifTrue, ifFalse),
+    getNextMonkey,
+    divisor,
   };
 }
