@@ -1,0 +1,26 @@
+import { PuzzleExample } from "../../types/examples";
+import day<DAY> from './day<DAY>'
+
+const getPartOneExamples = (): PuzzleExample[] => [];
+
+const getPartTwoExamples = (): PuzzleExample[] => [];
+
+describe("Day <DAY> examples", () => {
+  describe("Part one examples", () => {
+    it.each(getPartOneExamples())(
+      "should return expected",
+      ({ input, expected }) => {
+        expect(day<DAY>.solvePartOne(input)).toBe(expected);
+      }
+    );
+  });
+
+  describe("Part two examples", () => {
+    it.each(getPartTwoExamples())(
+      "should return expected",
+      ({ input, expected }) => {
+        expect(day<DAY>.solvePartTwo(input)).toBe(expected);
+      }
+    );
+  });
+});
