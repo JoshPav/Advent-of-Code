@@ -1,7 +1,7 @@
 export const parseSplitPair = <T>(
   str: string,
   splitter: string,
-  mapper: (a: string, b: string) => T
+  mapper: (a: string, b: string) => T,
 ): T => {
   const [a, b] = str.split(splitter);
   return mapper(a, b);
@@ -13,7 +13,7 @@ export const splitOnEmptyLines = (input: string[]): string[][] => {
   let startOfSplit = 0;
 
   for (let i = 0; i < input.length; i++) {
-    if (input[i].trim() === "") {
+    if (input[i].trim() === '') {
       splits.push(input.slice(startOfSplit, i));
       startOfSplit = i + 1;
     }

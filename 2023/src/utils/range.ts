@@ -1,8 +1,8 @@
-import { Range } from "../types/common";
+import { Range } from '../types/common';
 
 export const isRangeWithin = (
   innerRange: Range,
-  outerRange: Range
+  outerRange: Range,
 ): boolean => {
   return (
     outerRange.start <= innerRange.start && innerRange.end <= outerRange.end

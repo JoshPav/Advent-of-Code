@@ -1,13 +1,13 @@
-import { readFileForDay } from "./utils/io";
+import { readFileForDay } from './utils/io';
 
 solveForDay(1);
 
 async function solveForDay(dayNumber: number): Promise<void> {
-  const paddedDayNumber = String(dayNumber).padStart(2, "0");
+  const paddedDayNumber = String(dayNumber).padStart(2, '0');
 
   const input = readFileForDay(paddedDayNumber);
 
-  console.log("🎄 Advent of Code 2023 🎁");
+  console.log('🎄 Advent of Code 2023 🎁');
   console.log(`Day ${paddedDayNumber}`);
 
   // Dynamically import the day from the file. This assumes the file and folder are named correctly. And the file exports a default Day

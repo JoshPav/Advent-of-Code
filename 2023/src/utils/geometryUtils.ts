@@ -1,4 +1,4 @@
-import { Point, Vector } from "../types/geometry";
+import { Point, Vector } from '../types/geometry';
 
 export const origin = (): Point => ({ x: 0, y: 0 });
 
@@ -21,7 +21,7 @@ export const isSameCol = ({ x: aX }: Point, { x: bX }: Point): boolean => {
 export const clampVector = (
   { x, y }: Vector,
   min: number = -1,
-  max: number = 1
+  max: number = 1,
 ): Point => {
   return {
     x: Math.min(Math.max(x, min), max),
@@ -31,7 +31,7 @@ export const clampVector = (
 
 export const getDistances = (
   { x: aX, y: aY }: Point,
-  { x: bX, y: bY }: Point
+  { x: bX, y: bY }: Point,
 ): Vector => ({
   x: Math.abs(aX - bX),
   y: Math.abs(aY - bY),
@@ -39,7 +39,7 @@ export const getDistances = (
 
 export const applyVector = (
   { x, y }: Point,
-  { x: xDir, y: yDir }: Vector
+  { x: xDir, y: yDir }: Vector,
 ): Point => {
   return {
     x: x + xDir,
