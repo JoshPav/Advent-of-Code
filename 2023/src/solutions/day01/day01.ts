@@ -1,14 +1,9 @@
 import { Day } from '../../types/day';
 import { sum } from '../../utils/reducers';
 
-const getDigits = (str: string): string[] => {
-  const chars = [...str];
+type StringMatcher = (string: string) => string[];
 
-  return chars.filter((c) => c.toLowerCase() == c.toUpperCase());
-};
-
-const conactFirstAndLast = (arr: string[]): number =>
-  Number(arr[0] + arr[arr.length - 1]);
+const digitRegex = new RegExp(/[0-9]/g);
 
 const stringNumbers = [
   'one',
@@ -22,48 +17,37 @@ const stringNumbers = [
   'nine',
 ];
 
-const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+const digitWordRegex = new RegExp(
+  `(?=([0-9]|${stringNumbers.join('|')}))`,
+  'g',
+);
 
-const getFirstDigit = (str: string): number =>
-  getDigitForFunction(str, (str, search) => str.indexOf(search)).sort(
-    (a, b) => a.index - b.index,
-  )[0].val;
+const processWord = (num: string): string => {
+  if (num.length == 1) {
+    return num;
+  }
 
-const getLastDigit = (str: string): number =>
-  getDigitForFunction(str, (str, search) => str.lastIndexOf(search)).sort(
-    (a, b) => b.index - a.index,
-  )[0].val;
-
-const getDigitForFunction = (
-  str: string,
-  getIndex: (str: string, search: string) => number,
-) => {
-  const wordIndexes = stringNumbers
-    .map((wordNum, i) => ({
-      val: i + 1,
-      index: getIndex(str, wordNum),
-    }))
-    .filter((a) => a.index >= 0);
-
-  const digitIndexes = numbers
-    .map((digit) => ({
-      val: digit,
-      index: getIndex(str, `${digit}`),
-    }))
-    .filter((a) => a.index >= 0);
-
-  return [...wordIndexes, ...digitIndexes];
+  return String(stringNumbers.indexOf(num) + 1);
 };
 
+const matchDigitsAndWords: StringMatcher = (str) =>
+  Array.from(str.matchAll(digitWordRegex), (m) => m[1]);
+
+const matchDigits: StringMatcher = (str) => str.match(digitRegex);
+
+const getNumberForLine =
+  (matchString: StringMatcher) =>
+  (str: string): number => {
+    const matches = matchString(str);
+
+    return Number(
+      processWord(matches[0]) + processWord(matches[matches.length - 1]),
+    );
+  };
+
 export default {
-  solvePartOne: (input: string[]): string | number => {
-    return input.map(getDigits).map(conactFirstAndLast).reduce(sum, 0);
-  },
-  solvePartTwo: (input: string[]): string | number => {
-    return input
-      .map((str) => {
-        return Number(`${getFirstDigit(str)}${getLastDigit(str)}`);
-      })
-      .reduce(sum, 0);
-  },
+  solvePartOne: (input: string[]): string | number =>
+    input.map(getNumberForLine(matchDigits)).reduce(sum, 0),
+  solvePartTwo: (input: string[]): string | number =>
+    input.map(getNumberForLine(matchDigitsAndWords)).reduce(sum, 0),
 } as Day;
