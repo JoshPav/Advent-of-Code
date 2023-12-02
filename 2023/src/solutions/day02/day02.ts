@@ -57,6 +57,37 @@ const isGamePossible =
     });
   };
 
+const getMinRequired = (game: Game): DrawnCubes => {
+  return game.cubesRevealed.reduce(
+    (prev, curr) => {
+      const updated = { ...prev };
+
+      if (curr.blue > updated.blue) {
+        updated.blue = curr.blue;
+      }
+
+      if (curr.green > updated.green) {
+        updated.green = curr.green;
+      }
+
+      if (curr.red > updated.red) {
+        updated.red = curr.red;
+      }
+
+      return updated;
+    },
+    {
+      red: 0,
+      blue: 0,
+      green: 0,
+    },
+  );
+};
+
+const getCubePowers = ({ red, blue, green }: DrawnCubes): number => {
+  return red * blue * green;
+};
+
 export default {
   solvePartOne: (input: string[]): string | number => {
     const games = input.map(parseLine);
@@ -72,6 +103,10 @@ export default {
     return possible.map(({ id }) => Number(id)).reduce(sum, 0);
   },
   solvePartTwo: (input: string[]): string | number => {
-    return '';
+    return input
+      .map(parseLine)
+      .map(getMinRequired)
+      .map(getCubePowers)
+      .reduce(sum, 0);
   },
 } as Day;
