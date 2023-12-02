@@ -1,10 +1,16 @@
 import { Day } from '../../types/day';
 import { sum } from '../../utils/reducers';
 
+const zeroCubes: Cubes = {
+  red: 0,
+  green: 0,
+  blue: 0,
+};
+
 type Cubes = {
-  red?: number;
-  green?: number;
-  blue?: number;
+  red: number;
+  green: number;
+  blue: number;
 };
 
 type Game = {
@@ -12,62 +18,52 @@ type Game = {
   cubesRevealed: Cubes[];
 };
 
-const parseRound = (round: string): Cubes => {
-  return Object.fromEntries(
-    round.split(',').map((drawn) => {
-      const [count, color] = drawn.trim().split(' ');
-      return [color, Number(count)];
-    }),
-  );
+const parseDrawnColor = (drawn: string) => {
+  const [count, color] = drawn.trim().split(' ');
+  return [color, Number(count)];
 };
 
-const parseLine = (line: string): Game => {
-  const [id, details] = line.split(':');
+const parseRound = (round: string): Cubes => {
+  return {
+    // Spread 0 case to handle missing cubes
+    ...zeroCubes,
+    ...Object.fromEntries(round.split(',').map(parseDrawnColor)),
+  };
+};
+
+const parseGame = (line: string): Game => {
+  const [id, gameDetails] = line.split(':');
 
   return {
     id: id.replace('Game ', ''),
-    cubesRevealed: details.split(';').map(parseRound),
+    cubesRevealed: gameDetails.split(';').map(parseRound),
   };
 };
+
+const hasEnoughCubes = (total: Cubes) => (round: Cubes, color: keyof Cubes) =>
+  round[color] <= total[color];
 
 const isGamePossible =
   (total: Cubes) =>
   (game: Game): boolean => {
-    return game.cubesRevealed.every((round) => {
-      return (
-        (!round.red || round.red <= total.red) &&
-        (!round.blue || round.blue <= total.blue) &&
-        (!round.green || round.green <= total.green)
-      );
-    });
+    const hasEnough = hasEnoughCubes(total);
+
+    return game.cubesRevealed.every(
+      (round) =>
+        hasEnough(round, 'red') &&
+        hasEnough(round, 'blue') &&
+        hasEnough(round, 'green'),
+    );
   };
 
-const getMinRequired = (game: Game): Cubes => {
-  return game.cubesRevealed.reduce(
-    (prev, curr) => {
-      const updated = { ...prev };
+const getMinRequiredReducer = (prev: Cubes, curr: Cubes): Cubes => ({
+  red: Math.max(prev.red, curr.red),
+  green: Math.max(prev.green, curr.green),
+  blue: Math.max(prev.blue, curr.blue),
+});
 
-      if (curr.blue > updated.blue) {
-        updated.blue = curr.blue;
-      }
-
-      if (curr.green > updated.green) {
-        updated.green = curr.green;
-      }
-
-      if (curr.red > updated.red) {
-        updated.red = curr.red;
-      }
-
-      return updated;
-    },
-    {
-      red: 0,
-      blue: 0,
-      green: 0,
-    },
-  );
-};
+const getMinRequired = ({ cubesRevealed }: Game): Cubes =>
+  cubesRevealed.reduce(getMinRequiredReducer, zeroCubes);
 
 const getCubePowers = ({ red, blue, green }: Cubes): number =>
   red * blue * green;
@@ -81,14 +77,14 @@ export default {
     };
 
     return input
-      .map(parseLine)
+      .map(parseGame)
       .filter(isGamePossible(totalAllowed))
       .map(({ id }) => Number(id))
       .reduce(sum, 0);
   },
   solvePartTwo: (input: string[]): string | number => {
     return input
-      .map(parseLine)
+      .map(parseGame)
       .map(getMinRequired)
       .map(getCubePowers)
       .reduce(sum, 0);
