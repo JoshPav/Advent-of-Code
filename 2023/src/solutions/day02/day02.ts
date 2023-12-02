@@ -1,5 +1,5 @@
 import { Day } from '../../types/day';
-import { sum } from '../../utils/reducers';
+import { sum, sumNested } from '../../utils/reducers';
 
 const zeroCubes: Cubes = {
   red: 0,
@@ -14,7 +14,7 @@ type Cubes = {
 };
 
 type Game = {
-  id: string;
+  id: number;
   cubesRevealed: Cubes[];
 };
 
@@ -35,7 +35,7 @@ const parseGame = (line: string): Game => {
   const [id, gameDetails] = line.split(':');
 
   return {
-    id: id.replace('Game ', ''),
+    id: Number(id.replace('Game ', '')),
     cubesRevealed: gameDetails.split(';').map(parseRound),
   };
 };
@@ -79,8 +79,7 @@ export default {
     return input
       .map(parseGame)
       .filter(isGamePossible(totalAllowed))
-      .map(({ id }) => Number(id))
-      .reduce(sum, 0);
+      .reduce(sumNested('id'), 0);
   },
   solvePartTwo: (input: string[]): string | number => {
     return input
