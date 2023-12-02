@@ -1,10 +1,10 @@
 import { Day } from "../../types/day";
 
 export default {
-  solvePartOne: (input: string[]): string | number => {
+  solvePartOne: (input) => {
     return ""
   },
-  solvePartTwo: (input: string[]): string | number => {
+  solvePartTwo: (input) => {
     return ""
   },
 } as Day;

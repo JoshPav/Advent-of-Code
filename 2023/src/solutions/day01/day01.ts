@@ -37,8 +37,8 @@ const getNumberForLine =
   };
 
 export default {
-  solvePartOne: (input: string[]): string | number =>
+  solvePartOne: (input) =>
     input.map(getNumberForLine(/([0-9])/g)).reduce(sum, 0),
-  solvePartTwo: (input: string[]): string | number =>
+  solvePartTwo: (input) =>
     input.map(getNumberForLine(digitWordRegex)).reduce(sum, 0),
 } as Day;

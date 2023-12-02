@@ -69,7 +69,7 @@ const getCubePowers = ({ red, blue, green }: Cubes): number =>
   red * blue * green;
 
 export default {
-  solvePartOne: (input: string[]): string | number => {
+  solvePartOne: (input) => {
     const totalAllowed: Cubes = {
       red: 12,
       green: 13,
@@ -81,7 +81,7 @@ export default {
       .filter(isGamePossible(totalAllowed))
       .reduce(sumNested('id'), 0);
   },
-  solvePartTwo: (input: string[]): string | number => {
+  solvePartTwo: (input) => {
     return input
       .map(parseGame)
       .map(getMinRequired)
