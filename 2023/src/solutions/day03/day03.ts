@@ -13,7 +13,11 @@ type Symbol = {
   position: Point;
 };
 
+const hasGearSymbol = ({ symbol }: Symbol) => symbol === '*';
+
 const digitRegex = /[0-9]/;
+
+const isDigit = (element: string | undefined) => digitRegex.test(element);
 
 const parseEngineSchematic = (
   lines: string[],
@@ -24,26 +28,27 @@ const parseEngineSchematic = (
   for (let y = 0; y < lines.length; y++) {
     const line = lines[y];
 
-    let currentDigits = '';
+    let digits = '';
 
     for (let x = 0; x < line.length; x++) {
       const element = line[x];
 
       if (digitRegex.test(element)) {
-        currentDigits += element;
+        digits += element;
+
+        if (!isDigit(line[x + 1])) {
+          parts.push({
+            number: Number.parseInt(digits),
+            position: {
+              x: x - (digits.length - 1),
+              y,
+            },
+          });
+
+          digits = '';
+        }
+
         continue;
-      }
-
-      if (currentDigits.length) {
-        parts.push({
-          number: Number(currentDigits),
-          position: {
-            x: x - currentDigits.length,
-            y,
-          },
-        });
-
-        currentDigits = '';
       }
 
       if (element !== '.') {
@@ -55,18 +60,6 @@ const parseEngineSchematic = (
           symbol: element,
         });
       }
-    }
-
-    if (currentDigits.length) {
-      parts.push({
-        number: Number(currentDigits),
-        position: {
-          x: line.length - currentDigits.length,
-          y,
-        },
-      });
-
-      currentDigits = '';
     }
   }
 
@@ -91,37 +84,40 @@ const getAllCoords = ({ number, position }: PartNumber): Point[] => {
   return points;
 };
 
-const isTouchingSymbol = (part: PartNumber, symbol: Symbol) =>
+const isTouchingSymbol = (symbol: Symbol) => (part: PartNumber) =>
   getAllCoords(part).some((coord) => areAdjacent(coord, symbol.position));
+
+const isGear = (touchingParts: PartNumber[]) => touchingParts.length === 2;
+
+const getGearRatio = (touchingParts: PartNumber[]) => {
+  if (!isGear(touchingParts)) {
+    return 0;
+  }
+
+  return touchingParts[0].number * touchingParts[1].number;
+};
+
+const getAdjacentParts = (allParts: PartNumber[]) => (symbol: Symbol) =>
+  allParts.filter(isTouchingSymbol(symbol));
+
+const isTouchingAnySymbol = (allSymbols: Symbol[]) => (part: PartNumber) =>
+  allSymbols.some((symbol) => isTouchingSymbol(symbol)(part));
 
 export default {
   solvePartOne: (input) => {
     const { symbols, parts } = parseEngineSchematic(input);
 
-    const engineParts = parts.filter((part) =>
-      symbols.some((symbol) => isTouchingSymbol(part, symbol)),
-    );
-
-    return engineParts.reduce(sumNested('number'), 0);
+    return parts
+      .filter(isTouchingAnySymbol(symbols))
+      .reduce(sumNested('number'), 0);
   },
   solvePartTwo: (input) => {
     const { symbols, parts } = parseEngineSchematic(input);
 
-    const idk = symbols
-      .filter((symbol) => symbol.symbol === '*')
-      .map((symbol) => {
-        const touchingParts = parts.filter((part) =>
-          isTouchingSymbol(part, symbol),
-        );
-
-        if (touchingParts.length == 2) {
-          return touchingParts[0].number * touchingParts[1].number;
-        }
-
-        return 0;
-      })
+    return symbols
+      .filter(hasGearSymbol)
+      .map(getAdjacentParts(parts))
+      .map(getGearRatio)
       .reduce(sum, 0);
-
-    return idk;
   },
 } as Day;
