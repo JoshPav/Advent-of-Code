@@ -1,7 +1,7 @@
 import { Day } from '../../types/day';
 import { Point } from '../../types/geometry';
 import { areAdjacent } from '../../utils/geometryUtils';
-import { sumNested } from '../../utils/reducers';
+import { sum, sumNested } from '../../utils/reducers';
 
 type PartNumber = {
   number: number;
@@ -105,6 +105,23 @@ export default {
     return engineParts.reduce(sumNested('number'), 0);
   },
   solvePartTwo: (input) => {
-    return '';
+    const { symbols, parts } = parseEngineSchematic(input);
+
+    const idk = symbols
+      .filter((symbol) => symbol.symbol === '*')
+      .map((symbol) => {
+        const touchingParts = parts.filter((part) =>
+          isTouchingSymbol(part, symbol),
+        );
+
+        if (touchingParts.length == 2) {
+          return touchingParts[0].number * touchingParts[1].number;
+        }
+
+        return 0;
+      })
+      .reduce(sum, 0);
+
+    return idk;
   },
 } as Day;
