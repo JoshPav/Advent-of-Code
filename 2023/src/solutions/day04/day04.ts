@@ -41,13 +41,6 @@ type ScratchCardWithQuantity = {
   card: ScratchCard;
 };
 
-const logPile = (cardPile: ScratchCardWithQuantity[]) => {
-  const toLog = cardPile
-    .map((card) => `${card.card.id}: ${card.quantity}`)
-    .join('\n');
-  console.log(toLog);
-};
-
 const processScratchCards = (
   cardPile: ScratchCardWithQuantity[],
 ): ScratchCardWithQuantity[] => {
@@ -56,20 +49,10 @@ const processScratchCards = (
 
     const matches = getCardMatches(card);
 
-    // console.log({ id: card.id, matches });
-
     // Update quantities
-    for (let j = 0; j < matches; j++) {
-      const index = i + 1 + j;
-
-      if (index >= cardPile.length) {
-        break;
-      }
-
-      cardPile[index].quantity += quantity;
+    for (let j = i + 1; j <= i + matches && j < cardPile.length; j++) {
+      cardPile[j].quantity += quantity;
     }
-
-    // logPile(cardPile);
   }
 
   return cardPile;
