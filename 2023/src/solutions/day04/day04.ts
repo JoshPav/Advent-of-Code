@@ -1,4 +1,5 @@
 import { Day } from '../../types/day';
+import { parseNumbers } from '../../utils/parsing';
 import { sum, sumNested } from '../../utils/reducers';
 
 type ScratchCard = {
@@ -6,12 +7,6 @@ type ScratchCard = {
   winningNumbers: number[];
   myNumbers: number[];
 };
-
-const parseNumbers = (numbers: string): number[] =>
-  numbers
-    .trim()
-    .split(/\s+/)
-    .map((num) => Number.parseInt(num));
 
 const parseScratchCard = (line: string): ScratchCard => {
   const [id, numbers] = line.split(':');

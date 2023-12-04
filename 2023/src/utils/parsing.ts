@@ -37,3 +37,7 @@ export const chunkStr = (toChunk: string, chunkSize: number): string[] => {
 
 export const splitAndTrim = (str: string) =>
   str.split('\n').map((str) => str.trim());
+
+export const splitOnSpaces = (str: string) => str.trim().split(/\s+/);
+
+export const parseNumbers = (str: string) => splitOnSpaces(str).map(Number);
