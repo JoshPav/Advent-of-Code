@@ -1,5 +1,7 @@
 import { PuzzleExample } from '../../types/examples';
+import { readFileForDay } from '../../utils/io';
 import { splitAndTrim } from '../../utils/parsing';
+import { withSameInput } from '../../utils/testUtils';
 import day05 from './day05';
 
 const getPartOneExamples = (): PuzzleExample[] => [
@@ -39,9 +41,14 @@ const getPartOneExamples = (): PuzzleExample[] => [
   56 93 4`),
     expected: 35,
   },
+  {
+    input: readFileForDay('05'),
+    expected: 322500873,
+  },
 ];
 
-const getPartTwoExamples = (): PuzzleExample[] => [];
+const getPartTwoExamples = (): PuzzleExample[] =>
+  withSameInput(getPartOneExamples(), [46]);
 
 describe('Day 05 examples', () => {
   describe('Part one examples', () => {
