@@ -86,59 +86,43 @@ export const processOverlappingRange =
     return toReturn;
   };
 
-type RangeType = [number, number];
-type RangesType = RangeType[];
+const getGaps = (ranges: Range[]): Range[] => {
+  const gaps: Range[] = [];
 
-const getGaps = (ranges: RangesType): RangesType => {
-  const gaps = [];
-
-  for (const index in ranges) {
-    const start = ranges[Number(index)][1];
-    const end = ranges[Number(index) + 1]?.[0];
+  for (let i = 0; i < ranges.length; i++) {
+    const start = ranges[i].end;
+    const end = ranges[i + 1]?.start;
 
     if (start < end) {
-      gaps.push([start + 1, end - 1]);
+      gaps.push({
+        start: start + 1,
+        end: end - 1,
+      });
     }
   }
 
   return gaps;
 };
 
-const isRangeOverlapping2 = (
-  [aStart, aEnd]: RangeType,
-  [bStart, bEnd]: RangeType,
-) =>
-  doesRangeOverlap({ start: aStart, end: aEnd }, { start: bStart, end: bEnd });
-
 const getMissingRanges = (
-  ranges: RangesType,
-  from: number,
-  to: number,
-): RangesType => {
-  if (ranges.length === 0) {
-    return [[from, to]];
-  }
+  rangesOriginal: Range[],
+  fullRange: Range,
+): Range[] => {
+  const ranges = [...rangesOriginal];
+  ranges.sort((a, b) => a.start - b.start);
 
-  const gaps: RangesType = [
-    [Number.NEGATIVE_INFINITY, ranges[0][0] - 1],
+  const gaps: Range[] = [
+    { start: Number.NEGATIVE_INFINITY, end: ranges[0].start - 1 },
     ...getGaps(ranges),
-    [ranges[ranges.length - 1][1] + 1, Number.POSITIVE_INFINITY],
+    { start: ranges[ranges.length - 1].end + 1, end: Number.POSITIVE_INFINITY },
   ];
 
   return gaps
-    .filter((gap) => {
-      return isRangeOverlapping2(gap, [from, to]);
-    })
-    .map((gap) => {
-      return [Math.max(gap[0], from), Math.min(gap[1], to)];
-    });
-};
-
-const getRangeGaps = (fullRange: Range, ranges: Range[]): Range[] => {
-  const sorted = [...ranges];
-  ranges.sort((a, b) => a.start - b.start);
-
-  return [];
+    .filter((gap) => doesRangeOverlap(gap, fullRange))
+    .map((gap) => ({
+      start: Math.max(gap.start, fullRange.start),
+      end: Math.min(gap.end, fullRange.end),
+    }));
 };
 
 export const getUpdatedRange =
@@ -154,21 +138,9 @@ export const getUpdatedRange =
 
     const mappedRanges = overlappingRanges.map(mapRange(seedRange));
 
-    const untouchedRanges = getRangeGaps(seedRange, overlappingRanges);
+    const missing = getMissingRanges(overlappingRanges, seedRange);
 
-    const missing = getMissingRanges(
-      overlappingRanges.map((range) => [range.start, range.end]),
-      seedRange.start,
-      seedRange.end,
-    );
-
-    return [
-      ...mappedRanges,
-      ...missing.map((missingRange) => ({
-        start: missingRange[0],
-        end: missingRange[1],
-      })),
-    ];
+    return [...mappedRanges, ...missing];
   };
 
 export const getUpdatedRanges = (
