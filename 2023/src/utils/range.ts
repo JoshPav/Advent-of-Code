@@ -9,11 +9,18 @@ export const isRangeWithin = (
   );
 };
 
-export const doesRangeOverlap = (rangeOne: Range, rangeTwo: Range): boolean => {
+export const doesRangeOverlap = (a: Range, b: Range): boolean => {
+  return a.start <= b.end && a.end >= b.start;
+
   return (
     // Does overlap at the start
-    (rangeOne.start >= rangeTwo.start && rangeOne.end <= rangeTwo.start) ||
+    (a.start >= b.start && a.end <= b.start) ||
     // Does overlap at the end
-    (rangeOne.end >= rangeTwo.start && rangeOne.end <= rangeTwo.end)
+    (a.end >= b.start && a.end <= b.end)
   );
 };
+
+export const getOverlappingRange = (a: Range, b: Range): Range => ({
+  start: Math.max(a.start, b.start),
+  end: Math.min(a.end, b.end),
+});

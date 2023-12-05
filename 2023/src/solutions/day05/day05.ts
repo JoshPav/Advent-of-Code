@@ -1,34 +1,24 @@
-import { log } from 'console';
 import { Day } from '../../types/day';
 import { parseNumbers, splitOnEmptyLines } from '../../utils/parsing';
 import { chunk } from '../../utils/collections';
-import { kMaxLength } from 'buffer';
-import { doesRangeOverlap } from '../../utils/range';
+import { doesRangeOverlap, getOverlappingRange } from '../../utils/range';
+import { Range } from '../../types/common';
 
-type CategoryConverter = {
+export type CategoryConverter = {
   type: string;
   mappingRanges: MappingRange[];
 };
 
-type SeedRange = {
-  start: number;
-  end: number;
-};
-
-type MappingRange = {
-  destStart: number;
-  sourceStart: number;
-  sourceEnd: number;
-  rangeLength: number;
+export type MappingRange = Range & {
+  destination: number;
 };
 
 const parseMappingRange = (range: string): MappingRange => {
   const [destStart, sourceStart, rangeLength] = parseNumbers(range);
   return {
-    destStart,
-    sourceStart,
-    sourceEnd: sourceStart + rangeLength,
-    rangeLength,
+    destination: destStart,
+    start: sourceStart,
+    end: sourceStart + rangeLength,
   };
 };
 
@@ -41,69 +31,119 @@ const parseCategoryConverter = (category: string[]): CategoryConverter => {
   };
 };
 
-const isValidForLocation =
-  (location: number) =>
-  ({ sourceStart, rangeLength }: MappingRange) =>
-    sourceStart <= location && location <= sourceStart + rangeLength;
+export const isRangeOverlapping =
+  (seedRange: Range) => (mappingCategory: MappingRange) =>
+    doesRangeOverlap(seedRange, mappingCategory);
 
-const isRangeOverlapping =
-  (seedRange: SeedRange) => (mappingCategory: MappingRange) => {
-    return doesRangeOverlap(
-      { start: seedRange.start, end: seedRange.end },
-      { start: mappingCategory.sourceStart, end: mappingCategory.sourceEnd },
-    );
+const getMappedRange = (
+  overlappingRange: Range,
+  mappingRange: MappingRange,
+) => {
+  const rangeSize = overlappingRange.end - overlappingRange.start;
+
+  const diff = overlappingRange.start - mappingRange.start;
+
+  const newStart = mappingRange.destination + diff;
+  const newEnd = newStart + rangeSize;
+
+  return {
+    start: newStart,
+    end: newEnd,
+  };
+};
+
+const mapRange =
+  (seedRange: Range) =>
+  (mappingRange: MappingRange): Range => {
+    const overlappingRange = getOverlappingRange(seedRange, mappingRange);
+
+    return getMappedRange(overlappingRange, mappingRange);
   };
 
-const processOverlappingRange =
-  (seedRange: SeedRange) =>
-  (overlappingRange: MappingRange): SeedRange[] => {
-    const start = Math.max(seedRange.start, overlappingRange.sourceStart);
-    const end = Math.min(
-      seedRange.end,
-      overlappingRange.sourceStart + overlappingRange.rangeLength,
-    );
+export const processOverlappingRange =
+  (seedRange: Range) =>
+  (mappingRange: MappingRange): Range[] => {
+    const overlappingRange = getOverlappingRange(seedRange, mappingRange);
 
-    const diff = start - overlappingRange.sourceStart;
+    const mappedRange = getMappedRange(overlappingRange, mappingRange);
 
-    // console.log({ seedRange, overlappingRange, start, end, diff });
+    const toReturn = [mappedRange];
 
-    const newStart = overlappingRange.destStart + diff;
-    const newEnd = newStart + (end - start);
-
-    const toReturn = [
-      {
-        start: newStart,
-        end: newEnd,
-      },
-    ];
-
-    if (seedRange.start < start) {
+    if (seedRange.start < overlappingRange.start) {
       toReturn.push({
         start: seedRange.start,
-        end: start - 1,
+        end: overlappingRange.start - 1,
       });
     }
 
-    if (seedRange.end > end) {
+    if (seedRange.end > overlappingRange.end) {
       toReturn.push({
-        start: end + 1,
+        start: overlappingRange.end + 1,
         end: seedRange.end,
       });
     }
 
-    const postRange = {
-      start: end + 1,
-      end: seedRange.end,
-    };
-
     return toReturn;
   };
 
-const getUpdatedRanges = (
-  convertedRanges: SeedRange[],
-  category: CategoryConverter,
-): SeedRange[] => {
-  return convertedRanges.flatMap((seedRange) => {
+type RangeType = [number, number];
+type RangesType = RangeType[];
+
+const getGaps = (ranges: RangesType): RangesType => {
+  const gaps = [];
+
+  for (const index in ranges) {
+    const start = ranges[Number(index)][1];
+    const end = ranges[Number(index) + 1]?.[0];
+
+    if (start < end) {
+      gaps.push([start + 1, end - 1]);
+    }
+  }
+
+  return gaps;
+};
+
+const isRangeOverlapping2 = (
+  [aStart, aEnd]: RangeType,
+  [bStart, bEnd]: RangeType,
+) =>
+  doesRangeOverlap({ start: aStart, end: aEnd }, { start: bStart, end: bEnd });
+
+const getMissingRanges = (
+  ranges: RangesType,
+  from: number,
+  to: number,
+): RangesType => {
+  if (ranges.length === 0) {
+    return [[from, to]];
+  }
+
+  const gaps: RangesType = [
+    [Number.NEGATIVE_INFINITY, ranges[0][0] - 1],
+    ...getGaps(ranges),
+    [ranges[ranges.length - 1][1] + 1, Number.POSITIVE_INFINITY],
+  ];
+
+  return gaps
+    .filter((gap) => {
+      return isRangeOverlapping2(gap, [from, to]);
+    })
+    .map((gap) => {
+      return [Math.max(gap[0], from), Math.min(gap[1], to)];
+    });
+};
+
+const getRangeGaps = (fullRange: Range, ranges: Range[]): Range[] => {
+  const sorted = [...ranges];
+  ranges.sort((a, b) => a.start - b.start);
+
+  return [];
+};
+
+export const getUpdatedRange =
+  (category: CategoryConverter) =>
+  (seedRange: Range): Range[] => {
     const overlappingRanges = category.mappingRanges.filter(
       isRangeOverlapping(seedRange),
     );
@@ -112,73 +152,85 @@ const getUpdatedRanges = (
       return [seedRange];
     }
 
-    const updatedRanges = overlappingRanges.flatMap(
-      processOverlappingRange(seedRange),
+    const mappedRanges = overlappingRanges.map(mapRange(seedRange));
+
+    const untouchedRanges = getRangeGaps(seedRange, overlappingRanges);
+
+    const missing = getMissingRanges(
+      overlappingRanges.map((range) => [range.start, range.end]),
+      seedRange.start,
+      seedRange.end,
     );
 
-    // console.log({ seedRange, overlappingRanges, updatedRanges });
+    return [
+      ...mappedRanges,
+      ...missing.map((missingRange) => ({
+        start: missingRange[0],
+        end: missingRange[1],
+      })),
+    ];
+  };
 
-    return updatedRanges;
-  });
+export const getUpdatedRanges = (
+  convertedRanges: Range[],
+  category: CategoryConverter,
+): Range[] => convertedRanges.flatMap(getUpdatedRange(category));
+
+const parseSeeds: AlmanacSeedParser = (values) =>
+  values.map((seedNo) => ({
+    start: seedNo,
+    end: seedNo,
+  }));
+
+const parseSeedRanges: AlmanacSeedParser = (values) =>
+  chunk(values, 2).map(([start, rangeLength]) => ({
+    start,
+    end: start + rangeLength,
+  }));
+
+type AlmanacSeedParser = (input: number[]) => Range[];
+
+type Almanac = {
+  seedRanges: Range[];
+  convertors: CategoryConverter[];
 };
 
-const getUpdatedNumbers = (
-  locations: number[],
-  convertor: CategoryConverter,
-) => {
-  return locations.map((location) => {
-    const mappingRange = convertor.mappingRanges.filter(
-      isValidForLocation(location),
-    );
+const parseAlmanac = (almanac: string[], seedParser: AlmanacSeedParser) => {
+  const [seeds, ...convertors] = splitOnEmptyLines(almanac);
 
-    if (mappingRange.length !== 1) {
-      // Any source numbers that aren't mapped correspond to the same destination number
-      return location;
-    }
-
-    return (
-      mappingRange[0].destStart +
-      Math.abs(mappingRange[0].sourceStart - location)
-    );
-  });
+  return {
+    seedRanges: seedParser(parseNumbers(seeds[0].split(':')[1])),
+    convertors: convertors.map(parseCategoryConverter),
+  };
 };
+
+const processAlmanac = (
+  { convertors, seedRanges }: Almanac,
+  lines = [],
+): number => {
+  let convertedRanges = seedRanges;
+
+  const idk = [seedRanges];
+
+  convertors.forEach((convertor) => {
+    const updated = getUpdatedRanges(convertedRanges, convertor);
+
+    convertedRanges = updated;
+    idk.push(updated);
+  });
+
+  return getLowestSeedLocation(convertedRanges);
+};
+
+const getLowestSeedLocation = (seedRanges: Range[]): number =>
+  seedRanges.reduce(
+    (prev, curr) => Math.min(prev, curr.start),
+    Number.MAX_SAFE_INTEGER,
+  );
 
 export default {
-  solvePartOne: (almanac) => {
-    const [seeds, ...rest] = splitOnEmptyLines(almanac);
-
-    const seedNumbers = parseNumbers(seeds[0].split(':')[1]);
-
-    const categories = rest.map(parseCategoryConverter);
-
-    let convertedLocations = seedNumbers;
-
-    categories.forEach((category) => {
-      const updated = getUpdatedNumbers(convertedLocations, category);
-      // console.log({ old: convertedLocations, new: updated });
-      convertedLocations = updated;
-    });
-
-    return Math.min(...convertedLocations);
-  },
-  solvePartTwo: (almanac) => {
-    const [seeds, ...rest] = splitOnEmptyLines(almanac);
-
-    const seedRanges: SeedRange[] = chunk(
-      parseNumbers(seeds[0].split(':')[1]),
-      2,
-    ).map(([start, rangeLength]) => ({ start, end: start + rangeLength }));
-
-    const categories = rest.map(parseCategoryConverter);
-
-    let convertedRanges = seedRanges;
-
-    categories.forEach((category) => {
-      const updated = getUpdatedRanges(convertedRanges, category);
-
-      convertedRanges = updated;
-    });
-
-    return Math.min(...convertedRanges.map((range) => range.start));
-  },
+  solvePartOne: (almanac) =>
+    processAlmanac(parseAlmanac(almanac, parseSeeds), almanac),
+  solvePartTwo: (almanac) =>
+    processAlmanac(parseAlmanac(almanac, parseSeedRanges), almanac),
 } as Day;

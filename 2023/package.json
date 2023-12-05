@@ -4,6 +4,7 @@
   "description": "2022 Advent of code solutions",
   "main": "src/main.ts",
   "scripts": {
+    "idk": "ts-node src/solutions/day05/idk.ts",
     "solve": "ts-node src/main.ts",
     "test": "jest",
     "fmt": "prettier --write src"
