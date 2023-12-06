@@ -1,5 +1,5 @@
 import { Day } from '../../types/day';
-import { parseNumbers } from '../../utils/parsing';
+import { parseNumbers, splitOnSpaces } from '../../utils/parsing';
 import { product } from '../../utils/reducers';
 
 type Race = {
@@ -53,6 +53,17 @@ const getRecordBreakingStrats = (race: Race): RaceStrategy[] => {
   return recordBeatingStrategies;
 };
 
+const parseRacePt2 = (lines: string[]): Race => {
+  const time = Number.parseInt(splitOnSpaces(lines[0].split(':')[1]).join(''));
+  const distance = Number.parseInt(
+    splitOnSpaces(lines[1].split(':')[1]).join(''),
+  );
+  return {
+    duration: time,
+    recordDistance: distance,
+  };
+};
+
 export default {
   solvePartOne: (input) => {
     const races = parseRaces(input);
@@ -64,6 +75,10 @@ export default {
       .reduce(product, 1);
   },
   solvePartTwo: (input) => {
-    return '';
+    const race = parseRacePt2(input);
+
+    const x = getRecordBreakingStrats(race);
+
+    return x.length;
   },
 } as Day;
