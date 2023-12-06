@@ -41,3 +41,9 @@ export const splitAndTrim = (str: string) =>
 export const splitOnSpaces = (str: string) => str.trim().split(/\s+/);
 
 export const parseNumbers = (str: string) => splitOnSpaces(str).map(Number);
+
+export const parseRhs = (str: string, delim: string = ':') =>
+  splitOnSpaces(str.split(delim)[1]);
+
+export const parseRhsNumbers = (str: string, delim: string = ':') =>
+  parseNumbers(str.split(delim)[1]);

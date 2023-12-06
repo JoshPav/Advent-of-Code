@@ -17,7 +17,7 @@ const getPartOneExamples = (): PuzzleExample[] => [
 ];
 
 const getPartTwoExamples = (): PuzzleExample[] =>
-  withSameInput(getPartOneExamples(), [71503]);
+  withSameInput(getPartOneExamples(), [71503, 36872656]);
 
 describe('Day 06 examples', () => {
   describe('Part one examples', () => {

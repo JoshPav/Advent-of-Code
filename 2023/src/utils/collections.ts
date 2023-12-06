@@ -6,6 +6,9 @@ export const flip = <K extends keyof any, V extends keyof any>(
 export const intersection = <T>(arr1: T[], arr2: T[]) =>
   [...new Set(arr1)].filter((ele) => arr2.includes(ele));
 
+export const zip = <T>(arr1: T[], arr2: T[]) =>
+  arr1.map((e, i) => [e, arr2[i]]);
+
 export const chunk = <T>(toChunk: T[], chunkSize: number): T[][] => {
   const chunks: T[][] = [];
 
