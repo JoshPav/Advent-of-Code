@@ -10,6 +10,8 @@ function plusReducer(prev: any, curr: any) {
 
 export const sum: Reducer<number> = plusReducer;
 
+export const product: Reducer<number> = (prev, curr) => prev * curr;
+
 export const sumNested =
   <T>(field: keyof T) =>
   (prev: number, curr: T) =>
