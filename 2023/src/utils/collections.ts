@@ -52,3 +52,14 @@ export const isDistinct = <T>(arr: T[]): boolean =>
 export const addWithCap = <T>(arr: T[], item: T, cap: number): T[] => {
   return [...arr.slice(-1 * (cap - 1)), item];
 };
+
+export const getNumberOfOccurrences = (items: string[]): number[] =>
+  Object.values(
+    items.reduce(
+      (tally, item) => ({
+        ...tally,
+        [item]: (tally[item] || 0) + 1,
+      }),
+      {},
+    ),
+  );

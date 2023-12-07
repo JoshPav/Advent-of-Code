@@ -1,7 +1,10 @@
 import { Day } from '../../types/day';
-import util from 'util';
+import { getNumberOfOccurrences } from '../../utils/collections';
+import { descending } from '../../utils/sort';
 
-const specialCardStrengths = {
+type CardValues = Record<string, number>;
+
+const cardValues: CardValues = {
   A: 14,
   K: 13,
   Q: 12,
@@ -18,13 +21,8 @@ const specialCardStrengths = {
   '1': 1,
 };
 
-type Card = {
-  symbol: string;
-  strength: number;
-};
-
 type CamelPokerHand = {
-  cards: Card[];
+  cardValues: number[];
   bid: number;
   handType: HandType;
 };
@@ -39,21 +37,20 @@ enum HandType {
   FIVE_OF_A_KIND,
 }
 
-const getHandType = (cards: Card[]): HandType => {
-  const numberOfOccurrences = Object.values(
-    cards.reduce(
-      (tally, card) => {
-        if (tally[card.symbol]) {
-          tally[card.symbol] += 1;
-        } else {
-          tally[card.symbol] = 1;
-        }
-        return tally;
-      },
-      {} as Record<string, number>,
-    ),
-  );
+const getOptimalHandType = (
+  numberOfOccurrences: number[],
+  numberOfJokers: number,
+): HandType => {
+  const sorted = [...numberOfOccurrences].sort(descending);
 
+  sorted[0] += numberOfJokers;
+  return getHandType(sorted);
+};
+
+const hasPair = (numberOfOccurrences: number[]) =>
+  numberOfOccurrences.includes(2);
+
+const getHandType = (numberOfOccurrences: number[]): HandType => {
   if (numberOfOccurrences.length === 1) {
     return HandType.FIVE_OF_A_KIND;
   }
@@ -63,13 +60,12 @@ const getHandType = (cards: Card[]): HandType => {
   }
 
   if (numberOfOccurrences.includes(3)) {
-    if (numberOfOccurrences.includes(2)) {
-      return HandType.FULL_HOUSE;
-    }
-    return HandType.THREE_OF_A_KIND;
+    return hasPair(numberOfOccurrences)
+      ? HandType.FULL_HOUSE
+      : HandType.THREE_OF_A_KIND;
   }
 
-  if (numberOfOccurrences.includes(2)) {
+  if (hasPair(numberOfOccurrences)) {
     if (numberOfOccurrences.filter((o) => o === 2).length === 2) {
       return HandType.TWO_PAIR;
     }
@@ -81,12 +77,12 @@ const getHandType = (cards: Card[]): HandType => {
 
 const compareHands = (a: CamelPokerHand, b: CamelPokerHand): number => {
   if (a.handType === b.handType) {
-    for (let i = 0; i < a.cards.length; i++) {
-      const aCard = a.cards[i];
-      const bCard = b.cards[i];
+    for (let i = 0; i < a.cardValues.length; i++) {
+      const aCard = a.cardValues[i];
+      const bCard = b.cardValues[i];
 
-      if (aCard.strength !== bCard.strength) {
-        return aCard.strength - bCard.strength;
+      if (aCard !== bCard) {
+        return aCard - bCard;
       }
     }
   }
@@ -94,125 +90,52 @@ const compareHands = (a: CamelPokerHand, b: CamelPokerHand): number => {
   return a.handType - b.handType;
 };
 
-const compareHandsPt2 = (
-  a: { originalHand: CamelPokerHand; updated: CamelPokerHand },
-  b: { originalHand: CamelPokerHand; updated: CamelPokerHand },
-): number => {
-  if (a.updated.handType === b.updated.handType) {
-    for (let i = 0; i < a.originalHand.cards.length; i++) {
-      const aCard = a.originalHand.cards[i];
-      const bCard = b.originalHand.cards[i];
+type GetHandType = (cards: string) => HandType;
 
-      if (aCard.strength !== bCard.strength) {
-        return aCard.strength - bCard.strength;
-      }
-    }
-  }
+const getHandTypeWithJacks: GetHandType = (cards) =>
+  getHandType(getNumberOfOccurrences([...cards]));
 
-  return a.updated.handType - b.updated.handType;
+const getHandTypeWithJokers: GetHandType = (cards) => {
+  const withoutJokers = cards.replace(/J/g, '');
+  return getOptimalHandType(
+    getNumberOfOccurrences([...withoutJokers]),
+    5 - withoutJokers.length,
+  );
 };
 
-const parseCamelPokerHand = (hand: string, isPart2 = false): CamelPokerHand => {
-  const [cards, bid] = hand.split(' ');
+const parseCamelPokerHand =
+  (cardStrengths: CardValues, getHandType: GetHandType) =>
+  (hand: string): CamelPokerHand => {
+    const [cards, bid] = hand.split(' ');
 
-  const parsedCards = [...cards].map((card) => ({
-    symbol: card,
-    strength: isPart2 && card === 'J' ? 1 : specialCardStrengths[card],
-  }));
-
-  // console.log(parsedCards);
-
-  return {
-    bid: Number.parseInt(bid),
-    cards: parsedCards,
-    handType: getHandType(parsedCards),
+    return {
+      bid: Number.parseInt(bid),
+      handType: getHandType(cards),
+      cardValues: [...cards].map((card) => cardStrengths[card]),
+    };
   };
-};
 
-const exceptJoker = {
-  A: 14,
-  K: 13,
-  Q: 12,
-  T: 10,
-  '9': 9,
-  '8': 8,
-  '7': 7,
-  '6': 6,
-  '5': 5,
-  '4': 4,
-  '3': 3,
-  '2': 2,
-  '1': 1,
-};
+const getHandWinnings = ({ bid }: CamelPokerHand, rank: number) => bid * rank;
 
-export const getOptimalHand = (cards: string): string => {
-  const numberOfJokers = [...cards].filter((card) => card === 'J').length;
-
-  if (numberOfJokers === 0) {
-    return cards;
-  }
-
-  const jokerIndex = cards.indexOf('J');
-
-  let allHands = Object.keys(exceptJoker).map((symbol) => {
-    return cards.slice(0, jokerIndex) + symbol + cards.slice(jokerIndex + 1);
-  });
-
-  // console.log({ allHands });
-
-  const remainingJokers = numberOfJokers - 1;
-
-  if (remainingJokers) {
-    allHands = allHands.map((hand) => getOptimalHand(hand));
-  }
-
-  const parsed = allHands.map((hand) => ({
-    parsed: parseCamelPokerHand(hand, true),
-    hand,
-  }));
-
-  parsed.sort((a, b) => compareHands(a.parsed, b.parsed));
-  return parsed[parsed.length - 1].hand;
-};
-
-// First guess: 253371374
-
-const parseCamelPokerHandPt2 = (hand: string) => {
-  const originalHand = parseCamelPokerHand(hand, true);
-  // console.log(originalHand);
-
-  const hello = getOptimalHand(hand);
-
-  return { originalHand, updated: parseCamelPokerHand(hello, true) };
-};
+const getTotalWinnings = (camelPokerRankings: CamelPokerHand[]): number =>
+  camelPokerRankings.reduce(
+    (total, hand, index) => total + getHandWinnings(hand, index + 1),
+    0,
+  );
 
 export default {
   solvePartOne: (input) => {
-    const hands = input.map((idk) => parseCamelPokerHand(idk));
+    const hands = input.map(
+      parseCamelPokerHand(cardValues, getHandTypeWithJacks),
+    );
 
-    hands.sort(compareHands);
-
-    let totalWinnings = 0;
-
-    for (let rank = 1; rank <= hands.length; rank++) {
-      const hand = hands[rank - 1];
-      totalWinnings += rank * hand.bid;
-    }
-
-    return totalWinnings;
+    return getTotalWinnings(hands.sort(compareHands));
   },
   solvePartTwo: (input) => {
-    const hands = input.map(parseCamelPokerHandPt2);
+    const hands = input.map(
+      parseCamelPokerHand({ ...cardValues, J: 1 }, getHandTypeWithJokers),
+    );
 
-    hands.sort((a, b) => compareHandsPt2(a, b));
-
-    let totalWinnings = 0;
-
-    for (let rank = 1; rank <= hands.length; rank++) {
-      const hand = hands[rank - 1].originalHand;
-      totalWinnings += rank * hand.bid;
-    }
-
-    return totalWinnings;
+    return getTotalWinnings(hands.sort(compareHands));
   },
 } as Day;
