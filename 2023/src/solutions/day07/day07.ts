@@ -7,6 +7,15 @@ const specialCardStrengths = {
   Q: 12,
   J: 11,
   T: 10,
+  '9': 9,
+  '8': 8,
+  '7': 7,
+  '6': 6,
+  '5': 5,
+  '4': 4,
+  '3': 3,
+  '2': 2,
+  '1': 1,
 };
 
 type Card = {
@@ -70,8 +79,6 @@ const getHandType = (cards: Card[]): HandType => {
   return HandType.HIGH_CARD;
 };
 
-// const compareCards = (a: Card, b: Card)
-
 const compareHands = (a: CamelPokerHand, b: CamelPokerHand): number => {
   if (a.handType === b.handType) {
     for (let i = 0; i < a.cards.length; i++) {
@@ -87,13 +94,33 @@ const compareHands = (a: CamelPokerHand, b: CamelPokerHand): number => {
   return a.handType - b.handType;
 };
 
-const parseCamelPokerHand = (hand: string): CamelPokerHand => {
+const compareHandsPt2 = (
+  a: { originalHand: CamelPokerHand; updated: CamelPokerHand },
+  b: { originalHand: CamelPokerHand; updated: CamelPokerHand },
+): number => {
+  if (a.updated.handType === b.updated.handType) {
+    for (let i = 0; i < a.originalHand.cards.length; i++) {
+      const aCard = a.originalHand.cards[i];
+      const bCard = b.originalHand.cards[i];
+
+      if (aCard.strength !== bCard.strength) {
+        return aCard.strength - bCard.strength;
+      }
+    }
+  }
+
+  return a.updated.handType - b.updated.handType;
+};
+
+const parseCamelPokerHand = (hand: string, isPart2 = false): CamelPokerHand => {
   const [cards, bid] = hand.split(' ');
 
   const parsedCards = [...cards].map((card) => ({
     symbol: card,
-    strength: specialCardStrengths[card] || Number.parseInt(card),
+    strength: isPart2 && card === 'J' ? 1 : specialCardStrengths[card],
   }));
+
+  // console.log(parsedCards);
 
   return {
     bid: Number.parseInt(bid),
@@ -102,11 +129,66 @@ const parseCamelPokerHand = (hand: string): CamelPokerHand => {
   };
 };
 
+const exceptJoker = {
+  A: 14,
+  K: 13,
+  Q: 12,
+  T: 10,
+  '9': 9,
+  '8': 8,
+  '7': 7,
+  '6': 6,
+  '5': 5,
+  '4': 4,
+  '3': 3,
+  '2': 2,
+  '1': 1,
+};
+
+export const getOptimalHand = (cards: string): string => {
+  const numberOfJokers = [...cards].filter((card) => card === 'J').length;
+
+  if (numberOfJokers === 0) {
+    return cards;
+  }
+
+  const jokerIndex = cards.indexOf('J');
+
+  let allHands = Object.keys(exceptJoker).map((symbol) => {
+    return cards.slice(0, jokerIndex) + symbol + cards.slice(jokerIndex + 1);
+  });
+
+  // console.log({ allHands });
+
+  const remainingJokers = numberOfJokers - 1;
+
+  if (remainingJokers) {
+    allHands = allHands.map((hand) => getOptimalHand(hand));
+  }
+
+  const parsed = allHands.map((hand) => ({
+    parsed: parseCamelPokerHand(hand, true),
+    hand,
+  }));
+
+  parsed.sort((a, b) => compareHands(a.parsed, b.parsed));
+  return parsed[parsed.length - 1].hand;
+};
+
+// First guess: 253371374
+
+const parseCamelPokerHandPt2 = (hand: string) => {
+  const originalHand = parseCamelPokerHand(hand, true);
+  // console.log(originalHand);
+
+  const hello = getOptimalHand(hand);
+
+  return { originalHand, updated: parseCamelPokerHand(hello, true) };
+};
+
 export default {
   solvePartOne: (input) => {
-    const hands = input.map(parseCamelPokerHand);
-
-    // console.log(util.inspect(hands, false, null, true));
+    const hands = input.map((idk) => parseCamelPokerHand(idk));
 
     hands.sort(compareHands);
 
@@ -117,11 +199,20 @@ export default {
       totalWinnings += rank * hand.bid;
     }
 
-    console.log(util.inspect(hands, false, null, true));
-
     return totalWinnings;
   },
   solvePartTwo: (input) => {
-    return '';
+    const hands = input.map(parseCamelPokerHandPt2);
+
+    hands.sort((a, b) => compareHandsPt2(a, b));
+
+    let totalWinnings = 0;
+
+    for (let rank = 1; rank <= hands.length; rank++) {
+      const hand = hands[rank - 1].originalHand;
+      totalWinnings += rank * hand.bid;
+    }
+
+    return totalWinnings;
   },
 } as Day;
