@@ -1,6 +1,6 @@
 import { readFileForDay } from './utils/io';
 
-solveForDay(7);
+solveForDay(8);
 
 async function solveForDay(dayNumber: number): Promise<void> {
   const paddedDayNumber = String(dayNumber).padStart(2, '0');
