@@ -46,7 +46,7 @@ const getPartTwoExamples = (): PuzzleExample[] => [
   },
   {
     input: readFileForDay('08'),
-    expected: undefined,
+    expected: 9606140307013,
   },
 ];
 

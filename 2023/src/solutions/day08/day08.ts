@@ -1,6 +1,6 @@
 import { Day } from '../../types/day';
+import { leastCommonMultiple } from '../../utils/math';
 import { splitOnEmptyLines } from '../../utils/parsing';
-import { product } from '../../utils/reducers';
 
 enum Instruction {
   LEFT = 'left',
@@ -34,86 +34,55 @@ const parseMap = (map: string[]): Map => {
   };
 };
 
-const isGhostEnd = (node: string) => node.endsWith('Z');
+const GetNextNode =
+  (nodes: Record<string, Nodes>) =>
+  (currentNode: string, instruction: Instruction) =>
+    nodes[currentNode][instruction];
 
-export default {
-  solvePartOne: (input) => {
-    const { instructions, nodes } = parseMap(input);
+const GetNextInstruction = (instructions: Instruction[]) => (index: number) => {
+  return instructions[index % instructions.length];
+};
 
-    let currentNode = 'AAA';
+const ProcessMap =
+  ({ instructions, nodes }: Map, isEnd: NodePredicate) =>
+  (start: string): number => {
+    let currentNode = start;
 
     let instructionIndex = 0;
-
     let timesMoved = 0;
 
-    while (currentNode !== 'ZZZ') {
-      const nextInstruction = instructions[instructionIndex];
+    const getNextNode = GetNextNode(nodes);
+    const getNextInstruction = GetNextInstruction(instructions);
 
-      // Update node
-      const nextNode = nodes[currentNode];
-
-      currentNode = nextNode[nextInstruction];
+    while (!isEnd(currentNode)) {
+      currentNode = getNextNode(
+        currentNode,
+        getNextInstruction(instructionIndex++),
+      );
       timesMoved++;
-
-      // Update instruction
-      instructionIndex++;
-      if (instructionIndex === instructions.length) {
-        instructionIndex = 0;
-      }
     }
 
     return timesMoved;
+  };
+
+type NodePredicate = (node: string) => boolean;
+
+export default {
+  solvePartOne: (input) => {
+    const isEnd: NodePredicate = (node) => node === 'ZZZ';
+
+    return ProcessMap(parseMap(input), isEnd)('AAA');
   },
   solvePartTwo: (input) => {
-    const { instructions, nodes } = parseMap(input);
+    const isGhostStart: NodePredicate = (node) => node.endsWith('A');
+    const isGhostEnd = (node: string) => node.endsWith('Z');
 
-    // let instructionIndex = 0;
+    const map = parseMap(input);
+    const processMap = ProcessMap(map, isGhostEnd);
 
-    // let timesMoved = 0;
-
-    let allGhostNodes = Object.keys(nodes).filter((node) => node.endsWith('A'));
-
-    const whenOnZ = allGhostNodes.map((node) => {
-      let currentNode = node;
-      let timesMoved = 0;
-      let instructionIndex = 0;
-
-      while (!isGhostEnd(currentNode)) {
-        const nextInstruction = instructions[instructionIndex];
-
-        // Update node
-        const nextNode = nodes[currentNode];
-
-        currentNode = nextNode[nextInstruction];
-        timesMoved++;
-
-        // Update instruction
-        instructionIndex++;
-        if (instructionIndex === instructions.length) {
-          instructionIndex = 0;
-        }
-      }
-
-      return timesMoved;
-    });
-
-    console.log({ whenOnZ });
-
-    // while (!allGhostNodes.every(isGhostEnd)) {
-    //   const nextInstruction = instructions[instructionIndex];
-
-    //   // Update nodes
-    //   allGhostNodes = allGhostNodes.map((node) => nodes[node][nextInstruction]);
-
-    //   timesMoved++;
-
-    //   // Update instruction
-    //   instructionIndex++;
-    //   if (instructionIndex === instructions.length) {
-    //     instructionIndex = 0;
-    //   }
-    // }
-
-    return whenOnZ.reduce(product, 1);
+    return Object.keys(map.nodes)
+      .filter(isGhostStart)
+      .map(processMap)
+      .reduce(leastCommonMultiple);
   },
 } as Day;
