@@ -13,12 +13,12 @@ const getPartOneExamples = (): PuzzleExample[] => [
   },
   {
     input: readFileForDay('09'),
-    expected: undefined,
+    expected: 1916822650,
   },
 ];
 
 const getPartTwoExamples = (): PuzzleExample[] =>
-  withSameInput(getPartOneExamples(), [2]);
+  withSameInput(getPartOneExamples(), [2, 966]);
 
 describe('Day 09 examples', () => {
   describe('Part one examples', () => {

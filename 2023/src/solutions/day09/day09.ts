@@ -28,6 +28,16 @@ const getNextSequenceValue = (sequences: number[][]): number => {
   return toAdd;
 };
 
+const getPreviousSequenceValue = (sequences: number[][]): number => {
+  let toSubtract = 0;
+
+  for (let i = sequences.length - 1; i >= 0; i--) {
+    toSubtract = sequences[i][0] - toSubtract;
+  }
+
+  return toSubtract;
+};
+
 export default {
   solvePartOne: (input) => {
     const sequences = input.map(parseNumbers);
@@ -37,6 +47,10 @@ export default {
     return idk.map(getNextSequenceValue).reduce(sum, 0);
   },
   solvePartTwo: (input) => {
-    return '';
+    const sequences = input.map(parseNumbers);
+
+    const idk = sequences.map(getAllDifferences);
+
+    return idk.map(getPreviousSequenceValue).reduce(sum, 0);
   },
 } as Day;
