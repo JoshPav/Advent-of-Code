@@ -6,7 +6,7 @@ import { getManhattanDistance } from '../../utils/geometryUtils';
 type GalaxyCoordinates = Point;
 
 type Galaxy = {
-  galaxyData: Record<string, GalaxyCoordinates>;
+  galaxyPositions: GalaxyCoordinates[];
   emptyRows: number[];
   emptyColumns: number[];
 };
@@ -14,33 +14,18 @@ type Galaxy = {
 const hasNoGalaxies = (mapRow: string[]) =>
   mapRow.every((point) => point === '.');
 
-const processMap1D = (map: string[][]): string[][] => {
-  const withSpacesAdded = [];
-
-  for (let i = 0; i < map.length; i++) {
-    const row = map[i];
-    withSpacesAdded.push(row);
-
-    if (hasNoGalaxies(row)) {
-      withSpacesAdded.push(row);
-    }
-  }
-
-  return withSpacesAdded;
-};
-
-const getGalaxyData = (map: string[][]): Record<string, GalaxyCoordinates> => {
-  const data: Record<string, GalaxyCoordinates> = {};
+const getGalaxyData = (map: string[][]): GalaxyCoordinates[] => {
+  const data: GalaxyCoordinates[] = [];
 
   let nextId = 1;
 
   for (let y = 0; y < map.length; y++) {
     for (let x = 0; x < map[y].length; x++) {
       if (map[y][x] === '#') {
-        data[nextId] = {
+        data.push({
           x,
           y,
-        };
+        });
         nextId++;
       }
     }
@@ -49,55 +34,59 @@ const getGalaxyData = (map: string[][]): Record<string, GalaxyCoordinates> => {
   return data;
 };
 
-const getEmptyIndexes = (map: string[][]): number[] => {
-  const indexes = [];
-  for (let i = 0; i < map.length; i++) {
-    if (hasNoGalaxies(map[i])) {
-      indexes.push(i);
-    }
-  }
-  return indexes;
-};
+const getEmptyIndexes = (map: string[][]): number[] =>
+  map.reduce(
+    (indexes, curr, index) =>
+      hasNoGalaxies(curr) ? [...indexes, index] : indexes,
+    [] as number[],
+  );
 
 const parseGalaxy = (image: string[]): Galaxy => {
   const galaxyMap = image.map((line) => [...line]);
 
   return {
-    galaxyData: getGalaxyData(galaxyMap),
+    galaxyPositions: getGalaxyData(galaxyMap),
     emptyRows: getEmptyIndexes(galaxyMap),
     emptyColumns: getEmptyIndexes(flipGrid(galaxyMap)),
   };
 };
 
+const getDistancesBetweenGalaxies =
+  (emptyRows: number[], emptyColumns: number[], galaxyAge: number) =>
+  (galaxyOne: Point, galaxyTwo: Point): number => {
+    const { x: xA, y: yA } = galaxyOne;
+    const { x: xB, y: yB } = galaxyTwo;
+
+    const rowsCrossed = emptyRows.filter(
+      (row) => Math.min(yA, yB) < row && row < Math.max(yA, yB),
+    ).length;
+    const columnsCrossed = emptyColumns.filter(
+      (col) => Math.min(xA, xB) < col && col < Math.max(xA, xB),
+    ).length;
+
+    let distance = getManhattanDistance(galaxyOne, galaxyTwo);
+
+    distance += Math.max(rowsCrossed, 0) * (galaxyAge - 1);
+    distance += Math.max(columnsCrossed, 0) * (galaxyAge - 1);
+
+    return distance;
+  };
+
 const getCumulativeGalaxyDistances = (
-  { galaxyData, emptyColumns, emptyRows }: Galaxy,
+  { galaxyPositions, emptyColumns, emptyRows }: Galaxy,
   galaxyAge: number,
 ): number => {
-  const galaxyCoordinates = Object.entries(galaxyData);
-
   let total = 0;
 
-  for (let i = 0; i < galaxyCoordinates.length; i++) {
-    for (let j = i + 1; j < galaxyCoordinates.length; j++) {
-      const { x: xA, y: yA } = galaxyCoordinates[i][1];
-      const { x: xB, y: yB } = galaxyCoordinates[j][1];
+  const getDistances = getDistancesBetweenGalaxies(
+    emptyRows,
+    emptyColumns,
+    galaxyAge,
+  );
 
-      const rowsCrossed = emptyRows.filter(
-        (row) => Math.min(yA, yB) < row && row < Math.max(yA, yB),
-      ).length;
-      const columnsCrossed = emptyColumns.filter(
-        (col) => Math.min(xA, xB) < col && col < Math.max(xA, xB),
-      ).length;
-
-      let distance = getManhattanDistance(
-        galaxyCoordinates[i][1],
-        galaxyCoordinates[j][1],
-      );
-
-      distance += Math.max(rowsCrossed, 0) * (galaxyAge - 1);
-      distance += Math.max(columnsCrossed, 0) * (galaxyAge - 1);
-
-      total += distance;
+  for (let i = 0; i < galaxyPositions.length; i++) {
+    for (let j = i + 1; j < galaxyPositions.length; j++) {
+      total += getDistances(galaxyPositions[i], galaxyPositions[j]);
     }
   }
 
