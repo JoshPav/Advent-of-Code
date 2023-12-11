@@ -1,4 +1,5 @@
 import { Range } from '../types/common';
+import { Point } from '../types/geometry';
 
 export const isRangeWithin = (
   innerRange: Range,
@@ -8,6 +9,19 @@ export const isRangeWithin = (
     outerRange.start <= innerRange.start && innerRange.end <= outerRange.end
   );
 };
+
+export const isWithinRange = (range: Range) => (num: number) =>
+  range.start <= num && num <= range.end;
+
+const getRange = (a: number, b: number): Range => ({
+  start: Math.min(a, b),
+  end: Math.max(a, b),
+});
+
+export const getRanges = (a: Point, b: Point) => ({
+  x: getRange(a.x, b.x),
+  y: getRange(a.y, b.y),
+});
 
 export const doesRangeOverlap = (a: Range, b: Range): boolean =>
   a.start <= b.end && a.end >= b.start;
