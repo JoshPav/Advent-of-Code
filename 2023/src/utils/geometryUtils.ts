@@ -10,6 +10,9 @@ export const areAdjacent = (a: Point, b: Point): boolean => {
   return Math.abs(a.x - b.x) <= 1 && Math.abs(a.y - b.y) <= 1;
 };
 
+export const areEqual = (a: Point, b: Point) =>
+  isSameRow(a, b) && isSameCol(a, b);
+
 export const isSameRow = ({ y: aY }: Point, { y: bY }: Point): boolean => {
   return aY === bY;
 };
