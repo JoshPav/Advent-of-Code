@@ -49,3 +49,8 @@ export const applyVector = (
     y: y + yDir,
   };
 };
+
+export const getNorth = ({ x, y }: Point): Point => ({ x, y: y - 1 });
+export const getEast = ({ x, y }: Point): Point => ({ x: x + 1, y });
+export const getSouth = ({ x, y }: Point): Point => ({ x, y: y + 1 });
+export const getWest = ({ x, y }: Point): Point => ({ x: x - 1, y });
