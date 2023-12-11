@@ -6,7 +6,6 @@ import { getManhattanDistance } from '../../utils/geometryUtils';
 type GalaxyCoordinates = Point;
 
 type Galaxy = {
-  galaxyMap: string[][];
   galaxyData: Record<string, GalaxyCoordinates>;
   emptyRows: number[];
   emptyColumns: number[];
@@ -29,12 +28,6 @@ const processMap1D = (map: string[][]): string[][] => {
 
   return withSpacesAdded;
 };
-
-const printMap = (map: string[][]) =>
-  console.log(map.map((line) => line.join('')).join('\n'));
-
-const processGalaxyMap = (map: string[][]): string[][] =>
-  flipGrid(processMap1D(flipGrid(processMap1D(map))));
 
 const getGalaxyData = (map: string[][]): Record<string, GalaxyCoordinates> => {
   const data: Record<string, GalaxyCoordinates> = {};
@@ -71,115 +64,48 @@ const parseGalaxy = (image: string[]): Galaxy => {
 
   return {
     galaxyData: getGalaxyData(galaxyMap),
-    galaxyMap: galaxyMap,
     emptyRows: getEmptyIndexes(galaxyMap),
     emptyColumns: getEmptyIndexes(flipGrid(galaxyMap)),
   };
 };
 
+const getCumulativeGalaxyDistances = (
+  { galaxyData, emptyColumns, emptyRows }: Galaxy,
+  galaxyAge: number,
+): number => {
+  const galaxyCoordinates = Object.entries(galaxyData);
+
+  let total = 0;
+
+  for (let i = 0; i < galaxyCoordinates.length; i++) {
+    for (let j = i + 1; j < galaxyCoordinates.length; j++) {
+      const { x: xA, y: yA } = galaxyCoordinates[i][1];
+      const { x: xB, y: yB } = galaxyCoordinates[j][1];
+
+      const rowsCrossed = emptyRows.filter(
+        (row) => Math.min(yA, yB) < row && row < Math.max(yA, yB),
+      ).length;
+      const columnsCrossed = emptyColumns.filter(
+        (col) => Math.min(xA, xB) < col && col < Math.max(xA, xB),
+      ).length;
+
+      let distance = getManhattanDistance(
+        galaxyCoordinates[i][1],
+        galaxyCoordinates[j][1],
+      );
+
+      distance += Math.max(rowsCrossed, 0) * (galaxyAge - 1);
+      distance += Math.max(columnsCrossed, 0) * (galaxyAge - 1);
+
+      total += distance;
+    }
+  }
+
+  return total;
+};
+
 export default {
-  solvePartOne: (input) => {
-    const { galaxyMap, galaxyData, emptyColumns, emptyRows } =
-      parseGalaxy(input);
-
-    // printMap(galaxyMap);
-    // console.log(galaxyData);
-
-    const galaxyCoordinates = Object.entries(galaxyData);
-
-    let total = 0;
-
-    const galaxyAge = 2;
-
-    for (let i = 0; i < galaxyCoordinates.length; i++) {
-      for (let j = i + 1; j < galaxyCoordinates.length; j++) {
-        const { x: xA, y: yA } = galaxyCoordinates[i][1];
-        const { x: xB, y: yB } = galaxyCoordinates[j][1];
-
-        const rowsCrossed = emptyRows.filter(
-          (row) => Math.min(yA, yB) < row && row < Math.max(yA, yB),
-        ).length;
-        const columnsCrossed = emptyColumns.filter(
-          (col) => Math.min(xA, xB) < col && col < Math.max(xA, xB),
-        ).length;
-
-        // console.log({
-        //   a: galaxyCoordinates[i][1],
-        //   b: galaxyCoordinates[j][1],
-        // });
-
-        let distance = getManhattanDistance(
-          galaxyCoordinates[i][1],
-          galaxyCoordinates[j][1],
-        );
-
-        // console.log({ distance });
-
-        distance += Math.max(rowsCrossed, 0) * (galaxyAge - 1);
-        distance += Math.max(columnsCrossed, 0) * (galaxyAge - 1);
-
-        // console.log(
-        //   `${galaxyCoordinates[i][0]} -> ${galaxyCoordinates[j][0]}`,
-        //   { distance, rowsCrossed, columnsCrossed },
-        // );
-
-        total += distance;
-      }
-    }
-    // console.log({ emptyColumns, emptyRows });
-
-    return total;
-  },
-  solvePartTwo: (input) => {
-    const { galaxyMap, galaxyData, emptyColumns, emptyRows } =
-      parseGalaxy(input);
-
-    // printMap(galaxyMap);
-    // console.log(galaxyData);
-
-    const galaxyCoordinates = Object.entries(galaxyData);
-
-    let total = 0;
-
-    const galaxyAge = 1000000;
-
-    for (let i = 0; i < galaxyCoordinates.length; i++) {
-      for (let j = i + 1; j < galaxyCoordinates.length; j++) {
-        const { x: xA, y: yA } = galaxyCoordinates[i][1];
-        const { x: xB, y: yB } = galaxyCoordinates[j][1];
-
-        const rowsCrossed = emptyRows.filter(
-          (row) => Math.min(yA, yB) < row && row < Math.max(yA, yB),
-        ).length;
-        const columnsCrossed = emptyColumns.filter(
-          (col) => Math.min(xA, xB) < col && col < Math.max(xA, xB),
-        ).length;
-
-        // console.log({
-        //   a: galaxyCoordinates[i][1],
-        //   b: galaxyCoordinates[j][1],
-        // });
-
-        let distance = getManhattanDistance(
-          galaxyCoordinates[i][1],
-          galaxyCoordinates[j][1],
-        );
-
-        // console.log({ distance });
-
-        distance += Math.max(rowsCrossed, 0) * (galaxyAge - 1);
-        distance += Math.max(columnsCrossed, 0) * (galaxyAge - 1);
-
-        // console.log(
-        //   `${galaxyCoordinates[i][0]} -> ${galaxyCoordinates[j][0]}`,
-        //   { distance, rowsCrossed, columnsCrossed },
-        // );
-
-        total += distance;
-      }
-    }
-    // console.log({ emptyColumns, emptyRows });
-
-    return total;
-  },
+  solvePartOne: (input) => getCumulativeGalaxyDistances(parseGalaxy(input), 2),
+  solvePartTwo: (input) =>
+    getCumulativeGalaxyDistances(parseGalaxy(input), 1000000),
 } as Day;
