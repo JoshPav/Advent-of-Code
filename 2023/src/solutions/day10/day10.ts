@@ -1,6 +1,7 @@
+import { Range } from '../../types/common';
 import { Day } from '../../types/day';
 import { Point } from '../../types/geometry';
-import { getLast } from '../../utils/collections';
+import { chunk, getLast, groupByField } from '../../utils/collections';
 import {
   areEqual,
   getEast,
@@ -124,16 +125,66 @@ const getLoopPath = ({ map, start }: PipeMap) => {
     path.push(getNext(curr, prev));
   }
 
-  return path;
+  return path.slice(0, -1);
 };
 
+const getBoundaries = (points: Point[]): Boundary[] => {
+  const sorted = [...points].sort((a, b) => a.x - b.x);
+
+  const isEnd = (sorted: Point[]) => (point: Point) =>
+    sorted.filter(
+      (otherPoint) =>
+        otherPoint.x === point.x - 1 || otherPoint.x === point.x + 1,
+    ).length < 2;
+
+  const idk = sorted.filter(isEnd(sorted));
+
+  return chunk(idk, 2) as Boundary[];
+};
+
+type Boundary = [Point, Point];
+
 export default {
-  solvePartOne: (input) => {
-    const loopPath = getLoopPath(parsePipeMap(input));
-    // Minus 1 as origin appears twice
-    return (loopPath.length - 1) / 2;
-  },
+  solvePartOne: (input) => getLoopPath(parsePipeMap(input)).length / 2,
   solvePartTwo: (input) => {
-    return '';
+    const map = parsePipeMap(input);
+
+    const path = getLoopPath(map);
+    const grouped = path.reduce(groupByField('y'), {});
+
+    const boundaries = Object.fromEntries(
+      Object.entries(grouped).map(
+        ([y, coords]) =>
+          [
+            y,
+            getBoundaries(coords).map(
+              ([a, b]) => ({ start: a.x, end: b.x }) as Range,
+            ),
+          ] as [string, Range[]],
+      ),
+    );
+
+    const mapHeight = map.map.length;
+    const mapWidth = map.map[0].length;
+
+    let within = 0;
+
+    for (let y = 0; y < mapHeight; y++) {
+      for (let x = 0; x < mapWidth; x++) {
+        const rowBoundaries = boundaries[y];
+        if (
+          rowBoundaries &&
+          rowBoundaries.some((range) => isWithinRange(range)(x))
+        ) {
+          // console.log({ x, y });
+
+          within++;
+        }
+      }
+    }
+
+    // console.log({ pathLength: path.length, within });
+
+    return within - path.length;
   },
 } as Day;

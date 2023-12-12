@@ -63,3 +63,12 @@ export const getNumberOfOccurrences = (items: string[]): number[] =>
       {},
     ),
   );
+
+export const groupByField =
+  <T, K extends keyof T>(key: K) =>
+  (acc: Record<string, T[]>, curr: T) => {
+    const updated = { ...acc };
+    const val = <string | number>curr[key];
+    updated[val] = updated[val] ? [...updated[val], curr] : [curr];
+    return updated;
+  };
