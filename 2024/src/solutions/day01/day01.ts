@@ -1,10 +1,9 @@
 import { Day } from "../../types/day";
 import { sum } from "../../utils/reducers";
 
-export default {
-  solvePartOne: (input) => {
-    const left: number[] = []
-    const right: number[] = []
+const readLists = (input:  string[]) => {
+  const left: number[] = []
+  const right: number[] = []
 
     input.forEach((line) => {
       const [l, r] = line.split(/\s+/)
@@ -12,6 +11,13 @@ export default {
       left.push(parseInt(l));
       right.push(parseInt(r));
   })
+
+  return [left, right]
+}
+
+export default {
+  solvePartOne: (input) => {
+  const [left, right] = readLists(input);
 
   left.sort()
   right.sort()
@@ -21,6 +27,15 @@ export default {
   return dists.reduce(sum)
   },
   solvePartTwo: (input) => {
-    return ""
+    const [left, right] = readLists(input);
+
+    const appearances = right.reduce((acc, curr) => {
+      return {
+        ...acc,
+        [curr]: (acc[curr] || 0) + 1
+      };
+    }, {})
+
+    return left.map(num => num * (appearances[num] || 0)).reduce(sum)
   },
 } as Day;

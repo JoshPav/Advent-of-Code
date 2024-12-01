@@ -1,4 +1,5 @@
 import { PuzzleExample } from "../../types/examples";
+import { withSameInput } from "../../utils/testUtils";
 import day01 from './day01'
 
 const getPartOneExamples = (): PuzzleExample[] => [{
@@ -13,7 +14,7 @@ const getPartOneExamples = (): PuzzleExample[] => [{
 expected: 11
 }];
 
-const getPartTwoExamples = (): PuzzleExample[] => [];
+const getPartTwoExamples = (): PuzzleExample[] => withSameInput(getPartOneExamples(), [31]);
 
 describe("Day 01 examples", () => {
   describe("Part one examples", () => {

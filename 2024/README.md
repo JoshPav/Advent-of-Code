@@ -1,4 +1,4 @@
-# 2023 Advent of Code
+# 2024 Advent of Code
 
 ## Generating files for the next day
 
