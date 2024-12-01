@@ -18,3 +18,11 @@ export const sumNested =
     prev + (curr[field] as number);
 
 export const concat: Reducer<string> = plusReducer;
+
+export const groupByCount = <T extends string | number | symbol>(
+  acc: Record<T, number>,
+  curr: T,
+) => ({
+  ...acc,
+  [curr]: (acc[curr] || 0) + 1,
+});

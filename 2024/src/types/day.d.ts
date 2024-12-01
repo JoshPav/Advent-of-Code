@@ -1,4 +1,6 @@
+export type PuzzleInput = string[];
+
 export interface Day {
-  solvePartOne: (input: string[]) => string | number;
-  solvePartTwo: (input: string[]) => string | number;
+  solvePartOne: (input: PuzzleInput) => string | number;
+  solvePartTwo: (input: PuzzleInput) => string | number;
 }
