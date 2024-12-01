@@ -1,0 +1,10 @@
+import { Day } from "../../types/day";
+
+export default {
+  solvePartOne: (input) => {
+    return ""
+  },
+  solvePartTwo: (input) => {
+    return ""
+  },
+} as Day;
