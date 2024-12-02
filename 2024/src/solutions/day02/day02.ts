@@ -1,44 +1,44 @@
-import { Day, PuzzleInput } from "../../types/day";
-import { isWithinRange } from "../../utils/range";
+import { Day, PuzzleInput } from '../../types/day';
+import { getAllCombinations } from '../../utils/collections';
+import { allNegative, allPositive, getDifferences } from '../../utils/math';
+import { not } from '../../utils/predicate';
+import { isWithinRange } from '../../utils/range';
 
 type Report = {
-  levels: number[]
-}
+  levels: number[];
+};
 
-const parseInput = (input: PuzzleInput): Report[] => 
-  input.map(line => ({
-    levels: line.split(/\s+/).map(Number)
-  }))
+const parseInput = (input: PuzzleInput): Report[] =>
+  input.map((line) => ({
+    levels: line.split(/\s+/).map(Number),
+  }));
 
-const getDiffs = (arr: number[]) => {
-  const diffs = []
-  for (let i = 0; i < arr.length - 1; i++) {
-    diffs.push(arr[i] - arr[i + 1])
-  }
-  return diffs;
-}
-
-const isInSafeRange = isWithinRange({ start: 1, end: 3 })
+const isInSafeRange = isWithinRange({ start: 1, end: 3 });
 
 const isSafe = ({ levels }: Report) => {
-  const diffs = getDiffs(levels)
+  const diffs = getDifferences(levels);
 
-  const diffSafe = diffs.every(diff => isInSafeRange(Math.abs(diff)))
+  const diffSafe = diffs.every((diff) => isInSafeRange(Math.abs(diff)));
 
-  const isDesc = diffs.every(num => num > 0)
-  const isAsc = diffs.every(num => num < 0)
+  return diffSafe && (allPositive(diffs) || allNegative(diffs));
+};
 
+const getDampendReports = (report: Report): Report[] =>
+  getAllCombinations(report.levels).map((levels) => ({ levels }));
 
-  return diffSafe && (isDesc || isAsc)
-}
+const hasValidDampendReport = (dampendReports: Report[]) =>
+  dampendReports.some(isSafe);
 
 export default {
-  solvePartOne: (input) => {
+  solvePartOne: (input) => parseInput(input).filter(isSafe).length,
+  solvePartTwo: (input) => {
     const reports = parseInput(input);
 
-    return reports.filter(isSafe).length
-  },
-  solvePartTwo: (input) => {
-    return ""
+    const unsafeDampend = reports
+      .filter(not(isSafe))
+      .map(getDampendReports)
+      .filter(not(hasValidDampendReport)).length;
+
+    return reports.length - unsafeDampend;
   },
 } as Day;

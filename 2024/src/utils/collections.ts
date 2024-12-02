@@ -72,3 +72,9 @@ export const groupByField =
     updated[val] = updated[val] ? [...updated[val], curr] : [curr];
     return updated;
   };
+
+export const withIndexRemoved = <T>(arr: T[], index: number): T[] =>
+  arr.filter((_, i) => i !== index);
+
+export const getAllCombinations = <T>(arr: T[]): T[][] =>
+  arr.map((_, i) => withIndexRemoved(arr, i));
