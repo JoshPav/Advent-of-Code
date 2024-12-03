@@ -13,7 +13,16 @@ const getPartOneExamples = (): PuzzleExample[] => [
   }
 ];
 
-const getPartTwoExamples = (): PuzzleExample[] => [];
+const getPartTwoExamples = (): PuzzleExample[] => [
+  {
+    input: [`xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))`],
+    expected: 48
+  },
+  {
+    input: readFileForDay('03'),
+    expected: 111762583
+  }
+];
 
 describe("Day 03 examples", () => {
   describe("Part one examples", () => {
