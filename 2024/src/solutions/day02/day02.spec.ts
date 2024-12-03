@@ -15,31 +15,27 @@ const getPartOneExamples = (): PuzzleExample[] => [
     ],
     expected: 2,
   },
-  {
-    input: readFileForDay('02'),
-    expected: 218,
-  },
 ];
 
 const getPartTwoExamples = (): PuzzleExample[] =>
-  withSameInput(getPartOneExamples(), [4, 290]);
+  withSameInput(getPartOneExamples(), [4]);
 
 describe('Day 02 examples', () => {
   describe('Part one examples', () => {
     it.each(getPartOneExamples())(
-      'should return expected',
-      ({ input, expected }) => {
-        expect(day02.solvePartOne(input)).toBe(expected);
-      },
+      'should return expected for example',
+      ({ input, expected }) => expect(day02.solvePartOne(input)).toBe(expected),
     );
+    it('should return expected for actual', () =>
+      expect(day02.solvePartOne(readFileForDay('02'))).toBe(218));
   });
 
-  describe('Part two examples', () => {
+  describe('Part two', () => {
     it.each(getPartTwoExamples())(
-      'should return expected',
-      ({ input, expected }) => {
-        expect(day02.solvePartTwo(input)).toBe(expected);
-      },
+      'should return expected for example',
+      ({ input, expected }) => expect(day02.solvePartTwo(input)).toBe(expected),
     );
+    it('should return expected for actual', () =>
+      expect(day02.solvePartTwo(readFileForDay('02'))).toBe(290));
   });
 });

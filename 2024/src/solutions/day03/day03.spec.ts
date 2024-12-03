@@ -9,10 +9,6 @@ const getPartOneExamples = (): PuzzleExample[] => [
     ],
     expected: 161,
   },
-  {
-    input: readFileForDay('03'),
-    expected: 169021493,
-  },
 ];
 
 const getPartTwoExamples = (): PuzzleExample[] => [
@@ -22,24 +18,24 @@ const getPartTwoExamples = (): PuzzleExample[] => [
     ],
     expected: 48,
   },
-  {
-    input: readFileForDay('03'),
-    expected: 111762583,
-  },
 ];
 
 describe('Day 03 examples', () => {
   describe('Part one examples', () => {
     it.each(getPartOneExamples())(
-      'should return expected',
+      'should return expected for example',
       ({ input, expected }) => expect(day03.solvePartOne(input)).toBe(expected),
     );
+    it('should return expected for actual', () =>
+      expect(day03.solvePartOne(readFileForDay('03'))).toBe(169021493));
   });
 
   describe('Part two examples', () => {
     it.each(getPartTwoExamples())(
-      'should return expected',
+      'should return expected for example',
       ({ input, expected }) => expect(day03.solvePartTwo(input)).toBe(expected),
     );
+    it('should return expected for actual', () =>
+      expect(day03.solvePartTwo(readFileForDay('03'))).toBe(111762583));
   });
 });
