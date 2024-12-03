@@ -4,8 +4,8 @@ const greatestCommonDivisor = (a: number, b: number) =>
 export const leastCommonMultiple = (a: number, b: number) =>
   (a * b) / greatestCommonDivisor(a, b);
 
-export const isPositive = (x: number) => x > 0
-export const isNegative = (x: number) => x < 0
+export const isPositive = (x: number) => x > 0;
+export const isNegative = (x: number) => x < 0;
 
 export const allPositive = (arr: number[]) => arr.every(isPositive);
 export const allNegative = (arr: number[]) => arr.every(isNegative);

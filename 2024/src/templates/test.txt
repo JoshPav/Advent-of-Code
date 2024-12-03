@@ -1,26 +1,36 @@
 import { PuzzleExample } from "../../types/examples";
+import { readFileForDay } from '../../utils/io';
+import { withSameInput } from '../../utils/testUtils';
 import day<DAY> from './day<DAY>'
 
-const getPartOneExamples = (): PuzzleExample[] => [];
+const getPartOneExamples = (): PuzzleExample[] => [
+  {
+    input: [
+
+    ],
+    expected: undefined
+  },
+//   {
+//    input: readFileForDay('<DAY>'),
+//    expected: undefined,
+//   },
+];
 
 const getPartTwoExamples = (): PuzzleExample[] => [];
+// const getPartTwoExamples = (): PuzzleExample[] => withSameInput(getPartOneExamples(), [undefined, undefined]);
 
 describe("Day <DAY> examples", () => {
   describe("Part one examples", () => {
     it.each(getPartOneExamples())(
       "should return expected",
-      ({ input, expected }) => {
-        expect(day<DAY>.solvePartOne(input)).toBe(expected);
-      }
+      ({ input, expected }) => expect(day<DAY>.solvePartOne(input)).toBe(expected)
     );
   });
 
   describe("Part two examples", () => {
     it.each(getPartTwoExamples())(
       "should return expected",
-      ({ input, expected }) => {
-        expect(day<DAY>.solvePartTwo(input)).toBe(expected);
-      }
+      ({ input, expected }) => expect(day<DAY>.solvePartTwo(input)).toBe(expected)
     );
   });
 });
