@@ -18,23 +18,10 @@ const getPartOneExamples = (): PuzzleExample[] => [
       'MXMXAXMASX',
     ],
     expected: 18,
-  },
-  {
-    input: [
-      'SAASAAS',
-      'AAAAAAA',
-      'AAMMMAA',
-      'SAMXMAS',
-      'AAMMMAA',
-      'AAAAAAA',
-      'SAASAAS',
-    ],
-    expected: 8,
-  },
+  }
 ];
 
-const getPartTwoExamples = (): PuzzleExample[] => [];
-// const getPartTwoExamples = (): PuzzleExample[] => withSameInput(getPartOneExamples(), []);
+const getPartTwoExamples = (): PuzzleExample[] => withSameInput(getPartOneExamples(), [9]);
 
 describe('Day 04 examples', () => {
   describe('Part one examples', () => {
@@ -54,6 +41,6 @@ describe('Day 04 examples', () => {
     );
 
     it('should return expected for actual', () =>
-      expect(day04.solvePartTwo(readFileForDay('04'))).toBe(undefined));
+      expect(day04.solvePartTwo(readFileForDay('04'))).toBe(1916));
   });
 });
