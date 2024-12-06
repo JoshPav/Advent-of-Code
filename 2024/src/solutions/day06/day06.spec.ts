@@ -21,8 +21,7 @@ const getPartOneExamples = (): PuzzleExample[] => [
   },
 ];
 
-const getPartTwoExamples = (): PuzzleExample[] => [];
-// const getPartTwoExamples = (): PuzzleExample[] => withSameInput(getPartOneExamples(), []);
+const getPartTwoExamples = (): PuzzleExample[] => withSameInput(getPartOneExamples(), [6]);
 
 describe('Day 06', () => {
   describe('Part one', () => {
@@ -32,7 +31,7 @@ describe('Day 06', () => {
     );
 
     it('should return expected for actual', () =>
-      expect(day06.solvePartOne(readFileForDay('06'))).toBe(undefined));
+      expect(day06.solvePartOne(readFileForDay('06'))).toBe(4789));
   });
 
   describe('Part two', () => {
@@ -42,6 +41,7 @@ describe('Day 06', () => {
     );
 
   it('should return expected for actual', () =>
-    expect(day06.solvePartTwo(readFileForDay('06'))).toBe(undefined));
+    expect(day06.solvePartTwo(readFileForDay('06'))).toBe(1304));
   });
+  
 });

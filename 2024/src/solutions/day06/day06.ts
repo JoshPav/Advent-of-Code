@@ -3,19 +3,19 @@ import { Point } from "../../types/geometry";
 import { getEast, getNorth, getSouth, getWest } from "../../utils/geometryUtils";
 
 
-const parseInput = (input: PuzzleInput): string[][] => input.map(line => line.split(""))
+type Map = string[][]
 
-const findGuard = (map: string[][]): Point => {
+const parseMap = (input: PuzzleInput): string[][] => input.map(line => line.split(""))
+
+const findGuard = (map: string[][]): PointAndDirection => {
   for (let y = 0; y < map.length; y++) {
     for (let x = 0; x < map[y].length; x++) {
       
       if (map[y][x] === '^') {
-        return { x, y }
+        return { x, y, dir: 0 }
       }
     }
-    
   }
-
   throw new Error();
 }
 
@@ -23,34 +23,77 @@ const isOutOfBounds = (map: string[][]) => (pos: Point) => pos.x < 0 || pos.y < 
 
 const dirs = [getNorth, getEast, getSouth, getWest]
 
-export default {
-  solvePartOne: (input) => {
+export type PointAndDirection = {
+  x: number;
+  y: number;
+  dir: number;
+};
 
-    const map = parseInput(input)
+const getCopies = (map: Map, path: Point[]): Record<string, Map> => {
 
-    let guardPos = findGuard(map)
+  return Object.fromEntries(path.map(point => {
+    const newMap = [...map.map(row => [...row])]
+    newMap[point.y][point.x] = '#'
+    return [`${point.x},${point.y}`, newMap];
+  }))
+} 
 
-    let currDir = 0
+const toString = ({ x, y, dir}: PointAndDirection) => `${x},${y},${dir}`
 
+const followPath = (map: Map) => (startPos: PointAndDirection) => {
 
-    const isInMap = (pos: Point) => !isOutOfBounds(map)(pos)
+  const isInMap = (pos: Point) => !isOutOfBounds(map)(pos)
 
-    const uniquePositions = new Set();
+  let pos: PointAndDirection = startPos;
 
-    while (isInMap(dirs[currDir](guardPos))) {
-      const nextPos = dirs[currDir](guardPos)
-      
-      if (map[nextPos.y][nextPos.x] === '#') {
-        currDir = (currDir + 1) % 4
-      } else {
-        guardPos = nextPos;
-        uniquePositions.add(`${guardPos.x} - ${guardPos.y}`)
-      }
+  const path: PointAndDirection[] = [startPos];
+  const seen = new Set(toString(startPos))
+
+  while (isInMap(dirs[pos.dir](pos))) {
+    const nextPos = dirs[pos.dir](pos)
+    
+    if (seen.has(toString({ ...nextPos, dir: pos.dir }))) {
+      throw new Error();
     }
 
-    return uniquePositions.size
+    if (map[nextPos.y][nextPos.x] === '#') {
+      pos = { ...pos, dir: (pos.dir + 1) % 4 }
+    } else {
+      pos = { ...nextPos, dir: pos.dir};
+      path.push(pos)
+      seen.add(toString(pos))
+    }
+  }
+
+  return path
+}
+
+
+export default {
+  solvePartOne: (input) => {
+    const map = parseMap(input)
+    const startPos = findGuard(map)
+
+    return new Set(followPath(map)(findGuard(map)).map(pos => `${pos.x},${pos.y}`)).size
   },
   solvePartTwo: (input) => {
-    return ""
+    const map = parseMap(input)
+    const startPos = findGuard(map)
+    const path = followPath(map)(findGuard(map))
+
+    const [first,...rest] = path
+    
+    const copies = getCopies(map, rest)
+
+    return Object.values(copies).filter(copy => {
+      try {
+        followPath(copy)(startPos)
+      } catch (err) {
+        return true
+      }
+
+      return false
+    }).length
+
   },
 } as Day;
