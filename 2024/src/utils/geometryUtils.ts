@@ -55,10 +55,19 @@ export const getEast = ({ x, y }: Point): Point => ({ x: x + 1, y });
 export const getSouth = ({ x, y }: Point): Point => ({ x, y: y + 1 });
 export const getWest = ({ x, y }: Point): Point => ({ x: x - 1, y });
 
-export const getNorthEast = ({ x, y }: Point): Point => ({ x: x + 1, y: y - 1 });
+export const getNorthEast = ({ x, y }: Point): Point => ({
+  x: x + 1,
+  y: y - 1,
+});
 export const getNortWest = ({ x, y }: Point): Point => ({ x: x - 1, y: y - 1 });
-export const getSouthEast = ({ x, y }: Point): Point => ({ x: x + 1, y: y + 1 });
-export const getSouthWest = ({ x, y }: Point): Point => ({ x: x - 1, y: y + 1 });
+export const getSouthEast = ({ x, y }: Point): Point => ({
+  x: x + 1,
+  y: y + 1,
+});
+export const getSouthWest = ({ x, y }: Point): Point => ({
+  x: x - 1,
+  y: y + 1,
+});
 
 export const getAllAdjancent = (p: Point) => [
   getNorth(p),
@@ -69,4 +78,4 @@ export const getAllAdjancent = (p: Point) => [
   getNortWest(p),
   getSouthEast(p),
   getSouthWest(p),
-]
+];

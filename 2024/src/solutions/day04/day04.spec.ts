@@ -18,10 +18,11 @@ const getPartOneExamples = (): PuzzleExample[] => [
       'MXMXAXMASX',
     ],
     expected: 18,
-  }
+  },
 ];
 
-const getPartTwoExamples = (): PuzzleExample[] => withSameInput(getPartOneExamples(), [9]);
+const getPartTwoExamples = (): PuzzleExample[] =>
+  withSameInput(getPartOneExamples(), [9]);
 
 describe('Day 04 examples', () => {
   describe('Part one examples', () => {
