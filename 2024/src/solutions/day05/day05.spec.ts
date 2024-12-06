@@ -59,7 +59,7 @@ describe('Day 05 examples', () => {
       ({ input, expected }) => expect(day05.solvePartTwo(input)).toBe(expected),
     );
 
-    it.skip('should return expected for actual', () =>
-      expect(day05.solvePartTwo(readFileForDay('05'))).toBe(undefined));
+    it('should return expected for actual', () =>
+      expect(day05.solvePartTwo(readFileForDay('05'))).toBe(4719));
   });
 });
