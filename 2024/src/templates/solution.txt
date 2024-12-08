@@ -2,9 +2,9 @@ import { Day } from "../../types/day";
 
 export default {
   solvePartOne: (input) => {
-    return ""
+    return undefined
   },
   solvePartTwo: (input) => {
-    return ""
+    return undefined
   },
 } as Day;

@@ -32,12 +32,25 @@ export const clampVector = (
   };
 };
 
-export const getDistances = (
-  { x: aX, y: aY }: Point,
-  { x: bX, y: bY }: Point,
+export const getVector = (
+  { x: startX, y: startY }: Point,
+  { x: endX, y: endY }: Point,
 ): Vector => ({
-  x: Math.abs(aX - bX),
-  y: Math.abs(aY - bY),
+  x: endX - startX,
+  y: endY - startY,
+});
+
+export const getDistances = (a: Point, b: Point): Vector => {
+  const { x, y } = getVector(a, b);
+  return {
+    x: Math.abs(x),
+    y: Math.abs(y),
+  };
+};
+
+export const inverse = ({ x, y }: Vector): Vector => ({
+  x: x * -1,
+  y: y * -1,
 });
 
 export const applyVector = (
