@@ -1,4 +1,4 @@
-type Predicate = (args: unknown) => boolean;
+export type Predicate<T = unknown> = (args: T) => boolean;
 
 export const not =
   <T extends Predicate>(pred: T) =>
