@@ -1,7 +1,7 @@
 import { PuzzleExample } from '../../types/examples';
 import { readFileForDay } from '../../utils/io';
 import { withSameInput } from '../../utils/testUtils';
-import day07 from './day07'
+import day07 from './day07';
 
 const getPartOneExamples = (): PuzzleExample[] => [
   {
@@ -16,31 +16,31 @@ const getPartOneExamples = (): PuzzleExample[] => [
       '21037: 9 7 18 13',
       '292: 11 6 16 20',
     ],
-    expected: 3749
+    expected: 3749,
   },
 ];
 
-const getPartTwoExamples = (): PuzzleExample[] => [];
-// const getPartTwoExamples = (): PuzzleExample[] => withSameInput(getPartOneExamples(), []);
+const getPartTwoExamples = (): PuzzleExample[] =>
+  withSameInput(getPartOneExamples(), [11387]);
 
 describe('Day 07', () => {
   describe('Part one', () => {
     it.each(getPartOneExamples())(
       'should return expected for example',
-      ({ input, expected }) => expect(day07.solvePartOne(input)).toBe(expected)
+      ({ input, expected }) => expect(day07.solvePartOne(input)).toBe(expected),
     );
 
     it('should return expected for actual', () =>
-      expect(day07.solvePartOne(readFileForDay('07'))).toBe(undefined));
+      expect(day07.solvePartOne(readFileForDay('07'))).toBe(5030892084481));
   });
 
   describe('Part two', () => {
     it.each(getPartTwoExamples())(
       'should return expected for example',
-      ({ input, expected }) => expect(day07.solvePartTwo(input)).toBe(expected)
+      ({ input, expected }) => expect(day07.solvePartTwo(input)).toBe(expected),
     );
 
-  it('should return expected for actual', () =>
-    expect(day07.solvePartTwo(readFileForDay('07'))).toBe(undefined));
+    it('should return expected for actual', () =>
+      expect(day07.solvePartTwo(readFileForDay('07'))).toBe(91377448644679));
   });
 });

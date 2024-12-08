@@ -21,3 +21,9 @@ export const getDifferences = (
   }
   return diffs;
 };
+
+export type Operation = (a: number, b: number) => number;
+
+export const sum: Operation = (a, b) => a + b;
+export const mul: Operation = (a, b) => a * b;
+export const concat: Operation = (a, b) => parseInt(`${a}` + `${b}`);

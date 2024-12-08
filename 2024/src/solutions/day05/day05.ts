@@ -49,7 +49,6 @@ const isInOrder = (rules: OrderingRules) => (pageNumbers: PageUpdate) =>
 
 const getMiddle = (page: PageUpdate) => page[(page.length - 1) / 2];
 
-
 export default {
   solvePartOne: (input) => {
     const { orderingRules, pageUpdates } = parseInput(input);
@@ -62,21 +61,27 @@ export default {
   solvePartTwo: (input) => {
     const { orderingRules, pageUpdates } = parseInput(input);
 
-    const getRelevantRules = (num: number, update: PageUpdate) => (orderingRules[num] || []).filter(val => update.includes(val))
+    const getRelevantRules = (num: number, update: PageUpdate) =>
+      (orderingRules[num] || []).filter((val) => update.includes(val));
 
     type PageWithRules = {
       page: number;
-      rules: number[]
-    }
+      rules: number[];
+    };
 
-    const sortPageWithRules = ({ rules: aRules}: PageWithRules, { rules: bRules}: PageWithRules) => bRules.length - aRules.length
+    const sortPageWithRules = (
+      { rules: aRules }: PageWithRules,
+      { rules: bRules }: PageWithRules,
+    ) => bRules.length - aRules.length;
 
-    const getPage = ({ page }: PageWithRules) => page
+    const getPage = ({ page }: PageWithRules) => page;
 
     return pageUpdates
       .filter(not(isInOrder(orderingRules)))
-      .map(update => update.map(page => ({ page, rules: getRelevantRules(page, update) })))
-      .map(val => val.sort(sortPageWithRules).map(getPage))
+      .map((update) =>
+        update.map((page) => ({ page, rules: getRelevantRules(page, update) })),
+      )
+      .map((val) => val.sort(sortPageWithRules).map(getPage))
       .map(getMiddle)
       .reduce(sum, 0);
   },
