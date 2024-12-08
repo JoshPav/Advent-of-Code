@@ -42,8 +42,10 @@ const getAntinodes = (antennas: Point[]): Point[] => {
   return antinodes;
 };
 
-
-const getAntinodesPt2 = (antennas: Point[], isInMap: Predicate<Point>): Point[] => {
+const getAntinodesPt2 = (
+  antennas: Point[],
+  isInMap: Predicate<Point>,
+): Point[] => {
   const antinodes = [];
 
   for (let i = 0; i < antennas.length; i++) {
@@ -52,23 +54,22 @@ const getAntinodesPt2 = (antennas: Point[], isInMap: Predicate<Point>): Point[] 
       const end = antennas[j];
 
       const vect = getVector(start, end);
-      const inverseVect = inverse(vect)
+      const inverseVect = inverse(vect);
 
+      antinodes.push(start, end);
 
-antinodes.push(start, end)
-
-      let nextStart = applyVector(start, inverseVect)
+      let nextStart = applyVector(start, inverseVect);
       while (isInMap(nextStart)) {
         antinodes.push(nextStart);
 
-        nextStart = applyVector(nextStart, inverseVect)
+        nextStart = applyVector(nextStart, inverseVect);
       }
 
-      let nextEnd = applyVector(end, vect)
+      let nextEnd = applyVector(end, vect);
       while (isInMap(nextEnd)) {
         antinodes.push(nextEnd);
 
-        nextEnd = applyVector(nextEnd, vect)
+        nextEnd = applyVector(nextEnd, vect);
       }
     }
   }
@@ -81,8 +82,8 @@ export default {
     const nodes = parseInput(input);
 
     const isInMap = (point: Point) =>
-      isWithinRange({ start: 0, end: input.length  - 1})(point.y) &&
-      isWithinRange({ start: 0, end: input[0].length - 1})(point.x);
+      isWithinRange({ start: 0, end: input.length - 1 })(point.y) &&
+      isWithinRange({ start: 0, end: input[0].length - 1 })(point.x);
 
     const coords = Object.entries(nodes)
       .flatMap(([freq, antennas]) => getAntinodes(antennas))
@@ -95,12 +96,12 @@ export default {
     const nodes = parseInput(input);
 
     const isInMap = (point: Point) =>
-      isWithinRange({ start: 0, end: input.length  - 1})(point.y) &&
-      isWithinRange({ start: 0, end: input[0].length - 1})(point.x);
+      isWithinRange({ start: 0, end: input.length - 1 })(point.y) &&
+      isWithinRange({ start: 0, end: input[0].length - 1 })(point.x);
 
     const coords = Object.entries(nodes)
       .flatMap(([freq, antennas]) => getAntinodesPt2(antennas, isInMap))
-      .map(({ x, y }) => `${x},${y}`);    
+      .map(({ x, y }) => `${x},${y}`);
 
     return new Set(coords).size;
   },
