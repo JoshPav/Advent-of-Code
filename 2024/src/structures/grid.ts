@@ -83,6 +83,20 @@ export class Grid<T = string> implements Iterable<T> {
     this.grid[y][x] = val;
   }
 
+  public getRow(y: number): T[] {
+    return this.grid[y]
+  }
+
+  public getColumn(x: number): T[] {
+    const col = []
+    
+    for (let y = 0; y < this.height; y++) {
+      col.push(this.get(new Point(x, y)))
+    }
+
+    return col
+  }
+
   public isWithin({ x, y }: Point): boolean {
     return (
       isWithinRange({ start: 0, end: this.width - 1 })(x) &&

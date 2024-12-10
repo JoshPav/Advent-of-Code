@@ -1,5 +1,5 @@
+import { Point } from '../structures/point';
 import { Range } from '../types/common';
-import { Coord } from '../types/geometry';
 
 export const isRangeWithin = (
   innerRange: Range,
@@ -18,7 +18,7 @@ const getRange = (a: number, b: number): Range => ({
   end: Math.max(a, b),
 });
 
-export const getRanges = (a: Coord, b: Coord) => ({
+export const getRanges = (a: Point, b: Point) => ({
   x: getRange(a.x, b.x),
   y: getRange(a.y, b.y),
 });
