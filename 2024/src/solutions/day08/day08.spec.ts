@@ -1,6 +1,4 @@
-import { PuzzleInput } from '../../types/day';
 import { PuzzleExample } from '../../types/examples';
-import { Point } from '../../types/geometry';
 import { readFileForDay } from '../../utils/io';
 import { withSameInput } from '../../utils/testUtils';
 import day08 from './day08';
@@ -46,6 +44,6 @@ describe('Day 08', () => {
     );
 
     it('should return expected for actual', () =>
-      expect(day08.solvePartTwo(readFileForDay('08'))).toBe(undefined));
+      expect(day08.solvePartTwo(readFileForDay('08'))).toBe(1019));
   });
 });

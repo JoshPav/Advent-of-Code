@@ -1,6 +1,5 @@
 import { PuzzleExample } from '../../types/examples';
 import { readFileForDay } from '../../utils/io';
-import { withSameInput } from '../../utils/testUtils';
 import day10 from './day10';
 
 const getPartOneExamples = (): PuzzleExample[] => [
@@ -59,8 +58,49 @@ const getPartOneExamples = (): PuzzleExample[] => [
   },
 ];
 
-const getPartTwoExamples = (): PuzzleExample[] => [];
-// const getPartTwoExamples = (): PuzzleExample[] => withSameInput(getPartOneExamples(), []);
+const getPartTwoExamples = (): PuzzleExample[] => [
+  {
+    input: [
+      '.....0.',
+      '..4321.',
+      '..5..2.',
+      '..6543.',
+      '..7..4.',
+      '..8765.',
+      '..9....',
+    ],
+    expected: 3,
+  },
+  {
+    input: [
+      '..90..9',
+      '...1.98',
+      '...2..7',
+      '6543456',
+      '765.987',
+      '876....',
+      '987....',
+    ],
+    expected: 13,
+  },
+  {
+    input: ['012345', '123456', '234567', '345678', '4.6789', '56789.'],
+    expected: 227,
+  },
+  {
+    input: [
+      '89010123',
+      '78121874',
+      '87430965',
+      '96549874',
+      '45678903',
+      '32019012',
+      '01329801',
+      '10456732',
+    ],
+    expected: 81,
+  },
+];
 
 describe('Day 10', () => {
   describe('Part one', () => {
@@ -80,6 +120,6 @@ describe('Day 10', () => {
     );
 
     it('should return expected for actual', () =>
-      expect(day10.solvePartTwo(readFileForDay('10'))).toBe(undefined));
+      expect(day10.solvePartTwo(readFileForDay('10'))).toBe(1086));
   });
 });

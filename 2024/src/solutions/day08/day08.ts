@@ -1,11 +1,5 @@
 import { Day, PuzzleInput } from '../../types/day';
-import { Point } from '../../types/geometry';
-import {
-  applyVector,
-  getDistances,
-  getVector,
-  inverse,
-} from '../../utils/geometryUtils';
+import { Point } from '../../structures/point';
 import { Predicate } from '../../utils/predicate';
 import { isWithinRange } from '../../utils/range';
 
@@ -17,7 +11,7 @@ const parseInput = (input: PuzzleInput): Record<string, Point[]> => {
       const element = input[y][x];
 
       if (element !== '.') {
-        antennas[element] = [...(antennas[element] || []), { x, y }];
+        antennas[element] = [...(antennas[element] || []), new Point(x, y)];
       }
     }
   }
@@ -33,9 +27,9 @@ const getAntinodes = (antennas: Point[]): Point[] => {
       const start = antennas[i];
       const end = antennas[j];
 
-      const vect = getVector(start, end);
+      const vect = start.getVector(end);
 
-      antinodes.push(applyVector(end, vect), applyVector(start, inverse(vect)));
+      antinodes.push(end.applyVector(vect), start.applyVector(vect.inverse()));
     }
   }
 
@@ -53,23 +47,23 @@ const getAntinodesPt2 = (
       const start = antennas[i];
       const end = antennas[j];
 
-      const vect = getVector(start, end);
-      const inverseVect = inverse(vect);
+      const vect = start.getVector(end);
+      const inverseVect = vect.inverse();
 
       antinodes.push(start, end);
 
-      let nextStart = applyVector(start, inverseVect);
+      let nextStart = start.applyVector(inverseVect);
       while (isInMap(nextStart)) {
         antinodes.push(nextStart);
 
-        nextStart = applyVector(nextStart, inverseVect);
+        nextStart = nextStart.applyVector(inverseVect);
       }
 
-      let nextEnd = applyVector(end, vect);
+      let nextEnd = end.applyVector(vect);
       while (isInMap(nextEnd)) {
         antinodes.push(nextEnd);
 
-        nextEnd = applyVector(nextEnd, vect);
+        nextEnd = nextEnd.applyVector(vect);
       }
     }
   }
@@ -85,12 +79,12 @@ export default {
       isWithinRange({ start: 0, end: input.length - 1 })(point.y) &&
       isWithinRange({ start: 0, end: input[0].length - 1 })(point.x);
 
-    const coords = Object.entries(nodes)
+    const points = Object.entries(nodes)
       .flatMap(([freq, antennas]) => getAntinodes(antennas))
       .filter(isInMap)
       .map(({ x, y }) => `${x},${y}`);
 
-    return new Set(coords).size;
+    return new Set(points).size;
   },
   solvePartTwo: (input) => {
     const nodes = parseInput(input);
@@ -99,10 +93,10 @@ export default {
       isWithinRange({ start: 0, end: input.length - 1 })(point.y) &&
       isWithinRange({ start: 0, end: input[0].length - 1 })(point.x);
 
-    const coords = Object.entries(nodes)
+    const points = Object.entries(nodes)
       .flatMap(([freq, antennas]) => getAntinodesPt2(antennas, isInMap))
       .map(({ x, y }) => `${x},${y}`);
 
-    return new Set(coords).size;
+    return new Set(points).size;
   },
 } as Day;
