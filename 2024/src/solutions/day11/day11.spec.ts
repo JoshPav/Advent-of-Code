@@ -30,6 +30,6 @@ describe('Day 11', () => {
     );
 
     it('should return expected for actual', () =>
-      expect(day11.solvePartTwo(readFileForDay('11'))).toBe(undefined));
+      expect(day11.solvePartTwo(readFileForDay('11'))).toBe(237149922829154));
   });
 });
