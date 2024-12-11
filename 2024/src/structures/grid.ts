@@ -12,25 +12,25 @@ export class Grid<T = string> implements Iterable<T> {
   constructor(input: string[], parser?: Parser<T>, rowParser?: RowParser) {
     this.grid = this.parseGrid(input, parser, rowParser);
   }
-  
+
   forEach(callbackfn: (value: T, index: Point, grid: Grid<T>) => void) {
     for (let y = 0; y < this.height; y++) {
       for (let x = 0; x < this.width; x++) {
-        const p = new Point(x, y)
+        const p = new Point(x, y);
         callbackfn(this.get(p), p, this);
       }
     }
   }
 
   [Symbol.iterator](): Iterator<T, any, any> {
-    let grid = this.grid
+    let grid = this.grid;
 
     let y = 0;
     let x = 0;
-    
+
     return {
       next() {
-        x++
+        x++;
         if (x === grid[0].length) {
           y++;
           x = 0;
@@ -38,10 +38,10 @@ export class Grid<T = string> implements Iterable<T> {
 
         return {
           value: grid[y][x],
-          done: y > grid.length
-        }
-      }
-    }
+          done: y > grid.length,
+        };
+      },
+    };
   }
 
   private parseGrid(
@@ -84,17 +84,17 @@ export class Grid<T = string> implements Iterable<T> {
   }
 
   public getRow(y: number): T[] {
-    return this.grid[y]
+    return this.grid[y];
   }
 
   public getColumn(x: number): T[] {
-    const col = []
-    
+    const col = [];
+
     for (let y = 0; y < this.height; y++) {
-      col.push(this.get(new Point(x, y)))
+      col.push(this.get(new Point(x, y)));
     }
 
-    return col
+    return col;
   }
 
   public isWithin({ x, y }: Point): boolean {

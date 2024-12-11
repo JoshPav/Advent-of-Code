@@ -1,5 +1,5 @@
-import { Point } from "./point";
-import { DIRECTIONS } from "./vector";
+import { Point } from './point';
+import { DIRECTIONS } from './vector';
 
 const compass = {
   0: DIRECTIONS.NORTH,
@@ -10,7 +10,7 @@ const compass = {
   225: DIRECTIONS.SOUTH_WEST,
   270: DIRECTIONS.WEST,
   315: DIRECTIONS.NORTH_WEST,
-}
+};
 
 export class MovingPoint extends Point {
   private bearing: number;
@@ -21,7 +21,7 @@ export class MovingPoint extends Point {
   }
 
   move() {
-    const { x, y } = this.applyVector(compass[this.bearing])
+    const { x, y } = this.applyVector(compass[this.bearing]);
     return new MovingPoint(x, y, this.bearing);
   }
 
@@ -30,7 +30,6 @@ export class MovingPoint extends Point {
   }
 
   toString(): string {
-    return `${super.toString()},${this.bearing}`
+    return `${super.toString()},${this.bearing}`;
   }
-  
 }

@@ -28,8 +28,6 @@ export const DIRECTIONS = {
   SOUTH_EAST: new Vector(1, 1),
   SOUTH: new Vector(0, 1),
   SOUTH_WEST: new Vector(-1, 1),
-  WEST:new  Vector(-1, 0),
+  WEST: new Vector(-1, 0),
   NORTH_WEST: new Vector(-1, -1),
-}
-
-
+};

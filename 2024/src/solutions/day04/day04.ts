@@ -3,30 +3,42 @@ import { Point } from '../../structures/point';
 import { DIRECTIONS, Vector } from '../../structures/vector';
 import { Day, PuzzleInput } from '../../types/day';
 
-const parseInput = (input: PuzzleInput): Grid<string> =>  new Grid(input)
+const parseInput = (input: PuzzleInput): Grid<string> => new Grid(input);
 
 const check =
   (grid: Grid) =>
-  (
-    p: Point,
-    dir: Vector,
-    [toMatch, ...rest]: string[],
-  ) =>
+  (p: Point, dir: Vector, [toMatch, ...rest]: string[]) =>
     grid.get(p) === toMatch &&
     (!rest.length || check(grid)(p.applyVector(dir), dir, rest));
 
 const isXmas = (grid: Grid) => (middle: Point) => {
   return (
-    (check(grid)(middle.applyVector(DIRECTIONS.NORTH_WEST), DIRECTIONS.SOUTH_EAST, ['M', 'A', 'S']) ||
-      check(grid)(middle.applyVector(DIRECTIONS.NORTH_WEST), DIRECTIONS.SOUTH_EAST, ['S', 'A', 'M'])) &&
-    (check(grid)(middle.applyVector(DIRECTIONS.NORTH_EAST),  DIRECTIONS.SOUTH_WEST, ['M', 'A', 'S']) ||
-      check(grid)(middle.applyVector(DIRECTIONS.NORTH_EAST), DIRECTIONS.SOUTH_WEST, ['S', 'A', 'M']))
+    (check(grid)(
+      middle.applyVector(DIRECTIONS.NORTH_WEST),
+      DIRECTIONS.SOUTH_EAST,
+      ['M', 'A', 'S'],
+    ) ||
+      check(grid)(
+        middle.applyVector(DIRECTIONS.NORTH_WEST),
+        DIRECTIONS.SOUTH_EAST,
+        ['S', 'A', 'M'],
+      )) &&
+    (check(grid)(
+      middle.applyVector(DIRECTIONS.NORTH_EAST),
+      DIRECTIONS.SOUTH_WEST,
+      ['M', 'A', 'S'],
+    ) ||
+      check(grid)(
+        middle.applyVector(DIRECTIONS.NORTH_EAST),
+        DIRECTIONS.SOUTH_WEST,
+        ['S', 'A', 'M'],
+      ))
   );
 };
 
 export default {
   solvePartOne: (input) => {
-    const grid = new Grid(input)
+    const grid = new Grid(input);
 
     let count = 0;
 
@@ -40,7 +52,7 @@ export default {
           count += 1;
         }
       });
-    })
+    });
 
     return count;
   },
@@ -53,7 +65,7 @@ export default {
       if (val === 'A' && isXmas(grid)(point)) {
         count += 1;
       }
-    })
+    });
 
     return count;
   },

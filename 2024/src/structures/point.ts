@@ -1,8 +1,5 @@
 import { Predicate } from '../utils/predicate';
-import {
-  DIRECTIONS,
-  Vector,
-} from './vector';
+import { DIRECTIONS, Vector } from './vector';
 
 export class Point {
   static origin(): Point {
@@ -66,7 +63,8 @@ export class Point {
     includeIntercardinal: boolean,
     filter: Predicate<Point> = () => true,
   ) {
-    return Object.values(DIRECTIONS).reduce((points: Point[], dir, i) => {
+    return Object.values(DIRECTIONS)
+      .reduce((points: Point[], dir, i) => {
         if (includeIntercardinal || i % 2 === 0) {
           points.push(this.applyVector(dir));
         }
